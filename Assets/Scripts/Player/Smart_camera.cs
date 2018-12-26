@@ -14,7 +14,7 @@ public class Smart_camera : MonoBehaviour {
     public float Radius_minimum = 1.0f;
     public float Radius_maximum = 10.0f;
     public float Scroll_speed = 0.2f;
-    float radius = 4.0f;
+    float radius = 8.0f;
 
     private Vector3 camera_position = new Vector3();
 
@@ -28,7 +28,9 @@ public class Smart_camera : MonoBehaviour {
     }
 	
 	// Update is called once per frame
-	void Update () {
+	void FixedUpdate () {
+
+        float v = player.GetComponent<Smart_controller>().Look_speed.y * Input.GetAxis("Mouse Y");
 
         radius = Mathf.Clamp(radius + -Input.mouseScrollDelta.y * Scroll_speed, Radius_minimum, Radius_maximum);
 
@@ -40,7 +42,7 @@ public class Smart_camera : MonoBehaviour {
 
         camera_position.x = player_transform.position.x + acos * radius;
         camera_position.z = player_transform.position.z + -asin * radius;
-        camera_position.y = player_transform.position.y + radius * 0.7f;
+        camera_position.y = player_transform.position.y + radius * 0.2f;
         
         camera.transform.SetPositionAndRotation(camera_position, Quaternion.identity);
         camera.transform.LookAt(player_transform);
