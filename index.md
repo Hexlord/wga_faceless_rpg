@@ -1,6 +1,6 @@
-Все ресурсы помещаются в папке Assets, а именно:
+Все ресурсы помещаются в папку Assets, а именно:
 
-Сцены: Assets\Materials
+Сцены: Assets\Scenes
 
 Материалы: Assets\Materials
 
