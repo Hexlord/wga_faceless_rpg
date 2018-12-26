@@ -1,4 +1,7 @@
 ## Faceless 
 #### private game source repository
 
-#### Расположение ресурсов: [index.md]
+#### [Где искать и куда ложить файлы](index.md)
+
+![image](current_state.png)
+
