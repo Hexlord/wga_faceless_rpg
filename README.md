@@ -1,5 +1,5 @@
 ## Faceless 
-#### private game source repository
+
 
 #### [Где искать и куда ложить файлы](index.md)
 
