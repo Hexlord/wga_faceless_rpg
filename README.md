@@ -1,8 +1,5 @@
-## **Faceless** game private repository
+## Faceless
 
-### (TOP SECRET)
-
-###Current project state
+#### [Где искать и куда ложить файлы](index.md)
 
 ![image](current_state.png)
-
