@@ -17,6 +17,13 @@ public class HealthSystem : MonoBehaviour {
     public void DealDamage(float amount)
     {
         healthPoints -= amount;
+        Debug.Log("Dealt");
+        if(healthPoints <= 0.0f)
+        {
+            Debug.Log("Die");
+            healthPoints = 100.0f;
+            gameObject.GetComponent<BaseCharacter>().Die();
+        }
     }
 
     public void RestoreHealthPoints(float amount)
@@ -26,8 +33,7 @@ public class HealthSystem : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		
-	}
+    }
 	
 	// Update is called once per frame
 	void Update () {
