@@ -134,22 +134,22 @@ public class Control : MonoBehaviour {
     {
         if (Direction != Vector3.zero)
         {
-            charControl.Move(Direction * Time.deltaTime);
-            transform.forward = -CamDirectionRight;
-            previousRotation = transform.rotation;
+            //charControl.Move(Direction * Time.deltaTime);
+            //transform.forward = -CamDirectionRight;
+            //previousRotation = transform.rotation;
         }
         else
         {
-            transform.rotation = previousRotation;
+            //transform.rotation = previousRotation;
         }
-        Camera.main.transform.position = Camera.main.transform.position + (PlayerCharacter.position - targetPosition);
-        if (horizontalAngle != 0 || verticalAngle != 0)
-        {
-            Camera.main.transform.RotateAround(PlayerCharacter.position, PlayerCharacter.up, horizontalAngle);
-            Camera.main.transform.RotateAround(PlayerCharacter.position, CamDirectionRight, -verticalAngle);
-            Camera.main.transform.LookAt(PlayerCharacter, PlayerCharacter.up);
-        }
+        //Camera.main.transform.position = Camera.main.transform.position + (PlayerCharacter.position - targetPosition);
+        //if (horizontalAngle != 0 || verticalAngle != 0)
+        //{
+        //    Camera.main.transform.RotateAround(PlayerCharacter.position, PlayerCharacter.up, horizontalAngle);
+        //    Camera.main.transform.RotateAround(PlayerCharacter.position, CamDirectionRight, -verticalAngle);
+        //    Camera.main.transform.LookAt(PlayerCharacter, PlayerCharacter.up);
+        //}
 
-        targetPosition = PlayerCharacter.position;
+        //targetPosition = PlayerCharacter.position;
     }
 }
