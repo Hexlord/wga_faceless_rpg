@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44657874, g: 0.49641258, b: 0.5748172, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657844, g: 0.49641222, b: 0.57481694, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -11881,7 +11881,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1713741865}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3c870626a5402b74ebd1107e83845ffc, type: 3}
   m_Name: 
@@ -11921,29 +11921,65 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1713741865}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c4f6f50b1d59bed498322f276be0815f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveSpeed: 10
-  mouseSensitivity: {x: 5, y: 5}
-  rotationSpeedLimit: {x: 180, y: 180}
-  lookSpeedLimit: {x: 260, y: 260}
-  lookAimSpeedLimit: {x: 390, y: 390}
+  moveSpeed: 7
+  mouseHorizontalSensitivity: 5
+  mouseVerticalSensitivity: 5
+  mouseSpeedLimit: 390
+  rotationSpeedLimit: 180
+  cameraRotationSpeedLimit: 260
   LookAimLimit: 60
+  cameraDistanceSpeed: 10
   lookAFKTimeout: 2
   lookAFKThreshold: 0
-  lookAwayThreshold: 180
-  cameraDistance: 9.6
-  cameraHeight: 2.2
-  cameraAvoidanceFactor: 1.5
-  cameraAvoidanceSpeed: 4
-  safeCameraDistance: 0
+  lookAwayThreshold: 90
+  stateAngularTransitionSpeed: 0.5
+  stateDistanceTransitionSpeed: 0.5
+  stateDistanceTransitionSpeedLerp: 4
+  stateAngularTransitionSpeedLerp: 4
+  stateTransitionLerp: 1
+  transitionLerp: 0
+  stateDistanceTransitionSpeedShooting: 10
+  stateAngularTransitionSpeedShooting: 3
+  stateDistanceTransitionSpeedShootingLerp: 1.5
+  stateAngularTransitionSpeedShootingLerp: 1.5
+  stateAngularEpsilon: 0.25
+  stateDistanceEpsilon: 0.025
+  stateTransitionRaw: 0.001
+  actionCameraDistance: 7
+  actionCameraTargetHeight: 3
+  shootingCameraDistance: 1
+  shootingCameraHeight: 2.4
+  shootingCameraTargetDistance: 25
+  shootingCameraBackwardsDistance: 1
+  tacticsCameraDistance: 11
+  tacticsCameraTargetHeight: 3
+  tacticsCameraPitch: 65
+  cameraAvoidancePrecision: 2
+  cameraAvoidanceSmoothAngle: 2
+  cameraState: 0
+  cameraStateNext: 0
+  actionAim: {x: 0, y: 0}
+  tacticsAim: {x: 0, y: 0}
+  shootAim: {x: 0, y: 0}
+  cameraYaw: 0
+  cameraPitch: 0
+  actionCameraYaw: 0
+  actionCameraPitch: 0
+  shootingCameraYaw: 0
+  cameraDistance: 0
+  lookAFKTimer: 0
   isPlayerRotating: 0
-  lookAim: {x: 0, y: 0}
-  cameraDistanceDebug: 0
+  deltaAim: {x: 0, y: 0}
   cameraRayDistanceDebug: 0
+  cameraRemainingTargetDistance: 0
+  cameraRemainingDistance: 0
+  cameraRemainingYaw: 0
+  cameraRemainingPitch: 0
 --- !u!114 &1713741872
 MonoBehaviour:
   m_ObjectHideFlags: 0
