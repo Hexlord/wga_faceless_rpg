@@ -4,19 +4,53 @@ using UnityEngine;
 
 public class Weapon : MonoBehaviour {
 
-    public string targetTag;
+    private string targetTag;
+    private bool isStriking = false;
+    private float damage;
 
-    private void OnCollisionEnter(Collision collision)
+    public float Damage
     {
-        if(collision.collider.tag == targetTag)
+        set
+        {
+            damage = value;
+        }
+    }
+
+    public string TargetTag
+    {
+        set
         {
             try
             {
-                collision.gameObject.GetComponent<HealthSystem>().DealDamage(25.0f);
+                targetTag = value;
             }
             catch
             {
-                Debug.LogError("NO HP SYSTEM ATTACHED");
+                Debug.LogError("Something wrong with the tag \"" + value + "\"");
+            }
+        }
+    }
+
+    public void TriggerStricking()
+    {
+            isStriking = true;
+    }
+
+    private void OnTriggerEnter(Collider col)
+    {
+        if (isStriking)
+        {
+            if (col.tag == targetTag)
+            {
+                try
+                {
+                    col.gameObject.GetComponent<HealthSystem>().DealDamage(damage);
+                    isStriking = false;
+                }
+                catch
+                {
+                    Debug.LogError("NO HP SYSTEM ATTACHED");
+                }
             }
         }
     }
