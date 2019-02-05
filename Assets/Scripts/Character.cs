@@ -4,15 +4,23 @@ using UnityEngine;
 
 public class Character : MonoBehaviour {
 
+    public Weapon playerSword;
+    public GameObject playerProjectile;
+    public Transform ShootingPoint;
+    public bool isBlocking;
+    public enum CharacterState {SheathedSword, SwordStance, MagicStance};
+    public GameObject SwordParticles, MaskParticles;
+    public float projectileSpeed = 12.0f;
+    public float projectileDamage = 15.0f;
+    public float swordDamage = 25.0f;
+    public string target;
+
+    GameObject magicProjectile;
     Vector3 startingPos;
     Quaternion startingRot;
     Animator anim;
-    public bool isBlocking;
-    bool isSprinting;
-    public enum CharacterState {SheathedSword, SwordStance, MagicStance};
-    public GameObject SwordParticles, MaskParticles;
     private CharacterState currentState = CharacterState.SheathedSword;
-
+    bool isSprinting;
 
     public bool IsSprinting
     {
@@ -44,13 +52,10 @@ public class Character : MonoBehaviour {
         currentState = CharacterState.SheathedSword;
         SwordParticles.SetActive(false);
         MaskParticles.SetActive(false);
+
+        playerSword.TargetTag = "Faceless";
+        playerSword.Damage = swordDamage;
     }
-	
-	// Update is called once per frame
-	void Update ()
-    {
-        
-	}
 
     public void SwapPlayerStatus()
     {
@@ -105,6 +110,16 @@ public class Character : MonoBehaviour {
     public void SwingSword()
     {
         anim.SetTrigger("Swing");
+        playerSword.TriggerStricking();
+    }
+
+    public void ShootProjectile()
+    {
+        GameObject projectile = Instantiate(playerProjectile, ShootingPoint.position, ShootingPoint.rotation);
+        Weapon projectileDamageComponent = playerProjectile.GetComponent<Weapon>();
+        projectileDamageComponent.TriggerStricking();
+        projectileDamageComponent.TargetTag = target;
+        projectile.GetComponent<Rigidbody>().AddForce(Camera.main.gameObject.transform.forward * projectileSpeed);
     }
 
 }
