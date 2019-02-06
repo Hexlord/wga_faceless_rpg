@@ -136,13 +136,13 @@ public class Control : MonoBehaviour {
             {
                 charControl.Move(Direction * Time.deltaTime);
             //transform.forward = CamDirectionForward;
-            GetComponent<SmartController>().TriggerPlayerAutoRotation();
+                GetComponent<SmartController>().TriggerPlayerAutoRotation();
                 previousRotation = transform.rotation;
             }
             else
             {
                 //transform.rotation = previousRotation;
-            GetComponent<SmartController>().TriggerPlayerAutoRotation();
+                //GetComponent<SmartController>().TriggerPlayerAutoRotation();
         }
     }
 

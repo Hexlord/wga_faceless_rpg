@@ -52,7 +52,6 @@ public class Character : MonoBehaviour {
         currentState = CharacterState.SheathedSword;
         SwordParticles.SetActive(false);
         MaskParticles.SetActive(false);
-
         playerSword.TargetTag = "Faceless";
         playerSword.Damage = swordDamage;
     }

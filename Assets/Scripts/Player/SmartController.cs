@@ -35,9 +35,9 @@ public class SmartController : MonoBehaviour
 
     [Header("Player Settings")]
 
-    [Tooltip("Player movement speed in meters per second")]
-    [Range(0.0f, 10.0f)]
-    public float playerMoveSpeed = 7.0f;
+    //[Tooltip("Player movement speed in meters per second")]
+    //[Range(0.0f, 10.0f)]
+    //public float playerMoveSpeed = 7.0f;
 
     [Tooltip("Player rotation speed in degrees per second")]
     [Range(0.0f, 360.0f)]
@@ -73,6 +73,10 @@ public class SmartController : MonoBehaviour
     [Tooltip("Action camera distance")]
     [Range(0.0f, 10.0f)]
     public float actionDistance = 7.0f;
+
+    [Tooltip("Action camera additive height")]
+    [Range (-45.0f, 45.0f)]
+    public float initialPitch = -30.0f;
 
     [Tooltip("Action camera pitch limit")]
     [Range(0.0f, 90.0f)]
@@ -310,6 +314,7 @@ public class SmartController : MonoBehaviour
                 break;
         }
     }
+
     float FilterDistance(Ray ray, float distance, Vector3 forward)
     {
         RaycastHit hit;
@@ -417,11 +422,20 @@ public class SmartController : MonoBehaviour
     {
         playerAutoRotateActive = true;
     }
+
     public void SwitchState(CameraState state)
     {
-        if(cameraStateNext != state)
+        if (cameraStateNext != state)
         {
+            cameraState = cameraStateNext;
+
             cameraStateNext = state;
+
+            if (cameraStateNext == CameraState.Action)
+            {
+                actionYaw = playerTransform.eulerAngles.y;
+                actionPitch = initialPitch;
+            }
         }
     }
 
