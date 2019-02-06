@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Character : MonoBehaviour {
+public class Character : BaseCharacter {
 
     public Weapon playerSword;
     public GameObject playerProjectile;
@@ -57,6 +57,18 @@ public class Character : MonoBehaviour {
         playerSword.Damage = swordDamage;
     }
 
+
+    private bool isNotified = false;
+	void Update ()
+    {
+        //При нажатии кнопки m, Enemy2 начинает бежать в твое направление и бить
+        if(Input.GetKeyDown(KeyCode.M))
+        {
+            isNotified = !isNotified;
+            GameObject.Find("Enemy2").GetComponent<DumbEnemy>().notify();
+        }
+	}
+
     public void SwapPlayerStatus()
     {
        switch (currentState)
@@ -87,6 +99,11 @@ public class Character : MonoBehaviour {
 
 
     }
+
+    //public override void Die()
+    //{
+    //    Destroy(gameObject);
+    //}
 
     public void DrawSword()
     {
