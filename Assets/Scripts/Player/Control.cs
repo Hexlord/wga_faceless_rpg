@@ -15,7 +15,7 @@ public class Control : MonoBehaviour {
     public float dashModifier = 5.4f;
     public float dashTime = 0.2f;
     //public float radius = 5.0f;
-    float dashStart;
+    private float dashStart;
 
     // private variables
     Ray groundedRay;
@@ -49,7 +49,7 @@ public class Control : MonoBehaviour {
             Direction = Vector3.zero;
             groundedRay = new Ray(transform.position, Vector3.down);
             Direction += CamDirectionRight * Input.GetAxis("Horizontal") * speed;
-            Direction += CamDirectionForward * Input.GetAxis("Vertical") * speed;
+            Direction += CamDirectionForward * Input.GetAxis("Vertical") * speed * ((character.IsSprinting) ? sprintModifier : 1.0f);
             Direction += (!charControl.isGrounded) ? new Vector3(0, Physics.gravity.y * mass, 0) : Vector3.zero;
 
             if (Input.GetButtonDown("Attack"))
@@ -57,6 +57,10 @@ public class Control : MonoBehaviour {
                 if(character.Status == Character.CharacterState.SwordStance)
                 {
                     character.SwingSword();
+                }
+                if(character.Status == Character.CharacterState.MagicStance)
+                {
+                    character.ShootProjectile();
                 }
             }
 
@@ -114,11 +118,6 @@ public class Control : MonoBehaviour {
 
         }
 
-        if (character.IsSprinting)
-        {
-            Direction *= sprintModifier;
-        }
-
         if(isDashing)
         {
             Direction *= dashModifier;
@@ -130,26 +129,36 @@ public class Control : MonoBehaviour {
         GUI.Label(new Rect(0, 0, 100, 100), ((int)(1.0f / Time.smoothDeltaTime)).ToString());
     }
 
+    private void FixedUpdate()
+    {
+
+            if (Direction != Vector3.zero)
+            {
+                charControl.Move(Direction * Time.deltaTime);
+            //transform.forward = CamDirectionForward;
+            GetComponent<SmartController>().TriggerPlayerAutoRotation();
+                previousRotation = transform.rotation;
+            }
+            else
+            {
+                //transform.rotation = previousRotation;
+            GetComponent<SmartController>().TriggerPlayerAutoRotation();
+        }
+    }
+
     private void LateUpdate()
     {
-        if (Direction != Vector3.zero)
+        if (!GetComponent<SmartController>().isActiveAndEnabled)
         {
-            charControl.Move(Direction * Time.deltaTime);
-            transform.forward = -CamDirectionRight;
-            previousRotation = transform.rotation;
-        }
-        else
-        {
-            transform.rotation = previousRotation;
-        }
-        Camera.main.transform.position = Camera.main.transform.position + (PlayerCharacter.position - targetPosition);
-        if (horizontalAngle != 0 || verticalAngle != 0)
-        {
-            Camera.main.transform.RotateAround(PlayerCharacter.position, PlayerCharacter.up, horizontalAngle);
-            Camera.main.transform.RotateAround(PlayerCharacter.position, CamDirectionRight, -verticalAngle);
-            Camera.main.transform.LookAt(PlayerCharacter, PlayerCharacter.up);
-        }
+            Camera.main.transform.position = Camera.main.transform.position + (PlayerCharacter.position - targetPosition);
+            if (horizontalAngle != 0 || verticalAngle != 0)
+            {
+                Camera.main.transform.RotateAround(PlayerCharacter.position, PlayerCharacter.up, horizontalAngle);
+                Camera.main.transform.RotateAround(PlayerCharacter.position, CamDirectionRight, -verticalAngle);
+                Camera.main.transform.LookAt(PlayerCharacter, PlayerCharacter.up);
+            }
 
-        targetPosition = PlayerCharacter.position;
+            targetPosition = PlayerCharacter.position;
+        }
     }
 }

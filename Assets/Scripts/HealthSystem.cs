@@ -1,10 +1,22 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class HealthSystem : MonoBehaviour {
     [SerializeField]
     private float healthPoints = 100.0f;
+    [SerializeField]
+    private bool respawnAfterDeath = true;
+
+    [SerializeField]
+    private Image Healthbar; 
+
+    Vector3 originalPosition;
+    Quaternion originalRotation;
+    Vector3 originalScale;
+    float originalAmountOfHP;
+
 
     public float HP
     {
@@ -24,19 +36,49 @@ public class HealthSystem : MonoBehaviour {
             healthPoints = 100.0f;
             gameObject.GetComponent<BaseCharacter>().Die();
         }
+
+        Healthbar.fillAmount = healthPoints / originalAmountOfHP;
+
     }
 
     public void RestoreHealthPoints(float amount)
     {
         healthPoints += amount;
+        Healthbar.fillAmount = healthPoints / originalAmountOfHP;
+    }
+
+    void Respawn()
+    {
+        transform.position = originalPosition;
+        transform.rotation = originalRotation;
+        transform.localScale = originalScale;
+        healthPoints = originalAmountOfHP;
+        Healthbar.fillAmount = 1;
     }
 
 	// Use this for initialization
-	void Start () {
+	void Start ()
+    {
+        originalAmountOfHP = healthPoints;
+        originalPosition = transform.position;
+        originalRotation = transform.rotation;
+        originalScale = transform.localScale;
+        Healthbar.fillAmount = 1;
     }
 	
 	// Update is called once per frame
-	void Update () {
-		
+	void Update ()
+    {
+	    if (healthPoints <= 0)
+        {
+            if (respawnAfterDeath)
+            {
+                Respawn();
+            }
+            else
+            {
+                Destroy(gameObject);
+            }
+        }
 	}
 }
