@@ -11773,7 +11773,7 @@ GameObject:
   m_Layer: 0
   m_Name: ShootingPoint
   m_TagString: Untagged
-  m_Icon: {fileID: 2488908585195742037, guid: 0000000000000000d000000000000000, type: 0}
+  m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
@@ -11881,7 +11881,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1713741865}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3c870626a5402b74ebd1107e83845ffc, type: 3}
   m_Name: 
@@ -11926,60 +11926,30 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c4f6f50b1d59bed498322f276be0815f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveSpeed: 7
   mouseHorizontalSensitivity: 5
   mouseVerticalSensitivity: 5
-  mouseSpeedLimit: 390
-  rotationSpeedLimit: 180
-  cameraRotationSpeedLimit: 260
-  LookAimLimit: 60
-  cameraDistanceSpeed: 10
-  lookAFKTimeout: 2
-  lookAFKThreshold: 0
-  lookAwayThreshold: 90
-  stateAngularTransitionSpeed: 0.5
-  stateDistanceTransitionSpeed: 0.5
-  stateDistanceTransitionSpeedLerp: 4
-  stateAngularTransitionSpeedLerp: 4
-  stateTransitionLerp: 1
-  transitionLerp: 0
-  stateDistanceTransitionSpeedShooting: 10
-  stateAngularTransitionSpeedShooting: 3
-  stateDistanceTransitionSpeedShootingLerp: 1.5
-  stateAngularTransitionSpeedShootingLerp: 1.5
-  stateAngularEpsilon: 0.25
-  stateDistanceEpsilon: 0.025
-  stateTransitionRaw: 0.001
-  actionCameraDistance: 7
-  actionCameraTargetHeight: 3
-  shootingCameraDistance: 1
-  shootingCameraHeight: 2.4
-  shootingCameraTargetDistance: 25
-  shootingCameraBackwardsDistance: 1
-  tacticsCameraDistance: 11
-  tacticsCameraTargetHeight: 3
-  tacticsCameraPitch: 65
-  cameraAvoidancePrecision: 2
+  playerMoveSpeed: 7
+  playerRotationSpeed: 180
+  playerAutoRotateEnabled: 1
+  playerAutoRotatePassive: 0
+  playerAutoRotateTimeout: 1
+  playerImmediateAutoRotateEnabled: 1
+  playerImmediateAutoRotateThreshold: 90
+  actionHeight: 1.7
+  actionDistance: 7
+  actionPitchLimit: 60
+  shootHeight: 2.17
+  shootBackwardsOffset: 0.3
+  shootRightOffset: 0.777
+  shootPitchLimit: 80
+  tacticsHeight: 1.7
+  tacticsDistance: 18
+  tacticsPitch: 90
   cameraAvoidanceSmoothAngle: 2
   cameraState: 0
   cameraStateNext: 0
-  actionAim: {x: 0, y: 0}
-  tacticsAim: {x: 0, y: 0}
-  shootAim: {x: 0, y: 0}
-  cameraYaw: 0
-  cameraPitch: 0
-  actionCameraYaw: 0
-  actionCameraPitch: 0
-  shootingCameraYaw: 0
-  cameraDistance: 0
-  lookAFKTimer: 0
-  isPlayerRotating: 0
-  deltaAim: {x: 0, y: 0}
+  cameraStateTransition: 0
   cameraRayDistanceDebug: 0
-  cameraRemainingTargetDistance: 0
-  cameraRemainingDistance: 0
-  cameraRemainingYaw: 0
-  cameraRemainingPitch: 0
 --- !u!114 &1713741872
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -12163,7 +12133,7 @@ GameObject:
   m_Layer: 0
   m_Name: Environment
   m_TagString: Untagged
-  m_Icon: {fileID: -5397416234189338067, guid: 0000000000000000d000000000000000, type: 0}
+  m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1

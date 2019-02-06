@@ -72,6 +72,7 @@ public class Character : MonoBehaviour {
                     MaskParticles.SetActive(false);
                     SwordParticles.SetActive(true);
                     currentState = CharacterState.SwordStance;
+                    GetComponent<SmartController>().SwitchState(SmartController.CameraState.Action);
                     break;
                 }
             case CharacterState.SwordStance:
@@ -79,6 +80,7 @@ public class Character : MonoBehaviour {
                     SwordParticles.SetActive(false);
                     MaskParticles.SetActive(true);
                     currentState = CharacterState.MagicStance;
+                    GetComponent<SmartController>().SwitchState(SmartController.CameraState.Shoot);
                     break;
                 }
         }
