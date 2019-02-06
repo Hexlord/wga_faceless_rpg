@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -18,11 +19,9 @@ using UnityEngine;
  */
 public class SmartController : MonoBehaviour
 {
-    [Header("Player Settings")]
+    //--------------------------------------------------- AFTER REVISION -----------------------------------------------------------//
 
-    [Tooltip("Player movement speed in meters per second")]
-    [Range(0.0f, 10.0f)]
-    public float moveSpeed = 7.0f;
+    // Public
 
     [Header("Input Settings")]
 
@@ -34,157 +33,84 @@ public class SmartController : MonoBehaviour
     [Range(1.0f, 10.0f)]
     public float mouseVerticalSensitivity = 5.0f;
 
-    [Header("Limits")]
+    [Header("Player Settings")]
 
-    [Tooltip("Limit mouse movement speed in degree per second")]
-    [Range(1.0f, 3600.0f, order = 2)]
-    public float mouseSpeedLimit = 390.0f;
+    [Tooltip("Player movement speed in meters per second")]
+    [Range(0.0f, 10.0f)]
+    public float playerMoveSpeed = 7.0f;
 
-    [Tooltip("Limit character rotation speed in degree per second")]
-    [Range(1.0f, 3600.0f, order = 2)]
-    public float rotationSpeedLimit = 180.0f;
+    [Tooltip("Player rotation speed in degrees per second")]
+    [Range(0.0f, 360.0f)]
+    public float playerRotationSpeed = 180.0f;
 
-    [Tooltip("Limit camera rotation speed in degree per second")]
-    [Range(1.0f, 3600.0f, order = 2)]
-    public float cameraRotationSpeedLimit = 260.0f;
+    [Header("Player Auto Rotation On Different Camera Angle")]
 
-    [Tooltip("Limit aim vertical in degree")]
-    [Range(0.0f, 90.0f)]
-    public float LookAimLimit = 60.0f;
+    [Tooltip("Enables this feature")]
+    public bool playerAutoRotateEnabled = true;
 
-    [Tooltip("Affects how fast camera distance changes in meter per second")]
-    [Range(1.0f, 20.0f)]
-    public float cameraDistanceSpeed = 10.0f;
+    [Tooltip("If checked, timeout only counts during mouse being inactive")]
+    public bool playerAutoRotatePassive = false;
 
-    [Header("Trigger Settings")]
+    [Tooltip("Timeout for player to rotate towards camera")]
+    [Range(0.0f, 60.0f)]
+    public float playerAutoRotateTimeout = 1.0f;
 
-    [Tooltip("Time in seconds of inactive mouse to trigger character rotation")]
-    [Range(0.0f, 3600.0f)]
-    public float lookAFKTimeout = 2.0f;
+    [Header("Player Immediate Rotation On Very Different Camera Angle")]
 
-    [Tooltip("Minimum angle difference in degree to allow character rotation due to timeout")]
+    [Tooltip("Enables this feature")]
+    public bool playerImmediateAutoRotateEnabled = true;
+
+    [Tooltip("Angle threshold to trigger rotation")]
     [Range(0.0f, 180.0f)]
-    public float lookAFKThreshold = 0.0f;
-
-    [Tooltip("Minimum angle difference in degree to trigger force character rotation")]
-    [Range(0.0f, 180.0f)]
-    public float lookAwayThreshold = 90.0f;
-
-    [Header("Camera State Settings")]
-
-    [Tooltip("State transition speed for angles coefficient")]
-    [Range(0.0f, 1.0f)]
-    public float stateAngularTransitionSpeed = 0.5f;
+    public float playerImmediateAutoRotateThreshold = 90.0f;
     
-    [Tooltip("State transition speed for distance coefficient")]
-    [Range(0.0f, 1.0f)]
-    public float stateDistanceTransitionSpeed = 0.5f;
+    [Header("Camera State Settings: Action")]
 
-    [Tooltip("State transition speed for distance coefficient during lerp interpolation")]
+    [Tooltip("Action camera additive height")]
     [Range(0.0f, 10.0f)]
-    public float stateDistanceTransitionSpeedLerp = 3.5f;
+    public float actionHeight = 1.7f;
 
-    [Tooltip("State transition speed for angles coefficient during lerp interpolation")]
+    [Tooltip("Action camera distance")]
     [Range(0.0f, 10.0f)]
-    public float stateAngularTransitionSpeedLerp = 3.5f;
+    public float actionDistance = 7.0f;
 
-    [Tooltip("State transition interpolation: toggles whether to use lerp interpolation")]
-    public bool stateTransitionLerp = true;
-
-    [Tooltip("Always use lerp interpolation")]
-    public bool transitionLerp = false;
-
-    [Tooltip("State transition speed for distance multiplier during switch to/from shooting")]
-    [Range(0.0f, 100.0f)]
-    public float stateDistanceTransitionSpeedShooting = 10.0f;
-
-    [Tooltip("State transition speed for angles multiplier during switch to/from shooting")]
-    [Range(0.0f, 10.0f)]
-    public float stateAngularTransitionSpeedShooting = 3.0f;
-
-    [Tooltip("State transition speed for distance multiplier during switch to/from shooting during lerp interpolation")]
-    [Range(0.0f, 10.0f)]
-    public float stateDistanceTransitionSpeedShootingLerp = 1.5f;
-
-    [Tooltip("State transition speed for angles multiplier during switch to/from shooting during lerp interpolation")]
-    [Range(0.0f, 10.0f)]
-    public float stateAngularTransitionSpeedShootingLerp = 1.5f;
-
-    [Tooltip("Angle difference to match new state")]
-    [Range(0.0f, 5.0f)]
-    public float stateAngularEpsilon = 0.25f;
-
-    [Tooltip("Distance difference to match new state")]
-    [Range(0.0f, 1.0f)]
-    public float stateDistanceEpsilon = 0.015f;
-
-    [Tooltip("Lerp interpolation raw (non-lerp) extra component to raise base level")]
-    [Range(0.0f, 1.0f)]
-    public float stateTransitionRaw = 0.0067f;
-
-    /*
-     * Action camera is a camera, located backwards of the player, 
-     * looking at player' center with vertical offset and constrained spherical rotation
-     */
-    [Header("Action Camera Settings")]
-
-    [Tooltip("Distance between camera and player")]
-    [Range(0.0f, 20.0f)]
-    public float actionCameraDistance = 7.0f;
-
-    [Tooltip("Vertical offset for camera target")]
-    [Range(0.0f, 5.0f)]
-    public float actionCameraTargetHeight = 3.0f;
-
-    /*
-     * To the right of the head
-     */
-    [Header("Shooting Camera Settings")]
-
-    [Tooltip("Distance between camera and player")]
-    [Range(0.0f, 1.0f)]
-    public float shootingCameraDistance = 1.0f;
-
-    [Tooltip("Vertical offset for camera")]
-    [Range(0.0f, 5.0f)]
-    public float shootingCameraHeight = 2.4f;
-
-    [Tooltip("Target distance for camera")]
-    [Range(0.0f, 100.0f)]
-    public float shootingCameraTargetDistance = 25.0f;
-
-    [Tooltip("Camera backwards offset")]
-    [Range(0.0f, 1.0f)]
-    public float shootingCameraBackwardsDistance = 1.0f;
-
-    /*
-     * Tactics camera is a camera, located backwards and to the top of the player, 
-     * looking at player' center with vertical offset and locked rotation
-     * 
-     * Iso-like, allows precise skill aiming and tactical analyzes of current position
-     */
-    [Header("Tactics Camera Settings")]
-
-    [Tooltip("Distance between camera and player")]
-    [Range(0.0f, 10.0f)]
-    public float tacticsCameraDistance = 11.0f;
-
-    [Tooltip("Vertical offset for camera target")]
-    [Range(0.0f, 5.0f)]
-    public float tacticsCameraTargetHeight = 3.0f;
-
-    [Tooltip("Vertical angle in degree")]
+    [Tooltip("Action camera pitch limit")]
     [Range(0.0f, 90.0f)]
-    public float tacticsCameraPitch = 65.0f;
+    public float actionPitchLimit = 60.0f;
 
+    [Header("Camera State Settings: Shoot")]
 
+    [Tooltip("Shoot camera additive height")]
+    [Range(0.0f, 10.0f)]
+    public float shootHeight = 2.17f;
 
+    [Tooltip("Shoot camera backwards offset")]
+    [Range(0.0f, 1.0f)]
+    public float shootBackwardsOffset = 0.3f;
 
-    [Header("Clipping Prevention Settings")]
+    [Tooltip("Shoot camera right offset")]
+    [Range(0.0f, 2.0f)]
+    public float shootRightOffset = 0.777f;
 
-    [Tooltip("Affects how safe distance for camera is calculated. Decreasing prevents clipping, but makes camera closer to player")]
-    [Range(0.0f, 5.0f)]
-    public float cameraAvoidancePrecision = 2.0f;
+    [Tooltip("Shoot camera pitch limit")]
+    [Range(0.0f, 90.0f)]
+    public float shootPitchLimit = 80.0f;
+
+    [Header("Camera State Settings: Tactics")]
+
+    [Tooltip("Tactics camera additive height")]
+    [Range(0.0f, 10.0f)]
+    public float tacticsHeight = 1.7f;
+
+    [Tooltip("Tactics camera distance")]
+    [Range(0.0f, 30.0f)]
+    public float tacticsDistance = 18.0f;
+
+    [Tooltip("Tactics camera pitch")]
+    [Range(0.0f, 90.0f)]
+    public float tacticsPitch = 90.0f;
+
+    [Header("Camera Clipping Settings")]
 
     [Tooltip("Affects how safe distance for camera is calculated. Increasing prevents clipping, but makes camera closer to player")]
     [Range(1.0f, 8.0f)]
@@ -196,28 +122,33 @@ public class SmartController : MonoBehaviour
         Shoot,
         Tactics
     }
+    [Header("Debug")]
     public CameraState cameraState = CameraState.Action;
     public CameraState cameraStateNext = CameraState.Action;
-
-
+    public float cameraStateTransition = 0.0f;
+    public float cameraRayDistanceDebug = 0.0f;
 
     // Private
 
-    public Vector2 actionAim = new Vector2();
-    public Vector2 tacticsAim = new Vector2();
-    public Vector2 shootAim = new Vector2();
+    private float inputDeltaX;
+    private float inputDeltaY;
 
-    public float cameraYaw = 0.0f;
-    public float cameraPitch = 0.0f;
+    private float actionYaw = 0.0f;
+    private float actionPitch = 0.0f;
+    private float shootPitch = 0.0f;
 
-    public float actionCameraYaw = 0.0f;
-    public float actionCameraPitch = 0.0f;
+    private float playerAutoRotateTimer = 0.0f;
+    private bool playerAutoRotateActive = false;
 
-    public float shootingCameraYaw = 0.0f;
 
-    public float cameraDistance = 0.0f;
-    public float lookAFKTimer = 0.0f;
-    public bool isPlayerRotating = false;
+    private Vector3 actionPosition = Vector3.zero;
+    private Vector3 shootPosition = Vector3.zero;
+    private Vector3 tacticsPosition = Vector3.zero;
+
+    private Quaternion actionRotation = Quaternion.identity;
+    private Quaternion shootRotation = Quaternion.identity;
+    private Quaternion tacticsRotation = Quaternion.identity;
+
 
     // Cache
 
@@ -227,23 +158,6 @@ public class SmartController : MonoBehaviour
 
     private new GameObject camera;
     private Transform cameraTransform;
-
-    // Single alloc
-
-    public Vector2 deltaAim = new Vector2();
-
-    private Vector2 inputDelta = new Vector2();
-
-    private Vector3 playerMovement = new Vector3();
-    private Vector3 cameraPosition = new Vector3();
-    private Vector3 cameraTarget = new Vector3();
-
-    public float cameraRayDistanceDebug = 0.0f;
-
-    public float cameraRemainingTargetDistance;
-    public float cameraRemainingDistance;
-    public float cameraRemainingYaw;
-    public float cameraRemainingPitch;
 
     void Start()
     {
@@ -256,68 +170,160 @@ public class SmartController : MonoBehaviour
         camera = GameObject.Find("Main Camera");
         cameraTransform = camera.GetComponent<Transform>();
 
-        // Private
-
-        cameraDistance = actionCameraDistance;
     }
 
-    void ProcessInput()
+    void UpdateNextState()
     {
-        inputDelta.Set(
-            Input.GetAxis("Mouse X"),
-            Input.GetAxis("Mouse Y"));
+        switch (cameraStateNext)
+        {
+            case CameraState.Action:
+                // Affect camera rotation
+                actionYaw = Mathf.DeltaAngle(0.0f, actionYaw + inputDeltaX);
+                actionPitch = Mathf.DeltaAngle(0.0f, actionPitch + inputDeltaY);
+                actionPitch = Mathf.Clamp(actionPitch, -actionPitchLimit, actionPitchLimit);
+
+                float yawDelta = Mathf.DeltaAngle(actionYaw, playerTransform.eulerAngles.y);
+
+                if(playerImmediateAutoRotateEnabled)
+                {
+                    if (Mathf.Abs(Mathf.DeltaAngle(playerTransform.eulerAngles.y, actionYaw)) >= playerImmediateAutoRotateThreshold)
+                    {
+                        playerAutoRotateActive = true;
+                    }
+                }
+
+                if(playerAutoRotateEnabled)
+                {
+                    if (yawDelta <= Mathf.Epsilon)
+                    {
+                        playerAutoRotateTimer += Time.deltaTime;
+                        if(playerAutoRotateTimer >= playerAutoRotateTimeout)
+                        {
+                            playerAutoRotateActive = true;
+                        }
+                    } else
+                    {
+                        playerAutoRotateTimer = 0.0f;
+                    }
+                }
+
+                if (playerAutoRotateActive)
+                {
+                    playerTransform.rotation = Quaternion.Euler(
+                                playerTransform.eulerAngles.x,
+                                Mathf.MoveTowardsAngle(playerTransform.eulerAngles.y, actionYaw, playerRotationSpeed * Time.deltaTime),
+                                playerTransform.eulerAngles.z);
+
+                    if (Mathf.Abs(Mathf.DeltaAngle(playerTransform.eulerAngles.y, actionYaw)) <= Mathf.Epsilon)
+                    {
+                        playerAutoRotateActive = false;
+                        playerAutoRotateTimer = 0.0f;
+                    }
+                }
+
+                break;
+            case CameraState.Shoot:
+                // Affect camera, player rotation
+                float shootYaw = playerTransform.eulerAngles.y + inputDeltaX;
+                shootPitch = Mathf.DeltaAngle(0.0f, shootPitch + inputDeltaY);
+                shootPitch = Mathf.Clamp(shootPitch, -shootPitchLimit, shootPitchLimit);
+
+                playerTransform.rotation = Quaternion.Euler(playerTransform.eulerAngles.x, shootYaw, playerTransform.eulerAngles.z);
+
+
+                break;
+            case CameraState.Tactics:
+                // Affect vector aim
+
+
+                break;
+        }
     }
 
-    void MoveAim()
+    void LoadHeights(out float heightA, out float heightB)
     {
-        // Move aim with speed limited by parameter
+        heightA = 0.0f;
+        heightB = 0.0f;
 
-        float speed;
-
-        // Aim, camera and player are constrained together during shooting
-        if (cameraStateNext == CameraState.Shoot)
+        switch (cameraState)
         {
-            speed = Mathf.Min(mouseSpeedLimit, rotationSpeedLimit, cameraRotationSpeedLimit) * Time.deltaTime;
+            case CameraState.Action:
+                heightA = actionHeight;
+                break;
+            case CameraState.Shoot:
+                heightA = shootHeight;
+                break;
+            case CameraState.Tactics:
+                heightA = tacticsHeight;
+                break;
         }
-        else
-        {
-            speed = mouseSpeedLimit * Time.deltaTime;
-        }
-
-        deltaAim.Set(
-            Mathf.Clamp(inputDelta.x * mouseHorizontalSensitivity, -speed, speed),
-            Mathf.Clamp(inputDelta.y * mouseVerticalSensitivity, -speed, speed));
 
         switch (cameraStateNext)
         {
             case CameraState.Action:
-                actionAim.Set(actionAim.x + deltaAim.x, actionAim.y + deltaAim.y);
-                actionAim.x = Mathf.DeltaAngle(0.0f, actionAim.x);
-                while (actionAim.y < -LookAimLimit + Mathf.Epsilon) actionAim.y = -LookAimLimit + Mathf.Epsilon;
-                while (actionAim.y > LookAimLimit - Mathf.Epsilon) actionAim.y = LookAimLimit - Mathf.Epsilon;
+                heightB = actionHeight;
                 break;
             case CameraState.Shoot:
-                shootAim.Set(shootAim.x + deltaAim.x, shootAim.y + deltaAim.y);
+                heightB = shootHeight;
                 break;
             case CameraState.Tactics:
-                tacticsAim.Set(tacticsAim.x + deltaAim.x, tacticsAim.y + deltaAim.y);
+                heightB = tacticsHeight;
                 break;
         }
     }
 
-    float FilterDistance(Ray ray)
+    void LoadPosRot(out Vector3 positionA, out Vector3 positionB, out Quaternion rotationA, out Quaternion rotationB)
+    {
+        positionA = Vector3.zero;
+        positionB = Vector3.zero;
+        rotationA = Quaternion.identity;
+        rotationB = Quaternion.identity;
+        switch (cameraState)
+        {
+            case CameraState.Action:
+                positionA = actionPosition;
+                rotationA = actionRotation;
+                break;
+            case CameraState.Shoot:
+                positionA = shootPosition;
+                rotationA = shootRotation;
+                break;
+            case CameraState.Tactics:
+                positionA = tacticsPosition;
+                rotationA = tacticsRotation;
+                break;
+        }
+
+        switch (cameraStateNext)
+        {
+            case CameraState.Action:
+                positionB = actionPosition;
+                rotationB = actionRotation;
+                break;
+            case CameraState.Shoot:
+                positionB = shootPosition;
+                rotationB = shootRotation;
+                break;
+            case CameraState.Tactics:
+                positionB = tacticsPosition;
+                rotationB = tacticsRotation;
+                break;
+        }
+    }
+    float FilterDistance(Ray ray, float distance, Vector3 forward)
     {
         RaycastHit hit;
 
-        if (Physics.Raycast(ray, out hit, actionCameraDistance * (1.0f + cameraAvoidancePrecision), ~LayerMask.NameToLayer("Environment")))
+        if (Physics.Raycast(ray, out hit, distance * 3.0f, ~LayerMask.NameToLayer("Environment")))
         {
-            float angle = Vector3.Angle(hit.normal, camera.transform.forward);
+            float angle = Vector3.Angle(hit.normal, forward);
             if (angle > 90.0f) angle = 90.0f;
             float factor = 1.0f - angle / 90.0f;
-            float factorSqrt = Mathf.Pow(factor, 1.0f / (1.0f + cameraAvoidancePrecision));
+            float factorSqrt = Mathf.Pow(factor, 1.0f / 3.0f);
 
             float d = hit.distance * factorSqrt;
-            cameraRayDistanceDebug = Mathf.Min(cameraRayDistanceDebug, hit.distance);
+
+            cameraRayDistanceDebug = Mathf.Min(cameraRayDistanceDebug, d);
 
             return d;
         }
@@ -325,288 +331,99 @@ public class SmartController : MonoBehaviour
         return float.MaxValue;
     }
 
-    void UpdateCamera()
+    void Update()
     {
-        // Move camera towards aim with speed limited by parameter
-
-
-        float desiredYaw = 0.0f;
-        float desiredPitch = 0.0f;
-
-        float distanceFactor = 1.0f;
-        float angularFactor = 1.0f;
-        float distanceFactorLerp = 1.0f;
-        float angularFactorLerp = 1.0f;
-        if (cameraState != cameraStateNext)
-        {
-            distanceFactor *= stateDistanceTransitionSpeed;
-            angularFactor *= stateAngularTransitionSpeed;
-            distanceFactorLerp *= stateDistanceTransitionSpeedLerp;
-            angularFactorLerp *= stateAngularTransitionSpeedLerp;
-        }
-
-        float speedStateDistance = cameraDistanceSpeed * distanceFactor * Time.deltaTime;
-        float speedStateAngular = cameraRotationSpeedLimit * angularFactor * Time.deltaTime;
-        float speedStateDistanceLerp = distanceFactorLerp * Time.deltaTime;
-        float speedStateAngularLerp = angularFactorLerp * Time.deltaTime;
-
-        // shooting aim must be instant
-        if (cameraState == CameraState.Shoot &&
-                cameraStateNext == CameraState.Shoot)
-        {
-            speedStateDistance *= 1000.0f;
-            speedStateAngular *= 1000.0f;
-            speedStateDistanceLerp *= 1000.0f;
-            speedStateAngularLerp *= 1000.0f;
-        }
-
-        if (cameraState != cameraStateNext &&
-            cameraState == CameraState.Shoot ||
-                cameraStateNext == CameraState.Shoot)
-        {
-            speedStateDistance *= stateDistanceTransitionSpeedShooting;
-            speedStateAngular *= stateAngularTransitionSpeedShooting;
-            speedStateDistanceLerp *= stateDistanceTransitionSpeedShootingLerp;
-            speedStateAngularLerp *= stateAngularTransitionSpeedShootingLerp;
-        }
-
-        float speedAngular = cameraRotationSpeedLimit * Time.deltaTime;
-
-        // Action
-
-        actionCameraYaw = Mathf.MoveTowardsAngle(actionCameraYaw, actionAim.x, speedAngular);
-        actionCameraPitch = Mathf.MoveTowardsAngle(actionCameraPitch, actionAim.y, speedAngular);
-
-        // Tactics
-
-
-
-        // Shooting
-
-        shootingCameraYaw = Mathf.MoveTowardsAngle(shootingCameraYaw, shootAim.x, speedAngular);
-
-        // States
-
-        bool avoidClipping = true;
-        float desiredDistance = 0.0f;
-        Vector3 desiredTarget = Vector3.zero;
-
-        switch (cameraStateNext)
-        {
-            case CameraState.Action:
-                desiredDistance = actionCameraDistance;
-                desiredTarget = playerTransform.position + new Vector3(0.0f, actionCameraTargetHeight, 0.0f);
-                desiredYaw = actionCameraYaw;
-                desiredPitch = actionCameraPitch;
-                break;
-            case CameraState.Shoot:
-                desiredDistance = shootingCameraTargetDistance + shootingCameraBackwardsDistance;
-                avoidClipping = false;
-                desiredTarget = playerTransform.position +
-                    Quaternion.Euler(0.0f, shootingCameraYaw, 0.0f) *
-                    Vector3.forward * shootingCameraTargetDistance +
-                    new Vector3(0, shootingCameraHeight, 0);
-
-                desiredYaw = shootingCameraYaw - Mathf.Atan(shootingCameraDistance / shootingCameraTargetDistance) * Mathf.Rad2Deg;
-                break;
-            case CameraState.Tactics:
-                desiredDistance = tacticsCameraDistance;
-                desiredTarget = playerTransform.position + new Vector3(0.0f, tacticsCameraTargetHeight, 0.0f);
-                desiredYaw = playerTransform.eulerAngles.y;
-                desiredPitch = -tacticsCameraPitch;
-                break;
-        }
-
-        float rawCoef = 1.0f;
-
-        if (cameraState != cameraStateNext && stateTransitionLerp ||
-            transitionLerp)
-        {
-            cameraTarget = Vector3.Lerp(cameraTarget, desiredTarget, speedStateDistanceLerp);
-            UpdateCameraDistance(speedStateDistanceLerp, desiredDistance, avoidClipping, true);
-            cameraYaw = Mathf.LerpAngle(cameraYaw, desiredYaw, speedStateAngularLerp);
-            cameraPitch = Mathf.LerpAngle(cameraPitch, desiredPitch, speedStateAngularLerp);
-
-            rawCoef = stateTransitionRaw;
-        }
-        
-        if(rawCoef > Mathf.Epsilon)
-        {
-            cameraTarget = Vector3.MoveTowards(cameraTarget, desiredTarget, speedStateDistance * rawCoef);
-            UpdateCameraDistance(speedStateDistance * rawCoef, desiredDistance, avoidClipping, false);
-            cameraYaw = Mathf.MoveTowardsAngle(cameraYaw, desiredYaw, speedStateAngular * rawCoef);
-            cameraPitch = Mathf.MoveTowardsAngle(cameraPitch, desiredPitch, speedStateAngular * rawCoef);
-        }
-
-        cameraRemainingTargetDistance = Vector3.Distance(cameraTarget, desiredTarget);
-        cameraRemainingDistance = Mathf.Abs(cameraDistance - desiredDistance);
-        cameraRemainingYaw = Mathf.Abs(Mathf.DeltaAngle(cameraYaw, desiredYaw));
-        cameraRemainingPitch = Mathf.Abs(Mathf.DeltaAngle(cameraPitch, desiredPitch));
-        if (cameraRemainingTargetDistance < stateDistanceEpsilon &&
-            cameraRemainingDistance < stateDistanceEpsilon &&
-            cameraRemainingYaw < stateAngularEpsilon &&
-            cameraRemainingPitch < stateAngularEpsilon)
-        {
-            cameraState = cameraStateNext;
-        }
-
-        Quaternion rotation = Quaternion.Euler(-cameraPitch, cameraYaw, 0);
-
-        cameraPosition.Set(0, 0, cameraDistance);
-        cameraPosition = cameraTarget - rotation * cameraPosition;
-
-        cameraTransform.position = cameraPosition;
-        cameraTransform.LookAt(cameraTarget);
-    }
-
-    void UpdateCameraDistance(float speed, float desiredDistance, bool avoidClipping = true, bool useLerp = false)
-    {
-        float distance = desiredDistance;
+        float t = Mathf.SmoothStep(0.0f, 1.0f, cameraStateTransition);
         cameraRayDistanceDebug = float.MaxValue;
 
-        if (avoidClipping)
+        inputDeltaX = Input.GetAxis("Mouse X") * mouseHorizontalSensitivity;
+        inputDeltaY = Input.GetAxis("Mouse Y") * mouseVerticalSensitivity;
+        
+        UpdateNextState();
+
+        float heightA = 0.0f;
+        float heightB = 0.0f;
+
+        LoadHeights(out heightA, out heightB);
+
+        Vector3 target = playerTransform.position + new Vector3(0, Mathf.Lerp(heightA, heightB, cameraStateTransition), 0);
+
+        // Action
+        actionPosition = Quaternion.Euler(-actionPitch, actionYaw, 0.0f) * (Vector3.forward * -actionDistance) + target;
+        actionRotation = Quaternion.Euler(-actionPitch, actionYaw, 0.0f);
+
+        shootPosition = Quaternion.Euler(-shootPitch, playerTransform.eulerAngles.y, 0.0f) * (Vector3.right * shootRightOffset + Vector3.forward * -shootBackwardsOffset) + target;
+        shootRotation = Quaternion.Euler(-shootPitch, playerTransform.eulerAngles.y, 0.0f);
+
+        tacticsPosition = Quaternion.Euler(tacticsPitch, playerTransform.eulerAngles.y, 0.0f) * (Vector3.forward * -tacticsDistance) + target;
+        tacticsRotation = Quaternion.Euler(tacticsPitch, playerTransform.eulerAngles.y, 0.0f);
+
+        Vector3 positionA = Vector3.zero;
+        Vector3 positionB = Vector3.zero;
+        Quaternion rotationA = Quaternion.identity;
+        Quaternion rotationB = Quaternion.identity;
+        
+        LoadPosRot(out positionA, out positionB, out rotationA, out rotationB);
+
+        Vector3 position = new Vector3(
+                Mathf.SmoothStep(positionA.x, positionB.x, cameraStateTransition),
+                Mathf.SmoothStep(positionA.y, positionB.y, cameraStateTransition),
+                Mathf.SmoothStep(positionA.z, positionB.z, cameraStateTransition));
+
+        Quaternion rotation = Quaternion.Lerp(rotationA, rotationB, t);
+
+        if (true)
         {
-            Vector3 backwards = -cameraTransform.forward;
+            // Avoid clipping when no transition
+
+            Vector3 forward = rotation * Vector3.forward;
+            Vector3 backwards = rotation * (-Vector3.forward);
             Vector3 dir1 = Quaternion.Euler(cameraAvoidanceSmoothAngle, 0.0f, 0.0f) * backwards;
             Vector3 dir2 = Quaternion.Euler(-cameraAvoidanceSmoothAngle, 0.0f, 0.0f) * backwards;
             Vector3 dir3 = Quaternion.Euler(0.0f, cameraAvoidanceSmoothAngle, 0.0f) * backwards;
             Vector3 dir4 = Quaternion.Euler(0.0f, -cameraAvoidanceSmoothAngle, 0.0f) * backwards;
 
-            distance = Mathf.Min(distance, FilterDistance(new Ray(cameraTarget, dir1)));
-            distance = Mathf.Min(distance, FilterDistance(new Ray(cameraTarget, dir2)));
-            distance = Mathf.Min(distance, FilterDistance(new Ray(cameraTarget, dir3)));
-            distance = Mathf.Min(distance, FilterDistance(new Ray(cameraTarget, dir4)));
+            // TODO: target is different for Shoot state, but this seem not to affect the player yet
+            float baseDistance = Vector3.Distance(target, position);
+            float distance = baseDistance;
+            distance = Mathf.Min(distance, FilterDistance(new Ray(target, dir1), baseDistance, forward));
+            distance = Mathf.Min(distance, FilterDistance(new Ray(target, dir2), baseDistance, forward));
+            distance = Mathf.Min(distance, FilterDistance(new Ray(target, dir3), baseDistance, forward));
+            distance = Mathf.Min(distance, FilterDistance(new Ray(target, dir4), baseDistance, forward));
+
+            float compensation = baseDistance - distance;
+            position += forward * compensation;
         }
 
-        float speedCoef = 1.0f;
+        cameraTransform.position = position;
+        cameraTransform.rotation = rotation;
 
-        if (cameraDistance > distance)
+        if(cameraState != cameraStateNext)
         {
-            if (cameraState == cameraStateNext)
+            cameraStateTransition = Mathf.MoveTowards(cameraStateTransition, 1.0f, Time.deltaTime);
+
+            if (cameraStateTransition >= 1.0f - Mathf.Epsilon)
             {
-                speedCoef *= 16.0f;
-            }
-            else
-            {
-                speedCoef *= 2.0f;
-            }
-        }
-        if (!useLerp)
-        {
-            cameraDistance = Mathf.MoveTowards(cameraDistance, distance, speed * speedCoef);
-        }
-        else
-        {
-            cameraDistance = Mathf.Lerp(cameraDistance, distance, Mathf.Clamp(speed, 0, 1));
-        }
-    }
-
-    void MoveСharacter()
-    {
-        // Move character towards aim
-
-        float speed = rotationSpeedLimit * Time.deltaTime;
-
-        bool isMoving = Mathf.Abs(Input.GetAxis("Horizontal")) > Mathf.Epsilon ||
-            Mathf.Abs(Input.GetAxis("Vertical")) > Mathf.Epsilon;
-
-        float playerYaw = playerTransform.eulerAngles.y;
-        float playerPitch = playerTransform.eulerAngles.x;
-
-        switch (cameraStateNext)
-        {
-            case CameraState.Action:
-                if (isMoving ||
-                    Mathf.Abs(Mathf.DeltaAngle(playerYaw, actionCameraYaw)) >= lookAwayThreshold)
-                {
-                    isPlayerRotating = true;
-                }
-                else
-                {
-                    if (Mathf.Abs(inputDelta.x) > Mathf.Epsilon ||
-                    Mathf.Abs(inputDelta.y) > Mathf.Epsilon)
-                    {
-                        lookAFKTimer = lookAFKTimeout;
-                    }
-                    else
-                    {
-                        lookAFKTimer -= Time.deltaTime;
-                        if (lookAFKTimer <= 0.0f &&
-                            Mathf.Abs(Mathf.DeltaAngle(playerYaw, actionCameraYaw)) >= lookAFKThreshold)
-                        {
-                            isPlayerRotating = true;
-                        }
-                    }
-                }
-                break;
-            case CameraState.Shoot:
-                isPlayerRotating = true;
-                break;
-            case CameraState.Tactics:
-                isPlayerRotating = false;
-                break;
-        }
-
-        if (isPlayerRotating)
-        {
-            float diff = Mathf.Abs(Mathf.DeltaAngle(playerYaw, cameraYaw));
-            if (diff > Mathf.Epsilon)
-            {
-                Quaternion q = Quaternion.Euler(0.0f, Mathf.MoveTowardsAngle(playerYaw, cameraYaw, speed), 0.0f);
-
-                playerTransform.rotation = q;
-
-                if (diff <= speed)
-                {
-                    // Done in this step
-                    isPlayerRotating = false;
-                }
-            }
-            else
-            {
-                isPlayerRotating = false;
+                cameraState = cameraStateNext;
+                cameraStateTransition = 0.0f;
             }
         }
-
     }
 
-    void Movement()
+    /*
+     * Calling this forces player to rotate towards camera when in Action state
+     */
+    public void TriggerPlayerAutoRotation()
     {
-        float angle = playerTransform.eulerAngles.y * Mathf.Deg2Rad;
-
-        float cosf = Mathf.Cos(angle);
-        float sinf = Mathf.Sin(angle);
-
-        playerMovement.Set(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
-        float x = playerMovement.x * cosf + playerMovement.z * sinf;
-        float z = playerMovement.z * cosf + -playerMovement.x * sinf;
-        playerMovement.Set(x, 0.0f, z);
-        if (x != 0.0f || z != 0.0f) playerMovement.Normalize();
-        playerMovement.y = -1.0f;
-
-        playerController.Move(playerMovement * Time.fixedDeltaTime * moveSpeed);
+        playerAutoRotateActive = true;
     }
-
-    void SwitchState(CameraState newState)
+    public void SwitchState(CameraState state)
     {
-        cameraState = cameraStateNext;
-        cameraStateNext = newState;
+        if(cameraStateNext != state)
+        {
+            cameraStateNext = state;
+        }
     }
 
-    void Update()
-    {
-        ProcessInput();
-
-        MoveAim();
-
-        UpdateCamera();
-
-        MoveСharacter();
-    }
-
-    void FixedUpdate()
-    {
-        Movement();
-    }
 
 }

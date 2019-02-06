@@ -135,13 +135,15 @@ public class Control : MonoBehaviour {
             if (Direction != Vector3.zero)
             {
                 charControl.Move(Direction * Time.deltaTime);
-                transform.forward = CamDirectionForward;
+            //transform.forward = CamDirectionForward;
+            GetComponent<SmartController>().TriggerPlayerAutoRotation();
                 previousRotation = transform.rotation;
             }
             else
             {
-                transform.rotation = previousRotation;
-            }
+                //transform.rotation = previousRotation;
+            GetComponent<SmartController>().TriggerPlayerAutoRotation();
+        }
     }
 
     private void LateUpdate()
