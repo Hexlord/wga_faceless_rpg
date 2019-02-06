@@ -2,18 +2,19 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+
 public class BaseCharacter : MonoBehaviour
 {
-
+    [SerializeField]
     private Vector3 spawnPosition;
     
-    public void Spawn()
+    public virtual void Spawn()
     {
         string name = gameObject.name;
         Instantiate(gameObject, spawnPosition, gameObject.transform.rotation).name = name;
     }
 
-    public void Die()
+    public virtual void Die()
     {
         Debug.Log("Died");
         Spawn();

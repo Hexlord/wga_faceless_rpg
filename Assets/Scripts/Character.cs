@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Character : MonoBehaviour {
+public class Character : BaseCharacter {
 
     Vector3 startingPos;
     Quaternion startingRot;
@@ -45,11 +45,16 @@ public class Character : MonoBehaviour {
         SwordParticles.SetActive(false);
         MaskParticles.SetActive(false);
     }
-	
-	// Update is called once per frame
+
+    private bool isNotified = false;
 	void Update ()
     {
-        
+        //При нажатии кнопки m, Enemy2 начинает бежать в твое направление и бить
+        if(Input.GetKeyDown(KeyCode.M))
+        {
+            isNotified = !isNotified;
+            GameObject.Find("Enemy2").GetComponent<DumbEnemy>().notify();
+        }
 	}
 
     public void SwapPlayerStatus()
@@ -80,6 +85,11 @@ public class Character : MonoBehaviour {
 
 
     }
+
+    //public override void Die()
+    //{
+    //    Destroy(gameObject);
+    //}
 
     public void DrawSword()
     {
