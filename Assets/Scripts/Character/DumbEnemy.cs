@@ -19,6 +19,7 @@ public class DumbEnemy : BaseCharacter
     private GameObject character;
     private CharacterController characterController;
     private HealthSystem healthSystem;
+    private Vector3 distanceToPlayer;
     private bool isNotified = false;
 
     public void notify()
@@ -31,18 +32,28 @@ public class DumbEnemy : BaseCharacter
         character = GameObject.FindGameObjectWithTag("Player");
         healthSystem = character.GetComponent<HealthSystem>();
         characterController = gameObject.GetComponent<CharacterController>();
+        
+    }
+
+    private void Awake()
+    {
         InvokeRepeating("Attack", 0.0f, attackCooldown);
     }
 
     void FixedUpdate()
     {
-        if(isNotified == true)
+        distanceToPlayer = (character.transform.position - gameObject.transform.position);
+        distanceToPlayer.y = 0;
+        if (isNotified == true && distanceToPlayer.magnitude > attackRange * 0.5)
+        {
             characterController.Move((character.transform.position - gameObject.transform.position).normalized * (velocity * Time.fixedDeltaTime));
+            transform.forward = distanceToPlayer;
+        }
     }
 
     private void Attack()
     {
-        if ((character.transform.position - gameObject.transform.position).magnitude >= attackRange || isNotified == false)
+        if (distanceToPlayer.magnitude >= attackRange || isNotified == false)
             return;
         healthSystem.DealDamage(damage);
     }
