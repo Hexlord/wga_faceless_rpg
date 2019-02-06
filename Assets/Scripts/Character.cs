@@ -64,6 +64,7 @@ public class Character : MonoBehaviour {
                 {
                     DrawSword();
                     //currentState = CharacterState.MagicStance;
+                    GetComponent<SmartController>().SwitchState(SmartController.CameraState.Action);
                     break;
                 }
             case CharacterState.MagicStance:
