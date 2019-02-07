@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44657874, g: 0.49641258, b: 0.5748172, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657844, g: 0.49641222, b: 0.57481694, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -12286,9 +12286,10 @@ MonoBehaviour:
   playerAutoRotateTimeout: 1
   playerImmediateAutoRotateEnabled: 0
   playerImmediateAutoRotateThreshold: 90
+  transitionSpeed: 0.07
   actionHeight: 1.7
   actionDistance: 7
-  initialPitch: -30
+  actionInitialPitch: -30
   actionPitchLimit: 60
   shootHeight: 2.17
   shootBackwardsOffset: 0.3
@@ -12302,6 +12303,16 @@ MonoBehaviour:
   cameraStateNext: 0
   cameraStateTransition: 0
   cameraRayDistanceDebug: 0
+  currentHeight: 0
+  currentPosition: {x: 0, y: 0, z: 0}
+  currentRotation: {x: 0, y: 0, z: 0, w: 1}
+  startHeight: 0
+  startPosition: {x: 0, y: 0, z: 0}
+  eulerDelta: {x: 0, y: 0, z: 0}
+  startRotation: {x: 0, y: 0, z: 0, w: 1}
+  desiredRotation: {x: 0, y: 0, z: 0, w: 1}
+  desiredHeight: 0
+  desiredPosition: {x: 0, y: 0, z: 0}
 --- !u!114 &1713741872
 MonoBehaviour:
   m_ObjectHideFlags: 0
