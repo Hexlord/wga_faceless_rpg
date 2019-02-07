@@ -16,6 +16,11 @@ public class Projectile : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
+        Weapon weapon;
+        if((weapon = gameObject.GetComponent<Weapon>()) != null)
+        {
+            weapon.Strike(collision.collider);
+        }
         if (timesBounced >= timesToBounce)
         {
             Destroy(gameObject);

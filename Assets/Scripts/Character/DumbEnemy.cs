@@ -4,6 +4,11 @@ using UnityEngine;
 
 public class DumbEnemy : BaseCharacter
 {
+
+    public Weapon rightFist, leftFist;
+    public float fistDamage = 5.0f;
+    public float mass = 1.0f;
+
     [SerializeField]
     private float attackCooldown;
 
@@ -16,6 +21,7 @@ public class DumbEnemy : BaseCharacter
     [SerializeField]
     private float attackRange;
 
+    private Animator anim;
     private GameObject character;
     private CharacterController characterController;
     private HealthSystem healthSystem;
@@ -32,7 +38,11 @@ public class DumbEnemy : BaseCharacter
         character = GameObject.FindGameObjectWithTag("Player");
         healthSystem = character.GetComponent<HealthSystem>();
         characterController = gameObject.GetComponent<CharacterController>();
-        
+        anim = gameObject.GetComponent<Animator>();
+        rightFist.Damage = fistDamage;
+        leftFist.Damage = fistDamage;
+        rightFist.TargetTag = "Player";
+        leftFist.TargetTag = "Player";
     }
 
     private void Awake()
@@ -44,10 +54,12 @@ public class DumbEnemy : BaseCharacter
     {
         distanceToPlayer = (character.transform.position - gameObject.transform.position);
         distanceToPlayer.y = 0;
-        if (isNotified == true && distanceToPlayer.magnitude > attackRange * 0.5)
+        if (isNotified == true && (distanceToPlayer.magnitude > attackRange * 0.5))
         {
-            characterController.Move((character.transform.position - gameObject.transform.position).normalized * (velocity * Time.fixedDeltaTime));
+            distanceToPlayer.Normalize();
             transform.forward = distanceToPlayer;
+            distanceToPlayer += (!characterController.isGrounded) ? new Vector3(0, Physics.gravity.y * mass, 0) : Vector3.zero;
+            characterController.Move(distanceToPlayer.normalized * (velocity * Time.fixedDeltaTime));
         }
     }
 
@@ -55,6 +67,8 @@ public class DumbEnemy : BaseCharacter
     {
         if (distanceToPlayer.magnitude >= attackRange || isNotified == false)
             return;
-        healthSystem.DealDamage(damage);
+        rightFist.TriggerStricking();
+        leftFist.TriggerStricking();
+        anim.SetTrigger("Attack");
     }
 }

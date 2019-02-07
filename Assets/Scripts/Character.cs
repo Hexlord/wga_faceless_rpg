@@ -7,7 +7,7 @@ public class Character : BaseCharacter {
     public Weapon playerSword;
     public GameObject playerProjectile;
     public Transform ShootingPoint;
-    public bool isBlocking;
+    
     public enum CharacterState {SheathedSword, SwordStance, MagicStance};
     public GameObject SwordParticles, MaskParticles;
     public float projectileSpeed = 12.0f;
@@ -21,6 +21,7 @@ public class Character : BaseCharacter {
     Animator anim;
     private CharacterState currentState = CharacterState.SheathedSword;
     bool isSprinting;
+    bool isBlocking;
 
     public bool IsSprinting
     {
@@ -32,6 +33,19 @@ public class Character : BaseCharacter {
         {
             isSprinting = value;
             anim.SetBool("isSprinting", value);
+        }
+    }
+
+    public bool IsBlocking
+    {
+        get
+        {
+            return isBlocking;
+        }
+        set
+        {
+            isBlocking = value;
+            anim.SetBool("isBlocking", value);
         }
     }
 
@@ -52,7 +66,6 @@ public class Character : BaseCharacter {
         currentState = CharacterState.SheathedSword;
         SwordParticles.SetActive(false);
         MaskParticles.SetActive(false);
-
         playerSword.TargetTag = "Faceless";
         playerSword.Damage = swordDamage;
     }
@@ -77,6 +90,7 @@ public class Character : BaseCharacter {
                 {
                     DrawSword();
                     //currentState = CharacterState.MagicStance;
+                    GetComponent<SmartController>().SwitchState(SmartController.CameraState.Action);
                     break;
                 }
             case CharacterState.MagicStance:
@@ -122,6 +136,7 @@ public class Character : BaseCharacter {
                 MaskParticles.SetActive(false);
                 anim.SetTrigger("SheatheSword");
                 currentState = CharacterState.SheathedSword;
+                GetComponent<SmartController>().SwitchState(SmartController.CameraState.Action);
             }
         }
     }
@@ -135,9 +150,10 @@ public class Character : BaseCharacter {
     public void ShootProjectile()
     {
         GameObject projectile = Instantiate(playerProjectile, ShootingPoint.position, ShootingPoint.rotation);
-        Weapon projectileDamageComponent = playerProjectile.GetComponent<Weapon>();
+        Weapon projectileDamageComponent = projectile.GetComponent<Weapon>();
         projectileDamageComponent.TriggerStricking();
         projectileDamageComponent.TargetTag = target;
+        projectileDamageComponent.Damage = projectileDamage;
         projectile.GetComponent<Rigidbody>().AddForce(Camera.main.gameObject.transform.forward * projectileSpeed);
     }
 

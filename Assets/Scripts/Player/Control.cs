@@ -12,7 +12,7 @@ public class Control : MonoBehaviour {
     public float sensitivity = 60.0f;
     public float CameraFollowRadius = 5.0f;
     public float sprintModifier = 1.25f;
-    public float dashModifier = 5.4f;
+    public float dashRange = 10.0f;
     public float dashTime = 0.2f;
     //public float radius = 5.0f;
     private float dashStart;
@@ -22,16 +22,19 @@ public class Control : MonoBehaviour {
     Vector3 Direction = Vector3.zero;
     Vector3 CamDirectionForward, CamDirectionRight;
     Vector3 targetPosition;
+    Vector3 dashDirection;
     CharacterController charControl;
     Character character;
     public Transform PlayerCharacter;
     Vector2 originalMousePosition;
-    float horizontalAngle, verticalAngle;
+    float horizontalAngle, verticalAngle,
+        dashSpeed;
     bool isDashing = false;
 
     // Use this for initialization
     void Start()
     {
+        dashSpeed = dashRange / dashTime;
         character = gameObject.GetComponent<Character>();
         targetPosition = PlayerCharacter.position;
         charControl = gameObject.GetComponent<CharacterController>();
@@ -54,7 +57,7 @@ public class Control : MonoBehaviour {
 
             if (Input.GetButtonDown("Attack"))
             {
-                if(character.Status == Character.CharacterState.SwordStance)
+                if((character.Status == Character.CharacterState.SwordStance)  && !character.IsBlocking)
                 {
                     character.SwingSword();
                 }
@@ -69,14 +72,25 @@ public class Control : MonoBehaviour {
                 character.SwapPlayerStatus();
             }
 
-            //if (Input.GetButton("Block"))
-            //{
-            //    character.isBlocking = true;
-            //}
-            //else
-            //{
-            //    character.isBlocking = false;
-            //}
+            if (character.Status == Character.CharacterState.SwordStance)
+            {
+                if (Input.GetButtonDown("Block"))
+                {
+                    character.IsBlocking = true;
+                }
+
+                if (Input.GetButtonUp("Block"))
+                {
+                    character.IsBlocking = false;
+                }
+            }
+
+            if ((Input.GetButtonDown("Block")) && (character.Status == Character.CharacterState.MagicStance) && (Direction != Vector3.zero))
+            {
+                dashStart = Time.time;
+                isDashing = true;
+                dashDirection = Direction.normalized;
+            }
 
             if (Input.GetButtonDown("Unsheathe"))
             {
@@ -85,15 +99,31 @@ public class Control : MonoBehaviour {
 
         }
 
+        if (isDashing)
+        {
+            Direction = dashDirection * dashSpeed;
+            if (Time.time > (dashStart + dashTime))
+            {
+                isDashing = false;
+            }
+        }
+
         horizontalAngle = Input.GetAxis("Mouse X") * sensitivity * Time.deltaTime;
         verticalAngle = Input.GetAxis("Mouse Y") * sensitivity * Time.deltaTime;
 
         if(Input.GetButtonDown("Sprint"))
         {
+            //Branches for states MagicStance and SwordStance are empty for future changes to sprinting logic;
             switch (character.Status)
             {
                 case Character.CharacterState.MagicStance:
+                    {
+                        break;
+                    }
                 case Character.CharacterState.SwordStance:
+                    {
+                        break;
+                    }
                 case Character.CharacterState.SheathedSword:
                     {
                         character.IsSprinting = true;
@@ -117,11 +147,6 @@ public class Control : MonoBehaviour {
             }
 
         }
-
-        if(isDashing)
-        {
-            Direction *= dashModifier;
-        }
     }
 
     void OnGUI()
@@ -136,13 +161,13 @@ public class Control : MonoBehaviour {
             {
                 charControl.Move(Direction * Time.deltaTime);
             //transform.forward = CamDirectionForward;
-            GetComponent<SmartController>().TriggerPlayerAutoRotation();
+                GetComponent<SmartController>().TriggerPlayerAutoRotation();
                 previousRotation = transform.rotation;
             }
             else
             {
                 //transform.rotation = previousRotation;
-            GetComponent<SmartController>().TriggerPlayerAutoRotation();
+                //GetComponent<SmartController>().TriggerPlayerAutoRotation();
         }
     }
 
