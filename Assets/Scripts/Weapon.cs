@@ -4,9 +4,16 @@ using UnityEngine;
 
 public class Weapon : MonoBehaviour {
 
+    private Transform wielder;
     private string targetTag;
     private bool isStriking = false;
     private float damage;
+
+
+    private void Awake()
+    {
+        wielder = transform.parent;
+    }
 
     public float Damage
     {
@@ -36,7 +43,7 @@ public class Weapon : MonoBehaviour {
             isStriking = true;
     }
 
-    private void OnTriggerEnter(Collider col)
+    public void Strike(Collider col)
     {
         if (isStriking)
         {
@@ -44,7 +51,7 @@ public class Weapon : MonoBehaviour {
             {
                 try
                 {
-                    col.gameObject.GetComponent<HealthSystem>().DealDamage(damage);
+                    col.attachedRigidbody.gameObject.GetComponent<HealthSystem>().DealDamage(damage);
                     isStriking = false;
                 }
                 catch
@@ -52,6 +59,22 @@ public class Weapon : MonoBehaviour {
                     Debug.LogError("NO HP SYSTEM ATTACHED");
                 }
             }
+            if (col.tag == "Shield")
+            {
+                if (wielder != null)
+                {
+                    Animator anim;
+                    if ((anim = wielder.GetComponent<Animator>()) != null)
+                    {
+                        anim.SetTrigger("Blocked");
+                    }
+                }
+            }
         }
+    }
+
+    private void OnTriggerEnter(Collider col)
+    {
+        Strike(col);
     }
 }

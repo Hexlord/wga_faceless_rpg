@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Character : MonoBehaviour {
+public class Character : BaseCharacter {
 
     public Weapon playerSword;
     public GameObject playerProjectile;
     public Transform ShootingPoint;
-    public bool isBlocking;
+    
     public enum CharacterState {SheathedSword, SwordStance, MagicStance};
     public GameObject SwordParticles, MaskParticles;
     public float projectileSpeed = 12.0f;
@@ -21,6 +21,7 @@ public class Character : MonoBehaviour {
     Animator anim;
     private CharacterState currentState = CharacterState.SheathedSword;
     bool isSprinting;
+    bool isBlocking;
 
     public bool IsSprinting
     {
@@ -32,6 +33,19 @@ public class Character : MonoBehaviour {
         {
             isSprinting = value;
             anim.SetBool("isSprinting", value);
+        }
+    }
+
+    public bool IsBlocking
+    {
+        get
+        {
+            return isBlocking;
+        }
+        set
+        {
+            isBlocking = value;
+            anim.SetBool("isBlocking", value);
         }
     }
 
@@ -55,6 +69,18 @@ public class Character : MonoBehaviour {
         playerSword.TargetTag = "Faceless";
         playerSword.Damage = swordDamage;
     }
+
+
+    private bool isNotified = false;
+	void Update ()
+    {
+        //При нажатии кнопки m, Enemy2 начинает бежать в твое направление и бить
+        if(Input.GetKeyDown(KeyCode.M))
+        {
+            isNotified = !isNotified;
+            GameObject.Find("Enemy2").GetComponent<DumbEnemy>().notify();
+        }
+	}
 
     public void SwapPlayerStatus()
     {
@@ -88,6 +114,11 @@ public class Character : MonoBehaviour {
 
     }
 
+    //public override void Die()
+    //{
+    //    Destroy(gameObject);
+    //}
+
     public void DrawSword()
     {
         if (currentState == CharacterState.SheathedSword)
@@ -105,6 +136,7 @@ public class Character : MonoBehaviour {
                 MaskParticles.SetActive(false);
                 anim.SetTrigger("SheatheSword");
                 currentState = CharacterState.SheathedSword;
+                GetComponent<SmartController>().SwitchState(SmartController.CameraState.Action);
             }
         }
     }
@@ -118,9 +150,10 @@ public class Character : MonoBehaviour {
     public void ShootProjectile()
     {
         GameObject projectile = Instantiate(playerProjectile, ShootingPoint.position, ShootingPoint.rotation);
-        Weapon projectileDamageComponent = playerProjectile.GetComponent<Weapon>();
+        Weapon projectileDamageComponent = projectile.GetComponent<Weapon>();
         projectileDamageComponent.TriggerStricking();
         projectileDamageComponent.TargetTag = target;
+        projectileDamageComponent.Damage = projectileDamage;
         projectile.GetComponent<Rigidbody>().AddForce(Camera.main.gameObject.transform.forward * projectileSpeed);
     }
 
