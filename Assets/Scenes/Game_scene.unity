@@ -12286,15 +12286,18 @@ MonoBehaviour:
   playerAutoRotateTimeout: 1
   playerImmediateAutoRotateEnabled: 0
   playerImmediateAutoRotateThreshold: 90
-  transitionSpeed: 0.07
+  transitionTime: 0.33
   actionHeight: 1.7
   actionDistance: 7
-  actionInitialPitch: -30
   actionPitchLimit: 60
+  actionInitialPitchEnabled: 1
+  actionInitialPitch: -30
   shootHeight: 2.17
   shootBackwardsOffset: 0.3
   shootRightOffset: 0.777
   shootPitchLimit: 80
+  shootInitialPitchEnabled: 1
+  shootInitialPitch: 0
   tacticsHeight: 1.7
   tacticsDistance: 18
   tacticsPitch: 90
@@ -12303,16 +12306,6 @@ MonoBehaviour:
   cameraStateNext: 0
   cameraStateTransition: 0
   cameraRayDistanceDebug: 0
-  currentHeight: 0
-  currentPosition: {x: 0, y: 0, z: 0}
-  currentRotation: {x: 0, y: 0, z: 0, w: 1}
-  startHeight: 0
-  startPosition: {x: 0, y: 0, z: 0}
-  eulerDelta: {x: 0, y: 0, z: 0}
-  startRotation: {x: 0, y: 0, z: 0, w: 1}
-  desiredRotation: {x: 0, y: 0, z: 0, w: 1}
-  desiredHeight: 0
-  desiredPosition: {x: 0, y: 0, z: 0}
 --- !u!114 &1713741872
 MonoBehaviour:
   m_ObjectHideFlags: 0
