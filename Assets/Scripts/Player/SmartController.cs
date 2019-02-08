@@ -35,10 +35,6 @@ public class SmartController : MonoBehaviour
 
     [Header("Player Settings")]
 
-    //[Tooltip("Player movement speed in meters per second")]
-    //[Range(0.0f, 10.0f)]
-    //public float playerMoveSpeed = 7.0f;
-
     [Tooltip("Player rotation speed in degrees per second")]
     [Range(0.0f, 360.0f)]
     public float playerRotationSpeed = 180.0f;
@@ -46,7 +42,7 @@ public class SmartController : MonoBehaviour
     [Header("Player Auto Rotation On Different Camera Angle")]
 
     [Tooltip("Enables this feature")]
-    public bool playerAutoRotateEnabled = true;
+    public bool playerAutoRotateEnabled = false;
 
     [Tooltip("If checked, timeout only counts during mouse being inactive")]
     public bool playerAutoRotatePassive = false;
@@ -58,12 +54,19 @@ public class SmartController : MonoBehaviour
     [Header("Player Immediate Rotation On Very Different Camera Angle")]
 
     [Tooltip("Enables this feature")]
-    public bool playerImmediateAutoRotateEnabled = true;
+    public bool playerImmediateAutoRotateEnabled = false;
 
     [Tooltip("Angle threshold to trigger rotation")]
     [Range(0.0f, 180.0f)]
     public float playerImmediateAutoRotateThreshold = 90.0f;
-    
+
+    [Header("Camera State Settings")]
+
+    [Tooltip("Camera state transition time in seconds")]
+    [Range(0.001f, 10.0f)]
+    public float transitionTime = 0.33f;
+
+
     [Header("Camera State Settings: Action")]
 
     [Tooltip("Action camera additive height")]
@@ -74,13 +77,16 @@ public class SmartController : MonoBehaviour
     [Range(0.0f, 10.0f)]
     public float actionDistance = 7.0f;
 
-    [Tooltip("Action camera additive height")]
-    [Range (-45.0f, 45.0f)]
-    public float initialPitch = -30.0f;
-
     [Tooltip("Action camera pitch limit")]
     [Range(0.0f, 90.0f)]
     public float actionPitchLimit = 60.0f;
+
+    [Tooltip("Reset camera pitch on switch to Action state")]
+    public bool actionInitialPitchEnabled = true;
+    
+    [Tooltip("Action camera pitch on state switch")]
+    [Range(-45.0f, 45.0f)]
+    public float actionInitialPitch = -30.0f;
 
     [Header("Camera State Settings: Shoot")]
 
@@ -99,6 +105,13 @@ public class SmartController : MonoBehaviour
     [Tooltip("Shoot camera pitch limit")]
     [Range(0.0f, 90.0f)]
     public float shootPitchLimit = 80.0f;
+        
+    [Tooltip("Reset camera pitch on switch to Shoot state")]
+    public bool shootInitialPitchEnabled = true;
+
+    [Tooltip("Shoot camera pitch on state switch")]
+    [Range(-45.0f, 45.0f)]
+    public float shootInitialPitch = 0.0f;
 
     [Header("Camera State Settings: Tactics")]
 
@@ -126,6 +139,7 @@ public class SmartController : MonoBehaviour
         Shoot,
         Tactics
     }
+
     [Header("Debug")]
     public CameraState cameraState = CameraState.Action;
     public CameraState cameraStateNext = CameraState.Action;
@@ -143,22 +157,32 @@ public class SmartController : MonoBehaviour
 
     private float playerAutoRotateTimer = 0.0f;
     private bool playerAutoRotateActive = false;
+    
+    /*
+     * Last update data to use as start data on state switch
+     */
+    private float currentHeight = 0.0f;
+    private Vector3 currentPosition = Vector3.zero;
+    private Quaternion currentRotation = Quaternion.identity;
 
 
-    private Vector3 actionPosition = Vector3.zero;
-    private Vector3 shootPosition = Vector3.zero;
-    private Vector3 tacticsPosition = Vector3.zero;
+    /*
+     * Last state switch data to interpolate from
+     */
+    private float startHeight = 0.0f;
+    private Vector3 startPosition = Vector3.zero;
+    private Quaternion startRotation = Quaternion.identity;
 
-    private Quaternion actionRotation = Quaternion.identity;
-    private Quaternion shootRotation = Quaternion.identity;
-    private Quaternion tacticsRotation = Quaternion.identity;
-
+    /*
+     * Camera rotation delta accumulated during state transition
+     */
+    private float transitionDeltaYaw = 0.0f;
+    private float transitionDeltaPitch = 0.0f;
 
     // Cache
 
     private GameObject player;
     private Transform playerTransform;
-    private CharacterController playerController;
 
     private new GameObject camera;
     private Transform cameraTransform;
@@ -169,7 +193,6 @@ public class SmartController : MonoBehaviour
 
         player = GameObject.Find("Player");
         playerTransform = player.GetComponent<Transform>();
-        playerController = GetComponent<CharacterController>();
 
         camera = GameObject.Find("Main Camera");
         cameraTransform = camera.GetComponent<Transform>();
@@ -188,7 +211,7 @@ public class SmartController : MonoBehaviour
 
                 float yawDelta = Mathf.DeltaAngle(actionYaw, playerTransform.eulerAngles.y);
 
-                if(playerImmediateAutoRotateEnabled)
+                if (playerImmediateAutoRotateEnabled)
                 {
                     if (Mathf.Abs(Mathf.DeltaAngle(playerTransform.eulerAngles.y, actionYaw)) >= playerImmediateAutoRotateThreshold)
                     {
@@ -196,16 +219,17 @@ public class SmartController : MonoBehaviour
                     }
                 }
 
-                if(playerAutoRotateEnabled)
+                if (playerAutoRotateEnabled)
                 {
                     if (yawDelta <= Mathf.Epsilon)
                     {
                         playerAutoRotateTimer += Time.deltaTime;
-                        if(playerAutoRotateTimer >= playerAutoRotateTimeout)
+                        if (playerAutoRotateTimer >= playerAutoRotateTimeout)
                         {
                             playerAutoRotateActive = true;
                         }
-                    } else
+                    }
+                    else
                     {
                         playerAutoRotateTimer = 0.0f;
                     }
@@ -244,77 +268,6 @@ public class SmartController : MonoBehaviour
         }
     }
 
-    void LoadHeights(out float heightA, out float heightB)
-    {
-        heightA = 0.0f;
-        heightB = 0.0f;
-
-        switch (cameraState)
-        {
-            case CameraState.Action:
-                heightA = actionHeight;
-                break;
-            case CameraState.Shoot:
-                heightA = shootHeight;
-                break;
-            case CameraState.Tactics:
-                heightA = tacticsHeight;
-                break;
-        }
-
-        switch (cameraStateNext)
-        {
-            case CameraState.Action:
-                heightB = actionHeight;
-                break;
-            case CameraState.Shoot:
-                heightB = shootHeight;
-                break;
-            case CameraState.Tactics:
-                heightB = tacticsHeight;
-                break;
-        }
-    }
-
-    void LoadPosRot(out Vector3 positionA, out Vector3 positionB, out Quaternion rotationA, out Quaternion rotationB)
-    {
-        positionA = Vector3.zero;
-        positionB = Vector3.zero;
-        rotationA = Quaternion.identity;
-        rotationB = Quaternion.identity;
-        switch (cameraState)
-        {
-            case CameraState.Action:
-                positionA = actionPosition;
-                rotationA = actionRotation;
-                break;
-            case CameraState.Shoot:
-                positionA = shootPosition;
-                rotationA = shootRotation;
-                break;
-            case CameraState.Tactics:
-                positionA = tacticsPosition;
-                rotationA = tacticsRotation;
-                break;
-        }
-
-        switch (cameraStateNext)
-        {
-            case CameraState.Action:
-                positionB = actionPosition;
-                rotationB = actionRotation;
-                break;
-            case CameraState.Shoot:
-                positionB = shootPosition;
-                rotationB = shootRotation;
-                break;
-            case CameraState.Tactics:
-                positionB = tacticsPosition;
-                rotationB = tacticsRotation;
-                break;
-        }
-    }
-
     float FilterDistance(Ray ray, float distance, Vector3 forward)
     {
         RaycastHit hit;
@@ -338,58 +291,126 @@ public class SmartController : MonoBehaviour
 
     void Update()
     {
-        float t = Mathf.SmoothStep(0.0f, 1.0f, cameraStateTransition);
         cameraRayDistanceDebug = float.MaxValue;
+        float tLinear = 1.0f;
 
+        if (cameraState != cameraStateNext)
+        {
+            tLinear = cameraStateTransition;
+        }
+
+        float desiredHeight = 0.0f;
+        Vector3 desiredPosition = Vector3.zero;
+        Quaternion desiredRotation = Quaternion.identity;
+        
         inputDeltaX = Input.GetAxis("Mouse X") * mouseHorizontalSensitivity;
         inputDeltaY = Input.GetAxis("Mouse Y") * mouseVerticalSensitivity;
-        
+
         UpdateNextState();
 
-        float heightA = 0.0f;
-        float heightB = 0.0f;
-
-        LoadHeights(out heightA, out heightB);
-
-        Vector3 target = playerTransform.position + new Vector3(0, Mathf.Lerp(heightA, heightB, cameraStateTransition), 0);
-
-        // Action
-        actionPosition = Quaternion.Euler(-actionPitch, actionYaw, 0.0f) * (Vector3.forward * -actionDistance) + target;
-        actionRotation = Quaternion.Euler(-actionPitch, actionYaw, 0.0f);
-
-        shootPosition = Quaternion.Euler(-shootPitch, playerTransform.eulerAngles.y, 0.0f) * (Vector3.right * shootRightOffset + Vector3.forward * -shootBackwardsOffset) + target;
-        shootRotation = Quaternion.Euler(-shootPitch, playerTransform.eulerAngles.y, 0.0f);
-
-        tacticsPosition = Quaternion.Euler(tacticsPitch, playerTransform.eulerAngles.y, 0.0f) * (Vector3.forward * -tacticsDistance) + target;
-        tacticsRotation = Quaternion.Euler(tacticsPitch, playerTransform.eulerAngles.y, 0.0f);
-
-        Vector3 positionA = Vector3.zero;
-        Vector3 positionB = Vector3.zero;
-        Quaternion rotationA = Quaternion.identity;
-        Quaternion rotationB = Quaternion.identity;
-        
-        LoadPosRot(out positionA, out positionB, out rotationA, out rotationB);
-
-        Vector3 position = new Vector3(
-                Mathf.SmoothStep(positionA.x, positionB.x, cameraStateTransition),
-                Mathf.SmoothStep(positionA.y, positionB.y, cameraStateTransition),
-                Mathf.SmoothStep(positionA.z, positionB.z, cameraStateTransition));
-
-        Quaternion rotation = Quaternion.Lerp(rotationA, rotationB, t);
-
-        if (true)
+        switch (cameraStateNext)
         {
-            // Avoid clipping when no transition
+            case CameraState.Action:
+                desiredHeight = actionHeight;
 
-            Vector3 forward = rotation * Vector3.forward;
-            Vector3 backwards = rotation * (-Vector3.forward);
+                desiredPosition = Quaternion.Euler(-actionPitch, actionYaw, 0.0f) * (Vector3.forward * -actionDistance);
+                desiredRotation = Quaternion.Euler(-actionPitch, actionYaw, 0.0f);
+                break;
+            case CameraState.Shoot:
+                desiredHeight = shootHeight;
+                desiredPosition = Quaternion.Euler(-shootPitch, playerTransform.eulerAngles.y, 0.0f) * (Vector3.right * shootRightOffset + Vector3.forward * -shootBackwardsOffset);
+                desiredRotation = Quaternion.Euler(-shootPitch, playerTransform.eulerAngles.y, 0.0f);
+                break;
+            case CameraState.Tactics:
+                desiredHeight = tacticsHeight;
+                desiredPosition = Quaternion.Euler(tacticsPitch, playerTransform.eulerAngles.y, 0.0f) * (Vector3.forward * -tacticsDistance);
+                desiredRotation = Quaternion.Euler(tacticsPitch, playerTransform.eulerAngles.y, 0.0f);
+                break;
+        }
+
+        if (transitionDeltaYaw == float.MaxValue)
+            transitionDeltaYaw = Mathf.DeltaAngle(startRotation.eulerAngles.y, desiredRotation.eulerAngles.y);
+        if (transitionDeltaPitch == float.MaxValue)
+            transitionDeltaPitch = Mathf.DeltaAngle(startRotation.eulerAngles.x, desiredRotation.eulerAngles.x);
+
+        switch (cameraStateNext)
+        {
+            case CameraState.Action:
+                transitionDeltaYaw += inputDeltaX;
+                transitionDeltaPitch -= inputDeltaY;
+                transitionDeltaPitch = Mathf.DeltaAngle(0,
+                    Mathf.Clamp(Mathf.DeltaAngle(0,
+                    transitionDeltaPitch + startRotation.eulerAngles.x), -actionPitchLimit, actionPitchLimit) - startRotation.eulerAngles.x);
+                break;
+            case CameraState.Shoot:
+                transitionDeltaYaw += inputDeltaX;
+                transitionDeltaPitch -= inputDeltaY;
+                transitionDeltaPitch = Mathf.DeltaAngle(0,
+                    Mathf.Clamp(Mathf.DeltaAngle(0,
+                    transitionDeltaPitch + startRotation.eulerAngles.x), -shootPitchLimit, shootPitchLimit) - startRotation.eulerAngles.x);
+                break;
+            case CameraState.Tactics:
+                break;
+        }
+
+        currentHeight = Mathf.SmoothStep(startHeight, desiredHeight, tLinear);
+        currentPosition = new Vector3(
+                Mathf.SmoothStep(startPosition.x, desiredPosition.x, tLinear),
+                Mathf.SmoothStep(startPosition.y, desiredPosition.y, tLinear),
+                Mathf.SmoothStep(startPosition.z, desiredPosition.z, tLinear));
+        if (cameraState != cameraStateNext)
+        {
+            Vector3 eulerDelta = new Vector3(
+                (transitionDeltaPitch),
+                (transitionDeltaYaw),
+                (desiredRotation.eulerAngles.z - startRotation.eulerAngles.z)
+                );
+            currentRotation = Quaternion.Euler(
+                Mathf.SmoothStep(startRotation.eulerAngles.x, startRotation.eulerAngles.x + eulerDelta.x, tLinear),
+                Mathf.SmoothStep(startRotation.eulerAngles.y, startRotation.eulerAngles.y + eulerDelta.y, tLinear),
+                Mathf.SmoothStep(startRotation.eulerAngles.z, startRotation.eulerAngles.z + eulerDelta.z, tLinear)
+                );
+        }
+        else
+        {
+            currentRotation = desiredRotation;
+        }
+
+
+        Vector3 target = playerTransform.position + new Vector3(0, currentHeight, 0);
+
+        Vector3 finalPosition = currentPosition;
+
+        // Avoid clipping through simple forward directed camera ray hittest
+        {
+            Vector3 fromCamera = Vector3.zero;
+            switch (cameraStateNext)
+            {
+                case CameraState.Action:
+                    fromCamera = -currentPosition;
+                    break;
+                case CameraState.Shoot:
+                    // This is not correct without
+                    // + Quaternion.Euler(-shootPitch, playerTransform.eulerAngles.y, 0.0f) * (Vector3.right * shootRightOffset + Vector3.forward * -shootBackwardsOffset);
+                    // part, but without it the visuals look smoother,
+                    // until serious glitches occur, keep it commented
+                    fromCamera = -currentPosition; // + Quaternion.Euler(-shootPitch, playerTransform.eulerAngles.y, 0.0f) * (Vector3.right * shootRightOffset + Vector3.forward * -shootBackwardsOffset);
+                    break;
+                case CameraState.Tactics:
+                    fromCamera = -currentPosition;
+                    break;
+            }
+            Vector3 toCamera = -fromCamera;
+
+            Vector3 forward = fromCamera.normalized;
+            Vector3 backwards = toCamera.normalized;
+
             Vector3 dir1 = Quaternion.Euler(cameraAvoidanceSmoothAngle, 0.0f, 0.0f) * backwards;
             Vector3 dir2 = Quaternion.Euler(-cameraAvoidanceSmoothAngle, 0.0f, 0.0f) * backwards;
             Vector3 dir3 = Quaternion.Euler(0.0f, cameraAvoidanceSmoothAngle, 0.0f) * backwards;
             Vector3 dir4 = Quaternion.Euler(0.0f, -cameraAvoidanceSmoothAngle, 0.0f) * backwards;
 
-            // TODO: target is different for Shoot state, but this seem not to affect the player yet
-            float baseDistance = Vector3.Distance(target, position);
+            float baseDistance = toCamera.magnitude;
             float distance = baseDistance;
             distance = Mathf.Min(distance, FilterDistance(new Ray(target, dir1), baseDistance, forward));
             distance = Mathf.Min(distance, FilterDistance(new Ray(target, dir2), baseDistance, forward));
@@ -397,15 +418,15 @@ public class SmartController : MonoBehaviour
             distance = Mathf.Min(distance, FilterDistance(new Ray(target, dir4), baseDistance, forward));
 
             float compensation = baseDistance - distance;
-            position += forward * compensation;
+            finalPosition += forward * compensation;
         }
 
-        cameraTransform.position = position;
-        cameraTransform.rotation = rotation;
+        cameraTransform.position = finalPosition + target;
+        cameraTransform.rotation = currentRotation;
 
-        if(cameraState != cameraStateNext)
+        if (cameraState != cameraStateNext)
         {
-            cameraStateTransition = Mathf.MoveTowards(cameraStateTransition, 1.0f, Time.deltaTime);
+            cameraStateTransition = Mathf.MoveTowards(cameraStateTransition, 1.0f, (1.0f / transitionTime) * Time.deltaTime);
 
             if (cameraStateTransition >= 1.0f - Mathf.Epsilon)
             {
@@ -428,14 +449,28 @@ public class SmartController : MonoBehaviour
         if (cameraStateNext != state)
         {
             cameraState = cameraStateNext;
-
             cameraStateNext = state;
+            cameraStateTransition = 0.0f;
 
-            if (cameraStateNext == CameraState.Action)
+            switch (cameraStateNext)
             {
-                actionYaw = playerTransform.eulerAngles.y;
-                actionPitch = initialPitch;
+                case CameraState.Action:
+                    actionYaw = playerTransform.eulerAngles.y;
+                    if (actionInitialPitchEnabled) actionPitch = actionInitialPitch;
+                    break;
+                case CameraState.Shoot:
+                    if (shootInitialPitchEnabled) shootPitch = shootInitialPitch;
+                    break;
+                case CameraState.Tactics:
+                    break;
             }
+
+            startHeight = currentHeight;
+            startPosition = currentPosition;
+            startRotation = currentRotation;
+
+            transitionDeltaYaw = float.MaxValue;
+            transitionDeltaPitch = float.MaxValue;
         }
     }
 
