@@ -363,7 +363,7 @@ public class SmartController : MonoBehaviour
 
         Vector3 finalPosition = currentPosition;
 
-        if (false)
+        if (true)
         {
             // Avoid clipping when no transition
 

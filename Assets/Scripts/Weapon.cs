@@ -56,7 +56,7 @@ public class Weapon : MonoBehaviour {
                 }
                 catch
                 {
-                    Debug.LogError("NO HP SYSTEM ATTACHED");
+                    Debug.LogError("NO HP SYSTEM ATTACHED TO GAMEOBJECT " + col.attachedRigidbody.gameObject.name);
                 }
             }
             if (col.tag == "Shield")
