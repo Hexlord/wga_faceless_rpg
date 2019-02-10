@@ -55,6 +55,8 @@ public class Character : BaseCharacter {
         playerSword.TargetTag = "Faceless";
         playerSword.Damage = swordDamage;
         playerSword.Concentration = swordConcentration;
+
+        GameObject.Find("Crosshair").GetComponent<CanvasRenderer>().SetAlpha(0);
     }
 
 
@@ -69,6 +71,7 @@ public class Character : BaseCharacter {
                     DrawSword();
                     //currentState = CharacterState.MagicStance;
                     GetComponent<SmartController>().SwitchState(SmartController.CameraState.Action);
+                    GameObject.Find("Crosshair").GetComponent<CanvasRenderer>().SetAlpha(0);
                     //gameObject.layer = LayerMask.NameToLayer("Physical");
                     break;
                 }
@@ -78,6 +81,7 @@ public class Character : BaseCharacter {
                     SwordParticles.SetActive(true);
                     currentState = CharacterState.SwordStance;
                     GetComponent<SmartController>().SwitchState(SmartController.CameraState.Action);
+                    GameObject.Find("Crosshair").GetComponent<CanvasRenderer>().SetAlpha(0);
                     SwitchPhysicalLayer("Physical");
                     gameObject.layer = LayerMask.NameToLayer("Physical");
                     break;
@@ -88,6 +92,7 @@ public class Character : BaseCharacter {
                     MaskParticles.SetActive(true);
                     currentState = CharacterState.MagicStance;
                     GetComponent<SmartController>().SwitchState(SmartController.CameraState.Shoot);
+                    GameObject.Find("Crosshair").GetComponent<CanvasRenderer>().SetAlpha(1);
                     SwitchPhysicalLayer("Magical");
                     gameObject.layer = LayerMask.NameToLayer("Magical");
                     break;
