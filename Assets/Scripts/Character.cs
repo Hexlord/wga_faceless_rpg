@@ -12,7 +12,7 @@ public class Character : BaseCharacter {
     public GameObject SwordParticles, MaskParticles;
     public float projectileSpeed = 12.0f;
     public float projectileDamage = 15.0f;
-    public float swordDamage = 25.0f;
+    public float swordDamage = 25.0f, swordConcentration = 12.5f;
     public string target;
 
     GameObject magicProjectile;
@@ -21,7 +21,6 @@ public class Character : BaseCharacter {
     Animator anim;
     private CharacterState currentState = CharacterState.SheathedSword;
     bool isSprinting;
-    bool isBlocking;
 
     public bool IsSprinting
     {
@@ -33,19 +32,6 @@ public class Character : BaseCharacter {
         {
             isSprinting = value;
             anim.SetBool("isSprinting", value);
-        }
-    }
-
-    public bool IsBlocking
-    {
-        get
-        {
-            return isBlocking;
-        }
-        set
-        {
-            isBlocking = value;
-            anim.SetBool("isBlocking", value);
         }
     }
 
@@ -68,19 +54,11 @@ public class Character : BaseCharacter {
         MaskParticles.SetActive(false);
         playerSword.TargetTag = "Faceless";
         playerSword.Damage = swordDamage;
+        playerSword.Concentration = swordConcentration;
     }
 
 
     private bool isNotified = false;
-	void Update ()
-    {
-        //При нажатии кнопки m, Enemy2 начинает бежать в твое направление и бить
-        if(Input.GetKeyDown(KeyCode.M))
-        {
-            isNotified = !isNotified;
-            GameObject.Find("Enemy2").GetComponent<DumbEnemy>().notify();
-        }
-	}
 
     public void SwapPlayerStatus()
     {
@@ -91,6 +69,7 @@ public class Character : BaseCharacter {
                     DrawSword();
                     //currentState = CharacterState.MagicStance;
                     GetComponent<SmartController>().SwitchState(SmartController.CameraState.Action);
+                    //gameObject.layer = LayerMask.NameToLayer("Physical");
                     break;
                 }
             case CharacterState.MagicStance:
@@ -99,6 +78,8 @@ public class Character : BaseCharacter {
                     SwordParticles.SetActive(true);
                     currentState = CharacterState.SwordStance;
                     GetComponent<SmartController>().SwitchState(SmartController.CameraState.Action);
+                    SwitchPhysicalLayer("Physical");
+                    gameObject.layer = LayerMask.NameToLayer("Physical");
                     break;
                 }
             case CharacterState.SwordStance:
@@ -107,6 +88,8 @@ public class Character : BaseCharacter {
                     MaskParticles.SetActive(true);
                     currentState = CharacterState.MagicStance;
                     GetComponent<SmartController>().SwitchState(SmartController.CameraState.Shoot);
+                    SwitchPhysicalLayer("Magical");
+                    gameObject.layer = LayerMask.NameToLayer("Magical");
                     break;
                 }
         }
@@ -126,6 +109,8 @@ public class Character : BaseCharacter {
             SwordParticles.SetActive(true);
             MaskParticles.SetActive(false);
             anim.SetTrigger("UnsheatheSword");
+            SwitchPhysicalLayer("Physical");
+            gameObject.layer = LayerMask.NameToLayer("Physical");
             currentState = CharacterState.SwordStance;
         }
         else
@@ -136,6 +121,8 @@ public class Character : BaseCharacter {
                 MaskParticles.SetActive(false);
                 anim.SetTrigger("SheatheSword");
                 currentState = CharacterState.SheathedSword;
+                SwitchPhysicalLayer("Physical");
+                gameObject.layer = LayerMask.NameToLayer("Physical");
                 GetComponent<SmartController>().SwitchState(SmartController.CameraState.Action);
             }
         }
@@ -155,6 +142,14 @@ public class Character : BaseCharacter {
         projectileDamageComponent.TargetTag = target;
         projectileDamageComponent.Damage = projectileDamage;
         projectile.GetComponent<Rigidbody>().AddForce(Camera.main.gameObject.transform.forward * projectileSpeed);
+    }
+
+    void SwitchPhysicalLayer(string layer)
+    {
+        foreach (Transform tf in transform.GetComponentInChildren<Transform>())
+        {
+            tf.gameObject.layer = LayerMask.NameToLayer(layer);
+        }
     }
 
 }

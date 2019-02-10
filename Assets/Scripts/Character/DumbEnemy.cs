@@ -27,22 +27,28 @@ public class DumbEnemy : BaseCharacter
     private HealthSystem healthSystem;
     private Vector3 distanceToPlayer;
     private bool isNotified = false;
+    private string tag;
 
-    public void notify()
+    public void Notify(string tag)
     {
-        isNotified = !isNotified;
+        if (!isNotified)
+        {
+            isNotified = true;
+            rightFist.TargetTag = tag;
+            leftFist.TargetTag = tag;
+            character = GameObject.FindWithTag(tag);
+            healthSystem = character.GetComponent<HealthSystem>();
+            Debug.Log("notify");
+        }
     }
 
     void Start()
     {
-        character = GameObject.FindGameObjectWithTag("Player");
-        healthSystem = character.GetComponent<HealthSystem>();
+        
         characterController = gameObject.GetComponent<CharacterController>();
         anim = gameObject.GetComponent<Animator>();
         rightFist.Damage = fistDamage;
         leftFist.Damage = fistDamage;
-        rightFist.TargetTag = "Player";
-        leftFist.TargetTag = "Player";
     }
 
     private void Awake()
@@ -52,14 +58,17 @@ public class DumbEnemy : BaseCharacter
 
     void FixedUpdate()
     {
-        distanceToPlayer = (character.transform.position - gameObject.transform.position);
-        distanceToPlayer.y = 0;
-        if (isNotified == true && (distanceToPlayer.magnitude > attackRange * 0.5))
+        if (isNotified)
         {
-            distanceToPlayer.Normalize();
-            transform.forward = distanceToPlayer;
-            distanceToPlayer += (!characterController.isGrounded) ? new Vector3(0, Physics.gravity.y * mass, 0) : Vector3.zero;
-            characterController.Move(distanceToPlayer.normalized * (velocity * Time.fixedDeltaTime));
+            distanceToPlayer = (character.transform.position - gameObject.transform.position);
+            distanceToPlayer.y = 0;
+            if (distanceToPlayer.magnitude > attackRange * 0.5)
+            {
+                distanceToPlayer.Normalize();
+                transform.forward = distanceToPlayer;
+                Vector3 MoveDirection = distanceToPlayer + ((!characterController.isGrounded) ? new Vector3(0, Physics.gravity.y * mass, 0) : Vector3.zero);
+                characterController.Move(MoveDirection.normalized * (velocity * Time.fixedDeltaTime));
+            }
         }
     }
 

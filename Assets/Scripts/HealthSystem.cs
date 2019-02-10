@@ -5,17 +5,17 @@ using UnityEngine.UI;
 
 public class HealthSystem : MonoBehaviour {
     [SerializeField]
-    private float healthPoints = 100.0f;
+    protected float healthPoints = 100.0f;
     [SerializeField]
-    private bool respawnAfterDeath = true;
+    protected bool respawnAfterDeath = true;
 
     [SerializeField]
-    private Image Healthbar; 
+    protected Image Healthbar; 
 
     Vector3 originalPosition;
     Quaternion originalRotation;
     Vector3 originalScale;
-    float originalAmountOfHP;
+    protected float originalAmountOfHP;
 
 
     public float HP
