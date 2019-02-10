@@ -29,14 +29,17 @@ public class DumbEnemy : BaseCharacter
     private bool isNotified = false;
     private string tag;
 
-    public void notify(string tag)
+    public void Notify(string tag)
     {
-        isNotified = true;
-        rightFist.TargetTag = tag;
-        leftFist.TargetTag = tag;
-        character = GameObject.FindWithTag(tag);
-        healthSystem = character.GetComponent<HealthSystem>();
-        Debug.Log("notify");
+        if (!isNotified)
+        {
+            isNotified = true;
+            rightFist.TargetTag = tag;
+            leftFist.TargetTag = tag;
+            character = GameObject.FindWithTag(tag);
+            healthSystem = character.GetComponent<HealthSystem>();
+            Debug.Log("notify");
+        }
     }
 
     void Start()
@@ -63,8 +66,8 @@ public class DumbEnemy : BaseCharacter
             {
                 distanceToPlayer.Normalize();
                 transform.forward = distanceToPlayer;
-                distanceToPlayer += (!characterController.isGrounded) ? new Vector3(0, Physics.gravity.y * mass, 0) : Vector3.zero;
-                characterController.Move(distanceToPlayer.normalized * (velocity * Time.fixedDeltaTime));
+                Vector3 MoveDirection = distanceToPlayer + ((!characterController.isGrounded) ? new Vector3(0, Physics.gravity.y * mass, 0) : Vector3.zero);
+                characterController.Move(MoveDirection.normalized * (velocity * Time.fixedDeltaTime));
             }
         }
     }

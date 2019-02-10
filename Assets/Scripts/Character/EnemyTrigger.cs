@@ -9,7 +9,7 @@ public class EnemyTrigger : MonoBehaviour
         if(other.gameObject.tag == "Player")
         {
             DumbEnemy enemyController = gameObject.GetComponentInParent<DumbEnemy>();
-            enemyController.notify("Player");
+            enemyController.Notify("Player");
         }
     }
 }
