@@ -74,12 +74,7 @@ public class Character : BaseCharacter {
     private bool isNotified = false;
 	void Update ()
     {
-        //При нажатии кнопки m, Enemy2 начинает бежать в твое направление и бить
-        if(Input.GetKeyDown(KeyCode.M))
-        {
-            isNotified = !isNotified;
-            GameObject.Find("Enemy2").GetComponent<DumbEnemy>().notify();
-        }
+        
 	}
 
     public void SwapPlayerStatus()
