@@ -69,6 +69,10 @@ public class SmartController : MonoBehaviour
 
     [Header("Camera State Settings: Action")]
 
+    [Tooltip("Minimum distance to target for camera")]
+    [Range(0.0f, 10.0f)]
+    public float actionMinimumDistance = 1.65f;
+
     [Tooltip("Action camera additive height")]
     [Range(0.0f, 10.0f)]
     public float actionHeight = 1.7f;
@@ -83,12 +87,16 @@ public class SmartController : MonoBehaviour
 
     [Tooltip("Reset camera pitch on switch to Action state")]
     public bool actionInitialPitchEnabled = true;
-    
+
     [Tooltip("Action camera pitch on state switch")]
     [Range(-45.0f, 45.0f)]
     public float actionInitialPitch = -30.0f;
 
     [Header("Camera State Settings: Shoot")]
+
+    [Tooltip("Minimum distance to target for camera")]
+    [Range(0.0f, 10.0f)]
+    public float shootMinimumDistance = 0.0f;
 
     [Tooltip("Shoot camera additive height")]
     [Range(0.0f, 10.0f)]
@@ -105,7 +113,7 @@ public class SmartController : MonoBehaviour
     [Tooltip("Shoot camera pitch limit")]
     [Range(0.0f, 90.0f)]
     public float shootPitchLimit = 80.0f;
-        
+
     [Tooltip("Reset camera pitch on switch to Shoot state")]
     public bool shootInitialPitchEnabled = true;
 
@@ -129,9 +137,24 @@ public class SmartController : MonoBehaviour
 
     [Header("Camera Clipping Settings")]
 
-    [Tooltip("Affects how safe distance for camera is calculated. Increasing prevents clipping, but makes camera closer to player")]
+    [Tooltip("Affects how safe distance for camera is calculated")]
     [Range(1.0f, 8.0f)]
-    public float cameraAvoidanceSmoothAngle = 2.0f;
+    public float cameraAvoidanceSmoothAngle = 3.0f;
+
+    [Tooltip("Camera distance change speed")]
+    [Range(0.1f, 50.0f)]
+    public float cameraAvoidanceSpeed = 12.0f;
+
+    [Tooltip("Camera distance immediate snap for solid clipping")]
+    public bool cameraAvoidanceInstantSnap = true;
+
+    [Tooltip("Maximum camera distance offset from object for perpendicular normal conditions")]
+    [Range(0.1f, 5.0f)]
+    public float cameraAvoidanceOffset = 2.0f;
+
+    [Tooltip("Camera distance offset normal angle factor reversed")]
+    [Range(1.0f, 5.0f)]
+    public float cameraAvoidanceNormalFactorReversed = 2.0f;
 
     public enum CameraState
     {
@@ -144,7 +167,6 @@ public class SmartController : MonoBehaviour
     public CameraState cameraState = CameraState.Action;
     public CameraState cameraStateNext = CameraState.Action;
     public float cameraStateTransition = 0.0f;
-    public float cameraRayDistanceDebug = 0.0f;
 
     // Private
 
@@ -157,7 +179,7 @@ public class SmartController : MonoBehaviour
 
     private float playerAutoRotateTimer = 0.0f;
     private bool playerAutoRotateActive = false;
-    
+
     /*
      * Last update data to use as start data on state switch
      */
@@ -178,6 +200,8 @@ public class SmartController : MonoBehaviour
      */
     private float transitionDeltaYaw = 0.0f;
     private float transitionDeltaPitch = 0.0f;
+
+    private float avoidanceOffset = 0.0f;
 
     // Cache
 
@@ -268,30 +292,232 @@ public class SmartController : MonoBehaviour
         }
     }
 
-    float FilterDistance(Ray ray, float distance, Vector3 forward)
+    struct RayEntry
     {
-        RaycastHit hit;
+        public Collider collider;
+        public bool small;
+        public float angleFactor;
+        public float distance;
+    };
+    class SnapEntry
+    {
+        public float distanceStart;
+        public float distanceEnd;
+    };
 
-        if (Physics.Raycast(ray, out hit, distance * 3.0f, ~LayerMask.NameToLayer("Environment")))
+    void ClipAnalyze(out float outDistance, out float outSnap, Vector3 cameraObject, Vector3 rayDirection, float cameraDistance, Vector3 cameraForward)
+    {
+        Vector3 rayObject = cameraObject;
+
+        Vector3 cameraPosition = rayObject + rayDirection * cameraDistance;
+
+        float range = 100.0f;
+
+        int mask = (1 << LayerMask.NameToLayer("Environment"));
+
+        RaycastHit[] hitsForward = Physics.RaycastAll(new Ray(cameraObject + rayDirection * range, -rayDirection), range, mask);
+        RaycastHit[] hitsBackwards = Physics.RaycastAll(new Ray(cameraObject, rayDirection), range, mask);
+        RaycastHit[] hitsObjectForward = Physics.RaycastAll(new Ray(cameraObject, -rayDirection), range, mask);
+        
+        List<RayEntry> rayEntries = new List<RayEntry>();
+
         {
-            float angle = Vector3.Angle(hit.normal, forward);
-            if (angle > 90.0f) angle = 90.0f;
-            float factor = 1.0f - angle / 90.0f;
-            float factorSqrt = Mathf.Pow(factor, 1.0f / 3.0f);
+            foreach (RaycastHit hit in hitsBackwards)
+            {
+                RayEntry entry;
+                entry.collider = hit.collider;
+                entry.small = hit.collider.gameObject.CompareTag("Small");
+                entry.distance = hit.distance;
+                float angle = Mathf.Abs(Vector3.Angle(hit.normal, cameraForward));
+                if (angle > 90.0f) angle = 180.0f - angle;
+                float factor = 1.0f - angle / 90.0f;
+                entry.angleFactor = Mathf.Pow(factor, 1.0f / cameraAvoidanceNormalFactorReversed);
 
-            float d = hit.distance * factorSqrt;
-
-            cameraRayDistanceDebug = Mathf.Min(cameraRayDistanceDebug, d);
-
-            return d;
+                if (entry.collider.gameObject.CompareTag("Planar"))
+                {
+                    rayEntries.Add(entry);
+                }
+                rayEntries.Add(entry);
+            }
+            foreach (RaycastHit hit in hitsForward)
+            {
+                RayEntry entry;
+                entry.collider = hit.collider;
+                entry.small = hit.collider.gameObject.CompareTag("Small");
+                entry.distance = range - hit.distance;
+                float angle = Mathf.Abs(Vector3.Angle(hit.normal, cameraForward));
+                if (angle > 90.0f) angle = 180.0f - angle;
+                float factor = 1.0f - angle / 90.0f;
+                entry.angleFactor = Mathf.Pow(factor, 1.0f / cameraAvoidanceNormalFactorReversed);
+                if (entry.collider.gameObject.CompareTag("Planar"))
+                {
+                    rayEntries.Add(entry);
+                }
+                rayEntries.Add(entry);
+            }
         }
 
-        return float.MaxValue;
+        rayEntries.Sort(delegate (RayEntry a, RayEntry b)
+        {
+            return a.distance.CompareTo(b.distance);
+        });
+
+        List<Collider> objectStuckColliders = new List<Collider>();
+        {
+            foreach (RaycastHit hit in hitsBackwards)
+            {
+                foreach (RaycastHit hit2 in hitsObjectForward)
+                {
+                    if (hit.collider == hit2.collider)
+                    {
+                        objectStuckColliders.Add(hit.collider);
+                    }
+                }
+            }
+        }
+
+        List<Collider> currentColliders = new List<Collider>();
+        List<SnapEntry> snapEntries = new List<SnapEntry>();
+
+        float start = float.MaxValue;
+        float snap = float.MaxValue;
+        bool stuck = false;
+
+        for (int i = 0; i < rayEntries.Count; ++i)
+        {
+            RayEntry entry = rayEntries[i];
+            if (objectStuckColliders.Contains(entry.collider)) continue;
+
+            if (currentColliders.Contains(entry.collider))
+            {
+                currentColliders.Remove(entry.collider);
+            }
+            else
+            {
+                currentColliders.Add(entry.collider);
+            }
+
+            if (currentColliders.Count == 0)
+            {
+                // Finished segment
+                SnapEntry snapEntry = new SnapEntry();
+                snapEntry.distanceStart = start - cameraAvoidanceOffset * entry.angleFactor;
+                snapEntry.distanceEnd = entry.distance + cameraAvoidanceOffset * entry.angleFactor;
+                if (cameraDistance >= snapEntry.distanceStart &&
+                    cameraDistance <= snapEntry.distanceEnd)
+                {
+                    stuck = true;
+                }
+                snapEntries.Add(snapEntry);
+                start = float.MaxValue;
+            }
+            else
+            {
+                // Started segment
+                if(start == float.MaxValue)
+                {
+                    start = entry.distance;
+                }
+            }
+
+            if (!entry.collider.gameObject.CompareTag("Small") &&
+                !entry.collider.gameObject.CompareTag("Player"))
+            {
+                snap = Mathf.Min(snap, entry.distance);
+            }
+        }
+
+        /*
+        // Widen snap entries by cameraAvoidanceOffset
+        for(int i = 0; i < snapEntries.Count; ++i)
+        {
+            snapEntries[i].distanceStart -= cameraAvoidanceOffset;
+            snapEntries[i].distanceEnd += cameraAvoidanceOffset;
+        }
+        */
+
+        // Join touching segments
+        for (int i = 0; i < snapEntries.Count - 1; ++i)
+        {
+            if(snapEntries[i].distanceEnd >=
+                snapEntries[i+1].distanceStart)
+            {
+                snapEntries[i].distanceEnd = snapEntries[i + 1].distanceEnd;
+                snapEntries.RemoveAt(i + 1);
+            }
+        }
+
+        if (!stuck &&
+            cameraDistance <= snap)
+        {
+            outDistance = cameraDistance;
+            outSnap = snap;
+        }
+        else // Need to find an extremum, that is both below snap and closest to cameraDistance
+        {
+            float distanceUp = float.MaxValue;
+            float distanceDown = float.MaxValue;
+            for (int i = 0; i < snapEntries.Count; ++i)
+            {
+                SnapEntry entry = snapEntries[i];
+                if (cameraDistance <= entry.distanceStart &&
+                    entry.distanceStart <= snap)
+                {
+                    distanceUp = entry.distanceStart;
+                    break;
+                }
+                if (cameraDistance <= entry.distanceEnd &&
+                    entry.distanceEnd <= snap)
+                {
+                    distanceUp = entry.distanceEnd;
+                    break;
+                }
+            }
+
+            for (int i = snapEntries.Count - 1; i >= 0; --i)
+            {
+                SnapEntry entry = snapEntries[i];
+                if (cameraDistance >= entry.distanceStart &&
+                    entry.distanceStart <= snap)
+                {
+                    distanceDown = entry.distanceStart;
+                    break;
+                }
+                if (cameraDistance >= entry.distanceEnd &&
+                    entry.distanceEnd <= snap)
+                {
+                    distanceDown = entry.distanceEnd;
+                    break;
+                }
+            }
+
+            /*
+            float deltaUp = Mathf.Abs(distanceUp - cameraDistance);
+            float deltaDown = Mathf.Abs(distanceDown - cameraDistance);
+            if (deltaUp < deltaDown)
+            {
+                distance = distanceUp;
+            }
+            else
+            {
+                distance = distanceDown;
+            }
+            */
+            if(distanceDown != float.MaxValue)
+            {
+                outDistance = distanceDown;
+                outSnap = snap;
+            } else
+            {
+                outDistance = distanceUp;
+                outSnap = snap;
+            }
+        }
+
     }
 
     void Update()
     {
-        cameraRayDistanceDebug = float.MaxValue;
         float tLinear = 1.0f;
 
         if (cameraState != cameraStateNext)
@@ -302,7 +528,7 @@ public class SmartController : MonoBehaviour
         float desiredHeight = 0.0f;
         Vector3 desiredPosition = Vector3.zero;
         Quaternion desiredRotation = Quaternion.identity;
-        
+
         inputDeltaX = Input.GetAxis("Mouse X") * mouseHorizontalSensitivity;
         inputDeltaY = Input.GetAxis("Mouse Y") * mouseVerticalSensitivity;
 
@@ -383,18 +609,22 @@ public class SmartController : MonoBehaviour
 
         // Avoid clipping through simple forward directed camera ray hittest
         {
+            float minDistance = 0.0f;
             Vector3 fromCamera = Vector3.zero;
             switch (cameraStateNext)
             {
                 case CameraState.Action:
                     fromCamera = -currentPosition;
+                    minDistance = actionMinimumDistance;
                     break;
                 case CameraState.Shoot:
                     // This is not correct without
                     // + Quaternion.Euler(-shootPitch, playerTransform.eulerAngles.y, 0.0f) * (Vector3.right * shootRightOffset + Vector3.forward * -shootBackwardsOffset);
                     // part, but without it the visuals look smoother,
                     // until serious glitches occur, keep it commented
-                    fromCamera = -currentPosition; // + Quaternion.Euler(-shootPitch, playerTransform.eulerAngles.y, 0.0f) * (Vector3.right * shootRightOffset + Vector3.forward * -shootBackwardsOffset);
+                    fromCamera = -currentPosition + Quaternion.Euler(-shootPitch, playerTransform.eulerAngles.y, 0.0f) * (Vector3.right * shootRightOffset + Vector3.forward * -shootBackwardsOffset);
+
+                    minDistance = shootMinimumDistance;
                     break;
                 case CameraState.Tactics:
                     fromCamera = -currentPosition;
@@ -412,13 +642,42 @@ public class SmartController : MonoBehaviour
 
             float baseDistance = toCamera.magnitude;
             float distance = baseDistance;
-            distance = Mathf.Min(distance, FilterDistance(new Ray(target, dir1), baseDistance, forward));
-            distance = Mathf.Min(distance, FilterDistance(new Ray(target, dir2), baseDistance, forward));
-            distance = Mathf.Min(distance, FilterDistance(new Ray(target, dir3), baseDistance, forward));
-            distance = Mathf.Min(distance, FilterDistance(new Ray(target, dir4), baseDistance, forward));
+
+            float d1, s1;
+            float d2, s2;
+            float d3, s3;
+            float d4, s4;
+            ClipAnalyze(out d1, out s1, target, dir1, baseDistance, forward);
+            ClipAnalyze(out d2, out s2, target, dir2, baseDistance, forward);
+            ClipAnalyze(out d3, out s3, target, dir3, baseDistance, forward);
+            ClipAnalyze(out d4, out s4, target, dir4, baseDistance, forward);
+
+            distance = Mathf.Min(distance, d1);
+            distance = Mathf.Min(distance, d2);
+            distance = Mathf.Min(distance, d3);
+            distance = Mathf.Min(distance, d4);
+
+            float snap = s1;
+            snap = Mathf.Min(snap, s2);
+            snap = Mathf.Min(snap, s3);
+            snap = Mathf.Min(snap, s4);
 
             float compensation = baseDistance - distance;
-            finalPosition += forward * compensation;
+            float snapCompensation = baseDistance - snap;
+
+            if(cameraAvoidanceInstantSnap)
+            {
+                if (avoidanceOffset < snapCompensation)
+                {
+                    avoidanceOffset = snapCompensation;
+                }
+            }
+
+            avoidanceOffset = Mathf.MoveTowards(avoidanceOffset, compensation, cameraAvoidanceSpeed * Time.deltaTime);
+
+            avoidanceOffset = Mathf.Min(avoidanceOffset, baseDistance - minDistance);
+
+            finalPosition += forward * avoidanceOffset;
         }
 
         cameraTransform.position = finalPosition + target;
