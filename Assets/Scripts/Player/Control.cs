@@ -166,6 +166,7 @@ public class Control : MonoBehaviour {
 
     private void LateUpdate()
     {
+        /*
         if (!GetComponent<SmartController>().isActiveAndEnabled)
         {
             Camera.main.transform.position = Camera.main.transform.position + (PlayerCharacter.position - targetPosition);
@@ -178,5 +179,6 @@ public class Control : MonoBehaviour {
 
             targetPosition = PlayerCharacter.position;
         }
+        */
     }
 }
