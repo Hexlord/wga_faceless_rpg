@@ -313,7 +313,7 @@ public class SmartController : MonoBehaviour
 
         float range = 100.0f;
 
-        int mask = ~(LayerMask.NameToLayer("Environment"));
+        int mask = (1 << LayerMask.NameToLayer("Environment"));
 
         RaycastHit[] hitsForward = Physics.RaycastAll(new Ray(cameraObject + rayDirection * range, -rayDirection), range, mask);
         RaycastHit[] hitsBackwards = Physics.RaycastAll(new Ray(cameraObject, rayDirection), range, mask);
