@@ -91,7 +91,7 @@ public class Character : BaseCharacter {
                     SwordParticles.SetActive(false);
                     MaskParticles.SetActive(true);
                     currentState = CharacterState.MagicStance;
-                    GetComponent<SmartController>().SwitchState(SmartController.CameraState.Shoot);
+                    // GetComponent<SmartController>().SwitchState(SmartController.CameraState.Shoot);
                     GameObject.Find("Crosshair").GetComponent<CanvasRenderer>().SetAlpha(1);
                     SwitchPhysicalLayer("Magical");
                     gameObject.layer = LayerMask.NameToLayer("Magical");
@@ -135,6 +135,7 @@ public class Character : BaseCharacter {
 
     public void SwingSword()
     {
+        GetComponent<SmartController>().TriggerPlayerAutoRotation();
         anim.SetTrigger("Swing");
         playerSword.TriggerStricking();
     }

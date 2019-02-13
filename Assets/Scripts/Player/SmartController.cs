@@ -10,11 +10,8 @@ using UnityEngine;
  *  2. After X angle becoming 90+ degree rotate character to match aim continuously (aim can still move during character rotation) until reaching the aim
  *  3. After any movement rotate character to match aim
  *  
- *  Camera rotation is respecting configurable speed limit (protection from dizziness)
- *  Camera is ray casting from character to determine safe distance (protection from clipping)
+ *  Camera uses ray casting to determine 
  * 
- * !NB!
- * Please use SwitchState(newState) to switch state!!!
  * 
  */
 public class SmartController : MonoBehaviour
@@ -77,8 +74,12 @@ public class SmartController : MonoBehaviour
     [Range(0.0f, 10.0f)]
     public float actionHeight = 1.7f;
 
-    [Tooltip("Action camera distance")]
+    [Tooltip("Action camera additive right offset")]
     [Range(0.0f, 10.0f)]
+    public float actionRightOffset = 0.0f;
+
+    [Tooltip("Action camera distance")]
+    [Range(0.0f, 20.0f)]
     public float actionDistance = 7.0f;
 
     [Tooltip("Action camera pitch limit")]
@@ -90,7 +91,7 @@ public class SmartController : MonoBehaviour
 
     [Tooltip("Action camera pitch on state switch")]
     [Range(-45.0f, 45.0f)]
-    public float actionInitialPitch = -30.0f;
+    public float actionInitialPitch = -15.0f;
 
     [Header("Camera State Settings: Shoot")]
 
@@ -103,11 +104,11 @@ public class SmartController : MonoBehaviour
     public float shootHeight = 2.17f;
 
     [Tooltip("Shoot camera backwards offset")]
-    [Range(0.0f, 1.0f)]
+    [Range(0.0f, 5.0f)]
     public float shootBackwardsOffset = 0.3f;
 
     [Tooltip("Shoot camera right offset")]
-    [Range(0.0f, 2.0f)]
+    [Range(0.0f, 5.0f)]
     public float shootRightOffset = 0.777f;
 
     [Tooltip("Shoot camera pitch limit")]
@@ -220,6 +221,11 @@ public class SmartController : MonoBehaviour
 
         camera = GameObject.Find("Main Camera");
         cameraTransform = camera.GetComponent<Transform>();
+
+        actionYaw = playerTransform.eulerAngles.y;
+        actionPitch = actionInitialPitch;
+
+        shootPitch = shootInitialPitch;
 
     }
 
@@ -400,20 +406,26 @@ public class SmartController : MonoBehaviour
             if (currentColliders.Count == 0)
             {
                 // Finished segment
-                SnapEntry snapEntry = new SnapEntry();
-                snapEntry.distanceStart = start - cameraAvoidanceOffset * entry.angleFactor;
-                snapEntry.distanceEnd = entry.distance + cameraAvoidanceOffset * entry.angleFactor;
+                SnapEntry snapEntry = new SnapEntry
+                {
+
+                    // Widen snap entries by cameraAvoidanceOffset
+                    distanceStart = start - cameraAvoidanceOffset * entry.angleFactor,
+                    distanceEnd = entry.distance + cameraAvoidanceOffset * entry.angleFactor
+                };
+
                 if (cameraDistance >= snapEntry.distanceStart &&
                     cameraDistance <= snapEntry.distanceEnd)
                 {
                     stuck = true;
                 }
+
                 snapEntries.Add(snapEntry);
                 start = float.MaxValue;
             }
             else
             {
-                // Started segment
+                // Started segment (first distance is the lowest one, keep it)
                 if(start == float.MaxValue)
                 {
                     start = entry.distance;
@@ -426,15 +438,6 @@ public class SmartController : MonoBehaviour
                 snap = Mathf.Min(snap, entry.distance);
             }
         }
-
-        /*
-        // Widen snap entries by cameraAvoidanceOffset
-        for(int i = 0; i < snapEntries.Count; ++i)
-        {
-            snapEntries[i].distanceStart -= cameraAvoidanceOffset;
-            snapEntries[i].distanceEnd += cameraAvoidanceOffset;
-        }
-        */
 
         // Join touching segments
         for (int i = 0; i < snapEntries.Count - 1; ++i)
@@ -453,7 +456,7 @@ public class SmartController : MonoBehaviour
             outDistance = cameraDistance;
             outSnap = snap;
         }
-        else // Need to find an extremum, that is both below snap and closest to cameraDistance
+        else // Need to find an extremum, which is both below snap and closest to cameraDistance
         {
             float distanceUp = float.MaxValue;
             float distanceDown = float.MaxValue;
@@ -492,6 +495,9 @@ public class SmartController : MonoBehaviour
             }
 
             /*
+             * Shortest snap is disabled for inconsistency with multiple ray result accumulation 
+             * (both avg and min/max lead to poor results)
+            // Shortest snap
             float deltaUp = Mathf.Abs(distanceUp - cameraDistance);
             float deltaDown = Mathf.Abs(distanceDown - cameraDistance);
             if (deltaUp < deltaDown)
@@ -503,6 +509,8 @@ public class SmartController : MonoBehaviour
                 distance = distanceDown;
             }
             */
+
+            // Closest snap
             if(distanceDown != float.MaxValue)
             {
                 outDistance = distanceDown;
@@ -528,7 +536,8 @@ public class SmartController : MonoBehaviour
         float desiredHeight = 0.0f;
         Vector3 desiredPosition = Vector3.zero;
         Quaternion desiredRotation = Quaternion.identity;
-
+        float desiredDistance = 0.0f;
+        float minDistance = 0.0f;
         inputDeltaX = Input.GetAxis("Mouse X") * mouseHorizontalSensitivity;
         inputDeltaY = Input.GetAxis("Mouse Y") * mouseVerticalSensitivity;
 
@@ -539,18 +548,26 @@ public class SmartController : MonoBehaviour
             case CameraState.Action:
                 desiredHeight = actionHeight;
 
-                desiredPosition = Quaternion.Euler(-actionPitch, actionYaw, 0.0f) * (Vector3.forward * -actionDistance);
+                desiredPosition = Quaternion.Euler(-actionPitch, actionYaw, 0.0f) * (Vector3.right * actionRightOffset + Vector3.forward * -actionDistance);
                 desiredRotation = Quaternion.Euler(-actionPitch, actionYaw, 0.0f);
+
+                desiredDistance = actionDistance;
+                minDistance = actionMinimumDistance;
                 break;
             case CameraState.Shoot:
                 desiredHeight = shootHeight;
                 desiredPosition = Quaternion.Euler(-shootPitch, playerTransform.eulerAngles.y, 0.0f) * (Vector3.right * shootRightOffset + Vector3.forward * -shootBackwardsOffset);
                 desiredRotation = Quaternion.Euler(-shootPitch, playerTransform.eulerAngles.y, 0.0f);
+
+                desiredDistance = shootBackwardsOffset;
+                minDistance = shootMinimumDistance;
                 break;
             case CameraState.Tactics:
                 desiredHeight = tacticsHeight;
                 desiredPosition = Quaternion.Euler(tacticsPitch, playerTransform.eulerAngles.y, 0.0f) * (Vector3.forward * -tacticsDistance);
                 desiredRotation = Quaternion.Euler(tacticsPitch, playerTransform.eulerAngles.y, 0.0f);
+
+                desiredDistance = tacticsDistance;
                 break;
         }
 
@@ -607,50 +624,41 @@ public class SmartController : MonoBehaviour
 
         Vector3 finalPosition = currentPosition;
 
+        /*
+                desiredPosition = Quaternion.Euler(-actionPitch, actionYaw, 0.0f) * (Vector3.right * actionRightOffset + Vector3.forward * -actionDistance);
+                desiredRotation = Quaternion.Euler(-actionPitch, actionYaw, 0.0f);
+                break;
+            case CameraState.Shoot:
+                desiredHeight = shootHeight;
+                desiredPosition = Quaternion.Euler(-shootPitch, playerTransform.eulerAngles.y, 0.0f) * (Vector3.right * shootRightOffset + Vector3.forward * -shootBackwardsOffset);
+                desiredRotation = Quaternion.Euler(-shootPitch, playerTransform.eulerAngles.y, 0.0f);
+                break;
+            case CameraState.Tactics:
+                desiredHeight = tacticsHeight;
+                desiredPosition = Quaternion.Euler(tacticsPitch, playerTransform.eulerAngles.y, 0.0f) * (Vector3.forward * -tacticsDistance);
+                desiredRotation = Quaternion.Euler(tacticsPitch, playerTransform.eulerAngles.y, 0.0f);
+         */
+
         // Avoid clipping through simple forward directed camera ray hittest
         {
-            float minDistance = 0.0f;
-            Vector3 fromCamera = Vector3.zero;
-            switch (cameraStateNext)
-            {
-                case CameraState.Action:
-                    fromCamera = -currentPosition;
-                    minDistance = actionMinimumDistance;
-                    break;
-                case CameraState.Shoot:
-                    // This is not correct without
-                    // + Quaternion.Euler(-shootPitch, playerTransform.eulerAngles.y, 0.0f) * (Vector3.right * shootRightOffset + Vector3.forward * -shootBackwardsOffset);
-                    // part, but without it the visuals look smoother,
-                    // until serious glitches occur, keep it commented
-                    fromCamera = -currentPosition + Quaternion.Euler(-shootPitch, playerTransform.eulerAngles.y, 0.0f) * (Vector3.right * shootRightOffset + Vector3.forward * -shootBackwardsOffset);
-
-                    minDistance = shootMinimumDistance;
-                    break;
-                case CameraState.Tactics:
-                    fromCamera = -currentPosition;
-                    break;
-            }
-            Vector3 toCamera = -fromCamera;
-
-            Vector3 forward = fromCamera.normalized;
-            Vector3 backwards = toCamera.normalized;
+            Vector3 forward = desiredRotation * Vector3.forward;
+            Vector3 backwards = -forward;
 
             Vector3 dir1 = Quaternion.Euler(cameraAvoidanceSmoothAngle, 0.0f, 0.0f) * backwards;
             Vector3 dir2 = Quaternion.Euler(-cameraAvoidanceSmoothAngle, 0.0f, 0.0f) * backwards;
             Vector3 dir3 = Quaternion.Euler(0.0f, cameraAvoidanceSmoothAngle, 0.0f) * backwards;
             Vector3 dir4 = Quaternion.Euler(0.0f, -cameraAvoidanceSmoothAngle, 0.0f) * backwards;
 
-            float baseDistance = toCamera.magnitude;
-            float distance = baseDistance;
+            float distance = desiredDistance;
 
             float d1, s1;
             float d2, s2;
             float d3, s3;
             float d4, s4;
-            ClipAnalyze(out d1, out s1, target, dir1, baseDistance, forward);
-            ClipAnalyze(out d2, out s2, target, dir2, baseDistance, forward);
-            ClipAnalyze(out d3, out s3, target, dir3, baseDistance, forward);
-            ClipAnalyze(out d4, out s4, target, dir4, baseDistance, forward);
+            ClipAnalyze(out d1, out s1, target, dir1, desiredDistance, forward);
+            ClipAnalyze(out d2, out s2, target, dir2, desiredDistance, forward);
+            ClipAnalyze(out d3, out s3, target, dir3, desiredDistance, forward);
+            ClipAnalyze(out d4, out s4, target, dir4, desiredDistance, forward);
 
             distance = Mathf.Min(distance, d1);
             distance = Mathf.Min(distance, d2);
@@ -662,8 +670,8 @@ public class SmartController : MonoBehaviour
             snap = Mathf.Min(snap, s3);
             snap = Mathf.Min(snap, s4);
 
-            float compensation = baseDistance - distance;
-            float snapCompensation = baseDistance - snap;
+            float compensation = desiredDistance - distance;
+            float snapCompensation = desiredDistance - snap;
 
             if(cameraAvoidanceInstantSnap)
             {
@@ -675,7 +683,7 @@ public class SmartController : MonoBehaviour
 
             avoidanceOffset = Mathf.MoveTowards(avoidanceOffset, compensation, cameraAvoidanceSpeed * Time.deltaTime);
 
-            avoidanceOffset = Mathf.Min(avoidanceOffset, baseDistance - minDistance);
+            avoidanceOffset = Mathf.Min(avoidanceOffset, desiredDistance - minDistance);
 
             finalPosition += forward * avoidanceOffset;
         }
@@ -703,6 +711,10 @@ public class SmartController : MonoBehaviour
         playerAutoRotateActive = true;
     }
 
+    public CameraState GetState()
+    {
+        return cameraStateNext;
+    }
     public void SwitchState(CameraState state)
     {
         if (cameraStateNext != state)

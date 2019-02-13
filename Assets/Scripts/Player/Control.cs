@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Control : MonoBehaviour {
+public class Control : MonoBehaviour
+{
 
     //public variables
     public float speed = 10.0f;
@@ -47,38 +48,63 @@ public class Control : MonoBehaviour {
             Direction += CamDirectionRight * Input.GetAxis("Horizontal") * speed;
             Direction += CamDirectionForward * Input.GetAxis("Vertical") * speed * ((character.IsSprinting) ? sprintModifier : 1.0f);
             Direction += (!charControl.isGrounded) ? new Vector3(0, Physics.gravity.y * mass, 0) : Vector3.zero;
+            if (character.Status == Character.CharacterState.MagicStance)
+            {
+
+                if (Input.GetButtonDown("Aim"))
+                {
+                    if (GetComponent<SmartController>().GetState() == SmartController.CameraState.Action)
+                    {
+                        GetComponent<SmartController>().SwitchState(SmartController.CameraState.Shoot);
+                    }
+                    else
+                    {
+                        GetComponent<SmartController>().SwitchState(SmartController.CameraState.Action);
+                    }
+                }
+
+
+                GetComponent<SmartController>().TriggerPlayerAutoRotation();
+            }
+
 
             if (Input.GetButtonDown("Attack"))
             {
-                if((character.Status == Character.CharacterState.SwordStance)  && !defenseSystem.IsBlocking)
+                if (character.Status == Character.CharacterState.SheathedSword)
+                {
+                    character.DrawSword();
+                }
+                if ((character.Status == Character.CharacterState.SwordStance) && !defenseSystem.IsBlocking)
                 {
                     character.SwingSword();
                 }
-                if(character.Status == Character.CharacterState.MagicStance)
+                if (character.Status == Character.CharacterState.MagicStance)
                 {
                     character.ShootProjectile();
                 }
             }
 
             if (Input.GetButtonDown("SwitchState"))
-            {            
+            {
                 character.SwapPlayerStatus();
             }
 
-            if (character.Status == Character.CharacterState.SwordStance)
+            if (Input.GetButtonDown("Block"))
             {
-                if (Input.GetButtonDown("Block"))
+                if (character.Status == Character.CharacterState.SwordStance)
                 {
                     defenseSystem.IsBlocking = true;
                 }
-
-                if (Input.GetButtonUp("Block"))
-                {
-                    defenseSystem.IsBlocking = false;
-                }
             }
 
-            if ((Input.GetButtonDown("Block")) && (character.Status == Character.CharacterState.MagicStance) && (Direction != Vector3.zero))
+            if (Input.GetButtonUp("Block"))
+            {
+                defenseSystem.IsBlocking = false;
+            }
+
+
+
+            if ((Input.GetButtonDown("Sprint")) && (character.Status == Character.CharacterState.MagicStance) && (Direction != Vector3.zero))
             {
                 defenseSystem.InitiateDash(Direction);
             }
@@ -104,7 +130,7 @@ public class Control : MonoBehaviour {
         horizontalAngle = Input.GetAxis("Mouse X") * sensitivity * Time.deltaTime;
         verticalAngle = Input.GetAxis("Mouse Y") * sensitivity * Time.deltaTime;
 
-        if(Input.GetButtonDown("Sprint"))
+        if (Input.GetButtonDown("Sprint"))
         {
             //Branches for states MagicStance and SwordStance are empty for future changes to sprinting logic;
             switch (character.Status)
@@ -123,7 +149,7 @@ public class Control : MonoBehaviour {
                         break;
                     }
             }
-            
+
         }
 
         if (Input.GetButtonUp("Sprint"))
@@ -156,12 +182,12 @@ public class Control : MonoBehaviour {
     private void FixedUpdate()
     {
 
-            if (Direction != Vector3.zero)
-            {
-                charControl.Move(Direction * Time.deltaTime);
-                GetComponent<SmartController>().TriggerPlayerAutoRotation();
-                previousRotation = transform.rotation;
-            }
+        if (Direction != Vector3.zero)
+        {
+            charControl.Move(Direction * Time.deltaTime);
+            GetComponent<SmartController>().TriggerPlayerAutoRotation();
+            previousRotation = transform.rotation;
+        }
     }
 
     private void LateUpdate()
