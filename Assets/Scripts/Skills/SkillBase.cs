@@ -15,18 +15,24 @@ using UnityEngine;
  */
 public class SkillBase
 {
-    public SkillBase(string name, bool channeling)
+    public SkillBase(string name, bool channeling, float cooldawn)
     {
         this.name = name;
         this.channeling = channeling;
+        this.cooldawn = cooldawn;
+        this.cooldawnTimer = 0.0f;
+    }
+
+    public void Update(float delta)
+    {
+        cooldawnTimer -= delta;
     }
     
     /*
      * Called before casting starts
      */
-    public virtual void Prepare(GameObject caster)
+    public virtual void PrepareEvent(GameObject caster)
     {
-
     }
 
     /*
@@ -34,7 +40,15 @@ public class SkillBase
      * length is begin animation length
      * 
      */
-    public virtual void Start(GameObject caster, float delta, float time, float length)
+    public virtual void StartUpdate(GameObject caster, float delta, float time, float length)
+    {
+
+    }
+
+    /*
+     * 
+     */
+    public virtual void CastEvent(GameObject caster)
     {
 
     }
@@ -44,32 +58,20 @@ public class SkillBase
      * length is begin animation length
      * 
      */
-    public virtual void Cast(GameObject caster)
+    public virtual void ChannelUpdate(GameObject caster, float delta, float time, float length)
     {
-
-    }
-
-    /*
-     * time is how much time passed since channel start
-     * length is begin animation length
-     * 
-     * Returning false ends the channeling
-     */
-    public virtual bool Channel(GameObject caster, float delta, float time, float length)
-    {
-        return false;
     }
 
     /*
      * time is how much time passed since cast end
      * length is return animation length
      */
-    public virtual void Return(GameObject caster, float delta, float time, float length)
+    public virtual void EndUpdate(GameObject caster, float delta, float time, float length)
     {
 
     }
 
-    public virtual void Interrupt(GameObject caster)
+    public virtual void InterruptEvent(GameObject caster)
     {
 
     }
@@ -78,8 +80,19 @@ public class SkillBase
 
     public bool Channeling { get { return channeling; } }
 
+    public bool OnCooldawn {  get { return cooldawnTimer > 0; } }
+
+    protected void PutOnCooldawn()
+    {
+        cooldawnTimer = cooldawn;
+    }
+
     private readonly string name;
     private readonly bool channeling;
+    private readonly float cooldawn;
+    private float cooldawnTimer;
+
+
 
 
 }

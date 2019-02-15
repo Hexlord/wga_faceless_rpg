@@ -14089,6 +14089,7 @@ GameObject:
   - component: {fileID: 1713741873}
   - component: {fileID: 1713741874}
   - component: {fileID: 1713741872}
+  - component: {fileID: 1713741875}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -14104,7 +14105,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1713741865}
   m_LocalRotation: {x: -0, y: 0.98768836, z: -0, w: 0.15643449}
-  m_LocalPosition: {x: -6.619352, y: 0.2799999, z: -0.14424759}
+  m_LocalPosition: {x: -6.478, y: 0.2799999, z: -0.098}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 984421701}
@@ -14299,6 +14300,37 @@ MonoBehaviour:
   dashRange: 10
   dashTime: 0.2
   dashDirection: {x: 0, y: 0, z: 0}
+--- !u!114 &1713741875
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1713741865}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c6767e809cdbe3d4c9436602855554b6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  state: 0
+  skillAnimationStart: skillStart
+  skillAnimationEnd: skillEnd
+  channelAnimationStart: channelStart
+  channelAnimationUpdate: channelUpdate
+  channelAnimationEnd: channelEnd
+  defaultAnimation: default
+  skillAnimationStartTrigger: skillStartTrigger
+  channelAnimationStartTrigger: channelStartTrigger
+  interruptTrigger: interruptTrigger
+  interruptInstantTrigger: interruptInstantTrigger
+  preciseEnding: 0
+  preciseChanneling: 1
+  useAnimationTime: 0
+  skillAnimationStartLength: 0
+  skillAnimationEndLength: 0
+  channelAnimationStartLength: 0
+  channelAnimationUpdateLength: 0
+  channelAnimationEndLength: 0
 --- !u!224 &1819486266 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 525471597236951255, guid: 7638d1f3aaf17fa4880c3868817b5f63,

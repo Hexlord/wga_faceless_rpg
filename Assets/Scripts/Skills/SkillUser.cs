@@ -42,9 +42,9 @@ public class SkillUser : MonoBehaviour
     public string skillAnimationEnd = "skillEnd";
 
     public string channelAnimationStart = "channelStart";
-    public string channelAnimationUpdate = "channelUpdate"; 
+    public string channelAnimationUpdate = "channelUpdate";
     public string channelAnimationEnd = "channelEnd";
-    
+
     public string defaultAnimation = "default";
 
     public string skillAnimationStartTrigger = "skillStartTrigger";
@@ -54,6 +54,10 @@ public class SkillUser : MonoBehaviour
 
     public string interruptTrigger = "interruptTrigger";
     public string interruptInstantTrigger = "interruptInstantTrigger";
+
+    public bool preciseEnding = false;
+    public bool preciseChanneling = false;
+    public bool useAnimationTime = false;
 
     public bool Casting
     {
@@ -70,10 +74,11 @@ public class SkillUser : MonoBehaviour
     public float channelAnimationEndLength = 0.0f;
 
 
-    private readonly ICollection<SkillBase> skills = new HashSet<SkillBase>();
+    private readonly IList<SkillBase> skills = new List<SkillBase>();
     private SkillBase activeSkill = null;
 
-    private float timer = 0.0f;
+    private float stateTimer = 0.0f;
+    private float time = 0.0f;
 
     // Cache
 
@@ -81,7 +86,7 @@ public class SkillUser : MonoBehaviour
 
     private void LoadAnimationLength(out float result, string name)
     {
-        RuntimeAnimatorController ac = animator.runtimeAnimatorController; 
+        RuntimeAnimatorController ac = animator.runtimeAnimatorController;
         for (int i = 0; i < ac.animationClips.Length; i++)
         {
             if (ac.animationClips[i].name == name)
@@ -92,8 +97,8 @@ public class SkillUser : MonoBehaviour
         }
 
         result = 0.0f;
-        Debug.LogError("Animation " + name + " not found!");
-        Debug.Assert(false);
+        Debug.LogWarning("Animation " + name + " not found!");
+        // Debug.Assert(false);
     }
 
     void Start()
@@ -109,99 +114,190 @@ public class SkillUser : MonoBehaviour
         LoadAnimationLength(out channelAnimationUpdateLength, channelAnimationUpdate);
         LoadAnimationLength(out channelAnimationEndLength, channelAnimationEnd);
 
-        skills.Add(new SkillFireball());
+        skills.Add(new SkillBlackBall());
     }
 
     private void SwitchState(SkillUserState state)
     {
-        timer = 0.0f;
+        stateTimer = 0.0f;
         this.state = state;
     }
 
+    /*
+     * To support missing animations and increase time precision by 1 frame,
+     * skill callbacks are called just after switch state, before switch-case analyzes
+     */
     void FixedUpdate()
     {
-        string clip = animator.GetCurrentAnimatorClipInfo(0)[0].clip.name;
+        foreach (SkillBase skill in skills)
+        {
+            skill.Update(Time.fixedDeltaTime);
+        }
+
+        AnimatorClipInfo info = animator.GetCurrentAnimatorClipInfo(0)[0];
+        AnimatorStateInfo animState = animator.GetCurrentAnimatorStateInfo(0);
+        AnimationClip clip = info.clip;
+        string clipName = clip.name;
+        time = useAnimationTime ? clip.length * animState.normalizedTime : stateTimer;
+
+        bool isDefaultClip = clipName == defaultAnimation;
+        isDefaultClip = true;
 
         switch (state)
         {
             case SkillUserState.None:
                 break;
             case SkillUserState.SkillStart:
-                if(clip == skillAnimationEnd)
+                if (clipName == skillAnimationStart)
                 {
+                    activeSkill.StartUpdate(gameObject, Time.fixedDeltaTime, time, skillAnimationStartLength);
+                }
+                else if (clipName == skillAnimationEnd)
+                {
+                    if (preciseEnding)
+                    {
+                        activeSkill.StartUpdate(gameObject, Time.fixedDeltaTime, skillAnimationStartLength, skillAnimationStartLength);
+                    }
                     SwitchState(SkillUserState.SkillEnd);
-                    activeSkill.Cast(gameObject);
-                } else if(clip == defaultAnimation)
+                    time = useAnimationTime ? clip.length * animState.normalizedTime : stateTimer;
+                    activeSkill.CastEvent(gameObject);
+                    activeSkill.EndUpdate(gameObject, Time.fixedDeltaTime, time, skillAnimationEndLength);
+                }
+                else if (isDefaultClip)
                 {
+                    if (preciseEnding)
+                    {
+                        activeSkill.StartUpdate(gameObject, Time.fixedDeltaTime, skillAnimationStartLength, skillAnimationStartLength);
+                        activeSkill.EndUpdate(gameObject, Time.fixedDeltaTime, skillAnimationEndLength, skillAnimationEndLength);
+                    }
                     SwitchState(SkillUserState.None);
-                    activeSkill.Cast(gameObject);
+                    activeSkill.CastEvent(gameObject);
                 }
                 break;
             case SkillUserState.SkillEnd:
-                if (clip == defaultAnimation)
+                if (clipName == skillAnimationEnd)
                 {
+                    activeSkill.EndUpdate(gameObject, Time.fixedDeltaTime, time, skillAnimationEndLength);
+                }
+                else if (isDefaultClip)
+                {
+                    if (preciseEnding) activeSkill.EndUpdate(gameObject, Time.fixedDeltaTime, skillAnimationEndLength, skillAnimationEndLength);
+
                     SwitchState(SkillUserState.None);
                 }
                 break;
             case SkillUserState.ChannelStart:
-               if (clip == channelAnimationUpdate)
+                if (clipName == channelAnimationStart)
                 {
+                    activeSkill.StartUpdate(gameObject, Time.fixedDeltaTime, time, channelAnimationStartLength);
+                }
+                else if (clipName == channelAnimationUpdate)
+                {
+                    if (preciseEnding) activeSkill.StartUpdate(gameObject, Time.fixedDeltaTime, channelAnimationStartLength, channelAnimationStartLength);
+
                     SwitchState(SkillUserState.ChannelUpdate);
-                    if(!activeSkill.Channel(gameObject, Time.fixedDeltaTime, timer, channelAnimationUpdateLength))
-                    {
-                        animator.SetTrigger(interruptTrigger);
-                    }
+                    time = useAnimationTime ? clip.length * animState.normalizedTime : stateTimer;
+                    activeSkill.ChannelUpdate(gameObject, Time.fixedDeltaTime, time, channelAnimationUpdateLength);
+
+                }
+                /* only happens due to no channel-loop animation */
+                // Debug.Assert(false);
+                else if (clipName == channelAnimationEnd)
+                {
+                    if (preciseEnding) activeSkill.StartUpdate(gameObject, Time.fixedDeltaTime, channelAnimationStartLength, channelAnimationStartLength);
+                    if (preciseChanneling) activeSkill.ChannelUpdate(gameObject, Time.fixedDeltaTime, channelAnimationUpdateLength, channelAnimationUpdateLength);
+
+                    SwitchState(SkillUserState.ChannelEnd);
+                    time = useAnimationTime ? clip.length * animState.normalizedTime : stateTimer;
+                    activeSkill.EndUpdate(gameObject, Time.fixedDeltaTime, time, channelAnimationEndLength);
+                }
+                else if (isDefaultClip)
+                {
+                    if (preciseEnding) activeSkill.StartUpdate(gameObject, Time.fixedDeltaTime, channelAnimationStartLength, channelAnimationStartLength);
+                    if (preciseChanneling) activeSkill.ChannelUpdate(gameObject, Time.fixedDeltaTime, channelAnimationUpdateLength, channelAnimationUpdateLength);
+                    if (preciseEnding) activeSkill.EndUpdate(gameObject, Time.fixedDeltaTime, channelAnimationEndLength, channelAnimationEndLength);
+
+                    SwitchState(SkillUserState.None);
                 }
                 break;
             case SkillUserState.ChannelUpdate:
-                if (clip == channelAnimationUpdate)
+                if (clipName == channelAnimationUpdate)
                 {
-                    if (!activeSkill.Channel(gameObject, Time.fixedDeltaTime, timer, channelAnimationUpdateLength))
-                    {
-                        animator.SetTrigger(interruptTrigger);
-                    }
+                    activeSkill.ChannelUpdate(gameObject, Time.fixedDeltaTime, time, channelAnimationUpdateLength);
                 }
-                else if (clip == channelAnimationEnd)
+                else if (clipName == channelAnimationEnd)
                 {
+                    if (preciseChanneling) activeSkill.ChannelUpdate(gameObject, Time.fixedDeltaTime, channelAnimationUpdateLength, channelAnimationUpdateLength);
+
                     SwitchState(SkillUserState.ChannelEnd);
+                    time = useAnimationTime ? clip.length * animState.normalizedTime : stateTimer;
+                    activeSkill.EndUpdate(gameObject, Time.fixedDeltaTime, time, channelAnimationEndLength);
+
                 }
-                else if (clip == defaultAnimation)
+                else if (isDefaultClip)
                 {
+                    if (preciseChanneling) activeSkill.ChannelUpdate(gameObject, Time.fixedDeltaTime, channelAnimationUpdateLength, channelAnimationUpdateLength);
+                    if (preciseEnding) activeSkill.EndUpdate(gameObject, Time.fixedDeltaTime, channelAnimationEndLength, channelAnimationEndLength);
+
                     SwitchState(SkillUserState.None);
                 }
                 break;
             case SkillUserState.ChannelEnd:
-                if (clip == defaultAnimation)
+                if (clipName == channelAnimationEnd)
+                {
+                    activeSkill.EndUpdate(gameObject, Time.fixedDeltaTime, time, channelAnimationEndLength);
+                }
+                else if (isDefaultClip)
                 {
                     SwitchState(SkillUserState.None);
                 }
                 break;
         }
+        
+        stateTimer += Time.fixedDeltaTime;
+    }
 
+    private void Update()
+    {
 
-        timer += Time.fixedDeltaTime;
-
+        SkillBase pressedSkill = null;
+        if (Input.GetButtonDown("Skill 1") && skills.Count >= 1)
+        {
+            pressedSkill = skills[0];
+        }
+        if (Input.GetButtonDown("Skill 2") && skills.Count >= 2)
+        {
+            pressedSkill = skills[1];
+        }
+        if(pressedSkill != null)
+        {
+            Cast(pressedSkill.Name);
+        }
     }
 
     public void Cast(string skillName)
     {
         Debug.Assert(!Casting);
 
-        foreach(SkillBase skill in skills)
+        foreach (SkillBase skill in skills)
         {
-            if(skill.Name == skillName)
+            if (skill.Name == skillName)
             {
+                if (skill.OnCooldawn) return;
+
                 activeSkill = skill;
-                activeSkill.Prepare(gameObject);
+                activeSkill.PrepareEvent(gameObject);
                 if (activeSkill.Channeling)
                 {
                     SwitchState(SkillUserState.ChannelStart);
                     animator.SetTrigger(channelAnimationStartTrigger);
+                    activeSkill.StartUpdate(gameObject, Time.fixedDeltaTime, 0.0f, channelAnimationStartLength);
                 }
                 else
                 {
                     SwitchState(SkillUserState.SkillStart);
                     animator.SetTrigger(skillAnimationStartTrigger);
+                    activeSkill.StartUpdate(gameObject, Time.fixedDeltaTime, 0.0f, skillAnimationStartLength);
                 }
 
                 return;
@@ -221,7 +317,7 @@ public class SkillUser : MonoBehaviour
     {
         Debug.Assert(Casting);
 
-        activeSkill.Interrupt(gameObject);
+        activeSkill.InterruptEvent(gameObject);
 
         if (!instant)
         {
@@ -229,7 +325,7 @@ public class SkillUser : MonoBehaviour
             {
                 SwitchState(SkillUserState.SkillEnd);
             }
-            else if(state == SkillUserState.ChannelStart ||
+            else if (state == SkillUserState.ChannelStart ||
                 state == SkillUserState.ChannelUpdate)
             {
                 SwitchState(SkillUserState.ChannelEnd);
@@ -239,15 +335,10 @@ public class SkillUser : MonoBehaviour
         }
         else
         {
-            timer = 0.0f;
+            stateTimer = 0.0f;
             state = SkillUserState.None;
             animator.SetTrigger(interruptInstantTrigger);
         }
-    }
-
-    void OnGUI()
-    {
-        GUI.Label(new Rect(0, 0, 200, 20), "Hello");
     }
 
 }
