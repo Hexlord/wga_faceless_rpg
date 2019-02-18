@@ -4,17 +4,28 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class HealthSystem : MonoBehaviour {
+
+    //Public
+
+    [Header ("Health Settings")]
+    
+    [Tooltip ("The amount of Health Points the object has.")]
     [SerializeField]
     protected float healthPoints = 100.0f;
+
+    [Tooltip("The object respawn after death.")]
     [SerializeField]
     protected bool respawnAfterDeath = true;
 
+    [Tooltip("The UI element which shows an amount of HP that object has.")]
     [SerializeField]
     protected Image Healthbar; 
 
-    Vector3 originalPosition;
+    //Private
+
+    Vector3 originalPosition, originalScale;
     Quaternion originalRotation;
-    Vector3 originalScale;
+
     protected float originalAmountOfHP;
 
 
@@ -26,19 +37,21 @@ public class HealthSystem : MonoBehaviour {
         }
     }
 
-    public void DealDamage(float amount)
+    public virtual void DealDamage(float amount)
     {
         healthPoints -= amount;
-        Debug.Log("Dealt");
+
         if(healthPoints <= 0.0f)
         {
-            Debug.Log("Die");
-            healthPoints = 100.0f;
-            gameObject.GetComponent<BaseCharacter>().Die();
+            
+            if(respawnAfterDeath)
+            {
+                healthPoints = 100.0f;
+                gameObject.GetComponent<BaseCharacter>().ResetPosition();
+            }
         }
 
         Healthbar.fillAmount = healthPoints / originalAmountOfHP;
-
     }
 
     public void RestoreHealthPoints(float amount)

@@ -4,23 +4,45 @@ using UnityEngine;
 
 public class Character : BaseCharacter {
 
-    public Weapon playerSword;
-    public GameObject playerProjectile;
-    public Transform ShootingPoint;
-    
-    public enum CharacterState {SheathedSword, SwordStance, MagicStance};
-    public GameObject SwordParticles, MaskParticles;
-    public float projectileSpeed = 12.0f;
-    public float projectileDamage = 15.0f;
-    public float swordDamage = 25.0f, swordConcentration = 12.5f;
+    //Handles player character behaviour
+    //Public
     public string target;
 
-    GameObject magicProjectile;
-    Vector3 startingPos;
-    Quaternion startingRot;
-    Animator anim;
-    private CharacterState currentState = CharacterState.SheathedSword;
-    bool isSprinting;
+    [Header("Projectile Settings")]
+    public GameObject playerProjectile;
+    public Transform ShootingPoint;
+    public float projectileSpeed = 12.0f;
+    public float projectileDamage = 15.0f;
+
+    [Header ("Sword Settings")]
+    public Weapon playerSword;
+    public float swordDamage = 25.0f;
+    public float swordConcentration = 12.5f;
+
+
+    [Header ("SFX")]
+    public GameObject SwordParticles, MaskParticles;
+
+    //Public enumerations that represent character states. Not using booleans for better code readability.
+    public enum CharacterState {SwordStance, MagicStance};
+    public enum SwordState {SheathedSword, UnsheathedSword};
+
+    //Private
+
+    private Vector3 startingPos;
+    private Quaternion startingRot;
+
+    private Animator anim;
+
+    [Header ("Debug")]
+    [SerializeField]
+    private CharacterState currentCharacterState = CharacterState.SwordStance;
+
+    [SerializeField]
+    private SwordState currentSwordState = SwordState.SheathedSword;
+
+    private GameObject magicProjectile;
+    private bool isSprinting;
 
     public bool IsSprinting
     {
@@ -39,62 +61,70 @@ public class Character : BaseCharacter {
     {
         get
         {
-            return currentState;
+            return currentCharacterState;
         }
     }
 
-	// Use this for initialization
-	void Start ()
+    public SwordState SwordStatus
+    {
+        get
+        {
+            return currentSwordState;
+        }
+    }
+
+    // Use this for initialization
+    void Start ()
     {
         anim = GetComponent<Animator>();
+
         startingPos = transform.position;
         startingRot = transform.rotation;
-        currentState = CharacterState.SheathedSword;
+        currentCharacterState = CharacterState.SwordStance;
+
         SwordParticles.SetActive(false);
         MaskParticles.SetActive(false);
-        playerSword.TargetTag = "Faceless";
+
+        playerSword.TargetTag = target;
         playerSword.Damage = swordDamage;
         playerSword.Concentration = swordConcentration;
 
         GameObject.Find("Crosshair").GetComponent<CanvasRenderer>().SetAlpha(0);
     }
 
-
     private bool isNotified = false;
 
     public void SwapPlayerStatus()
     {
-       switch (currentState)
+       switch (currentCharacterState)
        {
-            case CharacterState.SheathedSword:
-                {
-                    DrawSword();
-                    //currentState = CharacterState.MagicStance;
-                    GetComponent<SmartController>().SwitchState(SmartController.CameraState.Action);
-                    GameObject.Find("Crosshair").GetComponent<CanvasRenderer>().SetAlpha(0);
-                    //gameObject.layer = LayerMask.NameToLayer("Physical");
-                    break;
-                }
             case CharacterState.MagicStance:
                 {
-                    MaskParticles.SetActive(false);
-                    SwordParticles.SetActive(true);
-                    currentState = CharacterState.SwordStance;
+                    currentCharacterState = CharacterState.SwordStance;
+                    if (currentSwordState == SwordState.UnsheathedSword)
+                    {
+                        MaskParticles.SetActive(false);
+                        SwordParticles.SetActive(true);
+                    }
+
                     GetComponent<SmartController>().SwitchState(SmartController.CameraState.Action);
                     GameObject.Find("Crosshair").GetComponent<CanvasRenderer>().SetAlpha(0);
                     SwitchPhysicalLayer("Physical");
-                    gameObject.layer = LayerMask.NameToLayer("Physical");
+                    //gameObject.layer = LayerMask.NameToLayer("Physical");
                     break;
                 }
             case CharacterState.SwordStance:
                 {
-                    SwordParticles.SetActive(false);
-                    MaskParticles.SetActive(true);
-                    currentState = CharacterState.MagicStance;
+                    if (currentSwordState == SwordState.UnsheathedSword)
+                    {
+                        MaskParticles.SetActive(true);
+                        SwordParticles.SetActive(false);
+                    }
+                    currentCharacterState = CharacterState.MagicStance;
                     // GetComponent<SmartController>().SwitchState(SmartController.CameraState.Shoot);
                     GameObject.Find("Crosshair").GetComponent<CanvasRenderer>().SetAlpha(1);
                     SwitchPhysicalLayer("Magical");
-                    gameObject.layer = LayerMask.NameToLayer("Magical");
+                    //gameObject.layer = LayerMask.NameToLayer("Magical");
                     break;
                 }
         }
@@ -102,34 +132,31 @@ public class Character : BaseCharacter {
 
     }
 
-    //public override void Die()
-    //{
-    //    Destroy(gameObject);
-    //}
-
     public void DrawSword()
     {
-        if (currentState == CharacterState.SheathedSword)
+        if (currentSwordState == SwordState.SheathedSword)
         {
-            SwordParticles.SetActive(true);
-            MaskParticles.SetActive(false);
+            currentSwordState = SwordState.UnsheathedSword;
+            if (currentCharacterState == CharacterState.SwordStance)
+            {
+                SwordParticles.SetActive(true);
+                MaskParticles.SetActive(false);
+            }
+            else
+            {
+                SwordParticles.SetActive(false);
+                MaskParticles.SetActive(true);
+            }
             anim.SetTrigger("UnsheatheSword");
-            SwitchPhysicalLayer("Physical");
-            gameObject.layer = LayerMask.NameToLayer("Physical");
-            currentState = CharacterState.SwordStance;
+            GetComponent<SmartController>().SwitchState(SmartController.CameraState.Action);
         }
         else
         {
-            if (currentState == CharacterState.SwordStance || currentState == CharacterState.MagicStance)
-            {
                 SwordParticles.SetActive(false);
                 MaskParticles.SetActive(false);
                 anim.SetTrigger("SheatheSword");
-                currentState = CharacterState.SheathedSword;
-                SwitchPhysicalLayer("Physical");
-                gameObject.layer = LayerMask.NameToLayer("Physical");
+                currentSwordState = SwordState.SheathedSword;
                 GetComponent<SmartController>().SwitchState(SmartController.CameraState.Action);
-            }
         }
     }
 
@@ -142,12 +169,27 @@ public class Character : BaseCharacter {
 
     public void ShootProjectile()
     {
-        GameObject projectile = Instantiate(playerProjectile, ShootingPoint.position, ShootingPoint.rotation);
-        Weapon projectileDamageComponent = projectile.GetComponent<Weapon>();
-        projectileDamageComponent.TriggerStricking();
-        projectileDamageComponent.TargetTag = target;
-        projectileDamageComponent.Damage = projectileDamage;
-        projectile.GetComponent<Rigidbody>().AddForce(Camera.main.gameObject.transform.forward * projectileSpeed);
+        Ray rayFromCenterOfTheScreen = Camera.main.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
+        RaycastHit hit;
+        Vector3 shootingDirection;
+        int mask = LayerMask.GetMask("Enemy", "Environment");
+        float dist = 1000.0f;
+        if (Physics.Raycast(rayFromCenterOfTheScreen, out hit, dist, mask, QueryTriggerInteraction.Ignore))
+        {
+            shootingDirection = (hit.point - ShootingPoint.position).normalized;
+        }
+        else
+        {
+            shootingDirection = Camera.main.transform.forward;
+        }
+        magicProjectile = Instantiate(playerProjectile, ShootingPoint.position, ShootingPoint.rotation);
+        Weapon projectileWeaponComponent = magicProjectile.GetComponent<Weapon>();
+        //Debug.Log(hit.collider.name);
+        projectileWeaponComponent.SetWielder(transform);
+        projectileWeaponComponent.TriggerStricking();
+        projectileWeaponComponent.TargetTag = target;
+        projectileWeaponComponent.Damage = projectileDamage;
+        magicProjectile.GetComponent<Rigidbody>().AddForce(shootingDirection * projectileSpeed);
     }
 
     void SwitchPhysicalLayer(string layer)

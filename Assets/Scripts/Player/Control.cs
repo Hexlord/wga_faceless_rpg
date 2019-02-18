@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Control : MonoBehaviour
 {
-
+    //Handles user input
     //public variables
     public float speed = 10.0f;
     public Vector3 drag = new Vector3(1, 1, 1);
@@ -17,60 +17,62 @@ public class Control : MonoBehaviour
     // private variables
     Vector3 Direction = Vector3.zero;
     Vector3 CamDirectionForward, CamDirectionRight;
-    Vector3 targetPosition;
+    Camera mainCamera;
     CharacterController charControl;
-    ConcentrationSystem concentration;
+    SmartController cameraController;
+    HealthSystemWithConcentration concentration;
     Character character;
     DefenseSystem defenseSystem;
     public Transform PlayerCharacter;
-    Vector2 originalMousePosition;
-    float horizontalAngle, verticalAngle;
 
     // Use this for initialization
     void Start()
     {
-        concentration = gameObject.GetComponent<ConcentrationSystem>();
+        mainCamera = Camera.main;
+        concentration = gameObject.GetComponent<HealthSystemWithConcentration>();
         character = gameObject.GetComponent<Character>();
-        targetPosition = PlayerCharacter.position;
         charControl = gameObject.GetComponent<CharacterController>();
-        originalMousePosition = Input.mousePosition;
         defenseSystem = gameObject.GetComponent<DefenseSystem>();
+        cameraController = gameObject.GetComponent<SmartController>();
     }
 
     // Update is called once per frame
     void Update()
     {
-        CamDirectionForward = new Vector3(Camera.main.transform.forward.x, 0, Camera.main.transform.forward.z);
-        CamDirectionRight = new Vector3(Camera.main.transform.right.x, 0, Camera.main.transform.right.z);
+        //Determining camera associated vectors
+        CamDirectionForward = new Vector3(mainCamera.transform.forward.x, 0, mainCamera.transform.forward.z);
+        CamDirectionRight = new Vector3(mainCamera.transform.right.x, 0, mainCamera.transform.right.z);
+
         if (!defenseSystem.isDashing)
         {
             Direction = Vector3.zero;
             Direction += CamDirectionRight * Input.GetAxis("Horizontal") * speed;
             Direction += CamDirectionForward * Input.GetAxis("Vertical") * speed * ((character.IsSprinting) ? sprintModifier : 1.0f);
             Direction += (!charControl.isGrounded) ? new Vector3(0, Physics.gravity.y * mass, 0) : Vector3.zero;
-            if (character.Status == Character.CharacterState.MagicStance)
-            {
+            
+            //Aiming down sights handling
 
-                if (Input.GetButtonDown("Aim"))
+            if (Input.GetButtonDown("Aim"))
+            {
+                if (character.Status == Character.CharacterState.MagicStance)
                 {
-                    if (GetComponent<SmartController>().GetState() == SmartController.CameraState.Action)
+                    if (cameraController.GetState() == SmartController.CameraState.Action)
                     {
-                        GetComponent<SmartController>().SwitchState(SmartController.CameraState.Shoot);
+                        cameraController.SwitchState(SmartController.CameraState.Shoot);
                     }
                     else
                     {
-                        GetComponent<SmartController>().SwitchState(SmartController.CameraState.Action);
+                        cameraController.SwitchState(SmartController.CameraState.Action);
                     }
-                }
-
-
-                GetComponent<SmartController>().TriggerPlayerAutoRotation();
+                    cameraController.TriggerPlayerAutoRotation();
+                }   
             }
 
+            //Attack handling
 
             if (Input.GetButtonDown("Attack"))
             {
-                if (character.Status == Character.CharacterState.SheathedSword)
+                if (character.SwordStatus == Character.SwordState.SheathedSword)
                 {
                     character.DrawSword();
                 }
@@ -83,95 +85,68 @@ public class Control : MonoBehaviour
                     character.ShootProjectile();
                 }
             }
+            
+            //Switching states
 
             if (Input.GetButtonDown("SwitchState"))
             {
                 character.SwapPlayerStatus();
             }
 
-            if (Input.GetButtonDown("Block"))
+            //Blocking handling
+
+            if (Input.GetButtonDown("Block") && (character.Status == Character.CharacterState.SwordStance))
             {
-                if (character.Status == Character.CharacterState.SwordStance)
+                if (character.SwordStatus == Character.SwordState.SheathedSword)
                 {
-                    defenseSystem.IsBlocking = true;
+                    character.DrawSword();
                 }
+                defenseSystem.IsBlocking = true;
             }
 
-            if (Input.GetButtonUp("Block"))
+            if (Input.GetButtonUp("Block") && (character.Status == Character.CharacterState.SwordStance) && defenseSystem.IsBlocking)
             {
                 defenseSystem.IsBlocking = false;
             }
 
+            //Sprint handling
 
-
-            if ((Input.GetButtonDown("Sprint")) && (character.Status == Character.CharacterState.MagicStance) && (Direction != Vector3.zero))
+            if ((Input.GetButtonDown("Sprint")) && (character.Status == Character.CharacterState.MagicStance) 
+                && (Direction != Vector3.zero) && (character.SwordStatus == Character.SwordState.UnsheathedSword))
             {
                 defenseSystem.InitiateDash(Direction);
             }
+
+            if (Input.GetButtonDown("Sprint") && (character.SwordStatus == Character.SwordState.SheathedSword))
+            {
+                character.IsSprinting = true;
+            }
+
+            if (Input.GetButtonUp("Sprint") && character.SwordStatus == Character.SwordState.SheathedSword)
+            {
+                character.IsSprinting = false;
+            }
+
+            //Sheathing handling
 
             if (Input.GetButtonDown("Unsheathe"))
             {
                 character.DrawSword();
             }
 
+            //Heal handling
+
             if (Input.GetButton("Heal"))
             {
                 concentration.SpendConcentration(Time.deltaTime);
                 Direction = Vector3.zero;
             }
-
         }
-
-        if (defenseSystem.isDashing)
+        else
         {
             Direction = defenseSystem.dashDirection;
         }
 
-        horizontalAngle = Input.GetAxis("Mouse X") * sensitivity * Time.deltaTime;
-        verticalAngle = Input.GetAxis("Mouse Y") * sensitivity * Time.deltaTime;
-
-        if (Input.GetButtonDown("Sprint"))
-        {
-            //Branches for states MagicStance and SwordStance are empty for future changes to sprinting logic;
-            switch (character.Status)
-            {
-                case Character.CharacterState.MagicStance:
-                    {
-                        break;
-                    }
-                case Character.CharacterState.SwordStance:
-                    {
-                        break;
-                    }
-                case Character.CharacterState.SheathedSword:
-                    {
-                        character.IsSprinting = true;
-                        break;
-                    }
-            }
-
-        }
-
-        if (Input.GetButtonUp("Sprint"))
-        {
-            switch (character.Status)
-            {
-                case Character.CharacterState.MagicStance:
-                    {
-                        break;
-                    }
-                case Character.CharacterState.SwordStance:
-                    {
-                        break;
-                    }
-                case Character.CharacterState.SheathedSword:
-                    {
-                        character.IsSprinting = false;
-                        break;
-                    }
-            }
-
-        }
     }
 
     void OnGUI()
@@ -185,26 +160,8 @@ public class Control : MonoBehaviour
         if (Direction != Vector3.zero)
         {
             charControl.Move(Direction * Time.deltaTime);
-            GetComponent<SmartController>().TriggerPlayerAutoRotation();
+            cameraController.TriggerPlayerAutoRotation();
             previousRotation = transform.rotation;
         }
-    }
-
-    private void LateUpdate()
-    {
-        /*
-        if (!GetComponent<SmartController>().isActiveAndEnabled)
-        {
-            Camera.main.transform.position = Camera.main.transform.position + (PlayerCharacter.position - targetPosition);
-            if (horizontalAngle != 0 || verticalAngle != 0)
-            {
-                Camera.main.transform.RotateAround(PlayerCharacter.position, PlayerCharacter.up, horizontalAngle);
-                Camera.main.transform.RotateAround(PlayerCharacter.position, CamDirectionRight, -verticalAngle);
-                Camera.main.transform.LookAt(PlayerCharacter, PlayerCharacter.up);
-            }
-
-            targetPosition = PlayerCharacter.position;
-        }
-        */
     }
 }

@@ -25,6 +25,7 @@ public class DumbEnemy : BaseCharacter
     private GameObject character;
     private CharacterController characterController;
     private HealthSystem healthSystem;
+
     private Vector3 distanceToPlayer;
     private bool isNotified = false;
     private string tag;
