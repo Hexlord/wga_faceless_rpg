@@ -1,9 +1,10 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-public class ConcentrationSystem : HealthSystem
+public class PlayerStatusSystem : BasicStatusSystem
 {
     [SerializeField]
     private float maxConcentration = 100.0f;
@@ -11,6 +12,9 @@ public class ConcentrationSystem : HealthSystem
     private Image ConcentrationBar;
     [SerializeField]
     private float exchangeRate = 1.0f;
+
+    public GameObject deathScreen = null;
+
     float currentAmountOfConcentration;
 
     public void SpendConcentration(float time)
@@ -32,12 +36,35 @@ public class ConcentrationSystem : HealthSystem
         }
     }
 
-    // Use this for initialization
-    void Start()
+    public override void OnDeath()
     {
-        originalAmountOfHP = healthPoints;
-        currentAmountOfConcentration = 0;
-        Healthbar.fillAmount = 1;
-        ConcentrationBar.fillAmount = 0;
+        base.OnDeath();
+
+        Debug.Log("Player died");
+        deathScreen.SetActive(true);
+
+        GetComponent<SmartController>().enabled = false;
+        GetComponent<Control>().enabled = false;
+    }
+
+    // Use this for initialization
+    new void Start()
+    {
+        base.Start();
+
+        deathScreen.SetActive(true);
+        GameObject.Find("ToMainMenuButton").GetComponent<Button>().onClick.AddListener(ToMainMenu);
+        GameObject.Find("RestartButton").GetComponent<Button>().onClick.AddListener(Restart);
+        deathScreen.SetActive(false);
+
+    }
+
+    void ToMainMenu()
+    {
+        SceneManager.LoadScene("Intro", LoadSceneMode.Single);
+    }
+    void Restart()
+    {
+        SceneManager.LoadScene("Game", LoadSceneMode.Single);
     }
 }

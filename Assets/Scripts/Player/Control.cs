@@ -19,7 +19,7 @@ public class Control : MonoBehaviour
     Vector3 CamDirectionForward, CamDirectionRight;
     Vector3 targetPosition;
     CharacterController charControl;
-    ConcentrationSystem concentration;
+    PlayerStatusSystem concentration;
     Character character;
     DefenseSystem defenseSystem;
     public Transform PlayerCharacter;
@@ -29,7 +29,7 @@ public class Control : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-        concentration = gameObject.GetComponent<ConcentrationSystem>();
+        concentration = gameObject.GetComponent<PlayerStatusSystem>();
         character = gameObject.GetComponent<Character>();
         targetPosition = PlayerCharacter.position;
         charControl = gameObject.GetComponent<CharacterController>();

@@ -3,14 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class HealthSystem : MonoBehaviour {
+public class BasicStatusSystem : MonoBehaviour
+{
     [SerializeField]
     protected float healthPoints = 100.0f;
-    [SerializeField]
-    protected bool respawnAfterDeath = true;
 
     [SerializeField]
-    protected Image Healthbar; 
+    protected Image Healthbar;
 
     Vector3 originalPosition;
     Quaternion originalRotation;
@@ -30,15 +29,18 @@ public class HealthSystem : MonoBehaviour {
     {
         healthPoints -= amount;
         Debug.Log("Dealt");
-        if(healthPoints <= 0.0f)
+        if (healthPoints <= 0.0f)
         {
-            Debug.Log("Die");
-            healthPoints = 100.0f;
-            gameObject.GetComponent<BaseCharacter>().Die();
+            OnDeath();
         }
 
         Healthbar.fillAmount = healthPoints / originalAmountOfHP;
 
+    }
+
+    public virtual void OnDeath()
+    {
+        Debug.Log("Die");
     }
 
     public void RestoreHealthPoints(float amount)
@@ -47,7 +49,7 @@ public class HealthSystem : MonoBehaviour {
         Healthbar.fillAmount = healthPoints / originalAmountOfHP;
     }
 
-    void Respawn()
+    public void Respawn()
     {
         transform.position = originalPosition;
         transform.rotation = originalRotation;
@@ -56,8 +58,8 @@ public class HealthSystem : MonoBehaviour {
         Healthbar.fillAmount = 1;
     }
 
-	// Use this for initialization
-	void Start ()
+    // Use this for initialization
+    protected void Start()
     {
         originalAmountOfHP = healthPoints;
         originalPosition = transform.position;
@@ -65,20 +67,5 @@ public class HealthSystem : MonoBehaviour {
         originalScale = transform.localScale;
         Healthbar.fillAmount = 1;
     }
-	
-	// Update is called once per frame
-	void Update ()
-    {
-	    if (healthPoints <= 0)
-        {
-            if (respawnAfterDeath)
-            {
-                Respawn();
-            }
-            else
-            {
-                Destroy(gameObject);
-            }
-        }
-	}
+    
 }

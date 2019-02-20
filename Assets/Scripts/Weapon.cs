@@ -59,14 +59,14 @@ public class Weapon : MonoBehaviour {
             {
                 try
                 {
-                    col.attachedRigidbody.gameObject.GetComponent<HealthSystem>().DealDamage(damage);
+                    col.attachedRigidbody.gameObject.GetComponent<BasicStatusSystem>().DealDamage(damage);
                     isStriking = false;
                     if (wielder != null && wielder.tag == "Player")
                     {
                         try
                         {
 
-                            wielder.GetComponent<ConcentrationSystem>().StoreConcentration(concentration);
+                            wielder.GetComponent<PlayerStatusSystem>().StoreConcentration(concentration);
                         }
                         catch
                         {
