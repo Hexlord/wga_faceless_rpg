@@ -47,6 +47,14 @@ public class PlayerStatusSystem : BasicStatusSystem
         GetComponent<Control>().enabled = false;
     }
 
+    void Update()
+    {
+        if (Input.GetKey("escape"))
+        {
+            ToMainMenu();
+        }
+    }
+
     // Use this for initialization
     new void Start()
     {
@@ -61,7 +69,7 @@ public class PlayerStatusSystem : BasicStatusSystem
 
     void ToMainMenu()
     {
-        SceneManager.LoadScene("Intro", LoadSceneMode.Single);
+        SceneManager.LoadScene("MainMenu", LoadSceneMode.Single);
     }
     void Restart()
     {

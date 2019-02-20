@@ -21,7 +21,7 @@ public class EndScreenScript : MonoBehaviour
 
     void ToMainMenu()
     {
-        SceneManager.LoadScene("Intro", LoadSceneMode.Single);
+        SceneManager.LoadScene("MainMenu", LoadSceneMode.Single);
     }
     void Restart()
     {
