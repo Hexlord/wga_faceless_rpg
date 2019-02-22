@@ -24,7 +24,7 @@ public class DumbEnemy : BaseCharacter
     private Animator anim;
     private GameObject character;
     private CharacterController characterController;
-    private HealthSystem healthSystem;
+    private BasicStatusSystem healthSystem;
     private Vector3 distanceToPlayer;
     private bool isNotified = false;
     private string tag;
@@ -37,7 +37,7 @@ public class DumbEnemy : BaseCharacter
             rightFist.TargetTag = tag;
             leftFist.TargetTag = tag;
             character = GameObject.FindWithTag(tag);
-            healthSystem = character.GetComponent<HealthSystem>();
+            healthSystem = character.GetComponent<BasicStatusSystem>();
             Debug.Log("notify");
         }
     }
