@@ -7,7 +7,6 @@ public class DumbEnemy : BaseCharacter
 
     public Weapon rightFist, leftFist;
     public float fistDamage = 5.0f;
-    public float mass = 1.0f;
 
     [SerializeField]
     private float attackCooldown;
@@ -28,7 +27,6 @@ public class DumbEnemy : BaseCharacter
 
     private Vector3 distanceToPlayer;
     private bool isNotified = false;
-    private string tag;
 
     public void Notify(string tag)
     {
@@ -67,7 +65,7 @@ public class DumbEnemy : BaseCharacter
             {
                 distanceToPlayer.Normalize();
                 transform.forward = distanceToPlayer;
-                Vector3 MoveDirection = distanceToPlayer + ((!characterController.isGrounded) ? new Vector3(0, Physics.gravity.y * mass, 0) : Vector3.zero);
+                Vector3 MoveDirection = distanceToPlayer;
                 characterController.Move(MoveDirection.normalized * (velocity * Time.fixedDeltaTime));
             }
         }

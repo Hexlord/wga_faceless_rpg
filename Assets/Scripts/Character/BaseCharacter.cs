@@ -14,7 +14,6 @@ public class BaseCharacter : MonoBehaviour
     [Tooltip("Character normal speed")]
     [SerializeField]
     private float speed = 10.0f;
-    private float mass;
 
     private CharacterController charController;
     private Vector3 originalPosition;
@@ -28,7 +27,6 @@ public class BaseCharacter : MonoBehaviour
     {
         originalPosition = transform.position;
         charController = GetComponent<CharacterController>();
-        mass = GetComponent<Rigidbody>().mass;
     }
 
     void FixedUpdate()
