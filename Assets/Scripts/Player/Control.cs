@@ -5,33 +5,29 @@ using UnityEngine;
 public class Control : MonoBehaviour
 {
     //Handles user input
-    //public variables
-    public float speed = 10.0f;
-    public Vector3 drag = new Vector3(1, 1, 1);
-    public Quaternion previousRotation;
-    public float mass = 10.0f;
+    //public variables   
     public float sensitivity = 60.0f;
-    public float CameraFollowRadius = 5.0f;
     public float sprintModifier = 1.25f;
 
     // private variables
-    Vector3 Direction = Vector3.zero;
-    Vector3 CamDirectionForward, CamDirectionRight;
-    Camera mainCamera;
-    CharacterController charControl;
-    SmartController cameraController;
-    HealthSystemWithConcentration concentration;
-    Character character;
-    DefenseSystem defenseSystem;
-    public Transform PlayerCharacter;
+    private Quaternion previousRotation;
+    private Vector3 Direction = Vector3.zero;
+    private Vector3 CamDirectionForward, CamDirectionRight;
+    private Camera mainCamera;
+
+    private SmartController cameraController;
+    private HealthSystemWithConcentration healthSystemWithConcentration;
+    private Character character;
+    private DefenseSystem defenseSystem;
+    private Transform PlayerCharacter;
 
     // Use this for initialization
     void Start()
     {
+        PlayerCharacter = GameObject.Find("Player").transform;
         mainCamera = Camera.main;
-        concentration = gameObject.GetComponent<HealthSystemWithConcentration>();
+        healthSystemWithConcentration = gameObject.GetComponent<HealthSystemWithConcentration>();
         character = gameObject.GetComponent<Character>();
-        charControl = gameObject.GetComponent<CharacterController>();
         defenseSystem = gameObject.GetComponent<DefenseSystem>();
         cameraController = gameObject.GetComponent<SmartController>();
     }
@@ -46,9 +42,8 @@ public class Control : MonoBehaviour
         if (!defenseSystem.isDashing)
         {
             Direction = Vector3.zero;
-            Direction += CamDirectionRight * Input.GetAxis("Horizontal") * speed;
-            Direction += CamDirectionForward * Input.GetAxis("Vertical") * speed * ((character.IsSprinting) ? sprintModifier : 1.0f);
-            Direction += (!charControl.isGrounded) ? new Vector3(0, Physics.gravity.y * mass, 0) : Vector3.zero;
+            Direction += CamDirectionRight * Input.GetAxis("Horizontal");
+            Direction += CamDirectionForward * Input.GetAxis("Vertical") * ((character.IsSprinting) ? sprintModifier : 1.0f);
             
             //Aiming down sights handling
 
@@ -138,7 +133,7 @@ public class Control : MonoBehaviour
 
             if (Input.GetButton("Heal"))
             {
-                concentration.SpendConcentration(Time.deltaTime);
+                healthSystemWithConcentration.SpendConcentration(Time.deltaTime);
                 Direction = Vector3.zero;
             }
         }
@@ -146,7 +141,7 @@ public class Control : MonoBehaviour
         {
             Direction = defenseSystem.dashDirection;
         }
-
+        character.CurrentDirection = Direction;
     }
 
     void OnGUI()
@@ -159,7 +154,6 @@ public class Control : MonoBehaviour
 
         if (Direction != Vector3.zero)
         {
-            charControl.Move(Direction * Time.deltaTime);
             cameraController.TriggerPlayerAutoRotation();
             previousRotation = transform.rotation;
         }
