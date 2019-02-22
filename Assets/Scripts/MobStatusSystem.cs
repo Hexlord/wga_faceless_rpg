@@ -11,7 +11,7 @@ public class MobStatusSystem : BasicStatusSystem
         base.OnDeath();
 
         healthPoints = 100.0f;
-        gameObject.GetComponent<BaseCharacter>().Die();
+        gameObject.GetComponent<BaseCharacter>().ResetPosition();
     }
 
 }
