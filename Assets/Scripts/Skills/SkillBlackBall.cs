@@ -11,6 +11,10 @@ using UnityEngine;
  */
 public class SkillBlackBall : SkillBase
 {
+    private const float speed = 3.0f;
+    private const float height = 2.0f;
+    private Vector3 hand = new Vector3(0.4f, 0.0f, 0.5f);
+
     public SkillBlackBall() :
         base("blackball", false, 2.0f)
     {
@@ -31,9 +35,11 @@ public class SkillBlackBall : SkillBase
     public override void CastEvent(GameObject caster)
     {
         Debug.Log("Creating blackball GameObject and launching it from caster");
-        GameObject projectile = UnityEngine.Object.Instantiate(projectilePrefab, caster.transform.position + new Vector3(0, 2, 0) + caster.transform.forward * 2.0f, caster.transform.rotation);
+        GameObject projectile = UnityEngine.Object.Instantiate(projectilePrefab, 
+            Quaternion.Euler(caster.transform.eulerAngles) * hand +
+            caster.transform.position + new Vector3(0, height, 0), caster.transform.rotation);
 
-        projectile.GetComponent<Rigidbody>().velocity = caster.transform.forward * 1.0f;
+        projectile.GetComponent<Rigidbody>().velocity = caster.transform.forward * speed;
         projectile.GetComponent<Rigidbody>().rotation = Quaternion.Euler(0, caster.transform.eulerAngles.y + 180.0f, 0);
     }
 

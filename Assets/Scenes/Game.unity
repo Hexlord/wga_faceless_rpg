@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44657874, g: 0.49641258, b: 0.5748172, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657844, g: 0.49641222, b: 0.57481694, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -14449,7 +14449,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7bc7424053011804aaedaeafacc6a5e1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  spawnPosition: {x: 0, y: 0, z: 0}
+  designatedPosition: {x: 0, y: 0, z: 0}
   target: Faceless
   playerProjectile: {fileID: 3473170856130720857, guid: 554d3c36d571e484ba0c7ef086e79d49,
     type: 3}
@@ -14578,10 +14578,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cf7603be173864d4984155a6a629cde1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  healthPoints: 10
+  healthPoints: 100
   Healthbar: {fileID: 1358228689}
   maxConcentration: 100
-  currentAmountOfConcentration: 0
   ConcentrationBar: {fileID: 1487454007}
   exchangeRate: 1
   deathScreen: {fileID: 361158016}
@@ -15363,7 +15362,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fc4120b55bc2adb4cbaedb95364f00f8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  spawnPosition: {x: 0, y: 5, z: 0}
+  designatedPosition: {x: 0, y: 0, z: 0}
   rightFist: {fileID: 1695636982}
   leftFist: {fileID: 21786537}
   fistDamage: 5
@@ -15417,7 +15416,7 @@ Rigidbody:
   m_Drag: 0
   m_AngularDrag: 0.05
   m_UseGravity: 1
-  m_IsKinematic: 1
+  m_IsKinematic: 0
   m_Interpolate: 0
   m_Constraints: 80
   m_CollisionDetection: 3
@@ -15832,7 +15831,7 @@ Rigidbody:
   m_Drag: 0
   m_AngularDrag: 0.05
   m_UseGravity: 1
-  m_IsKinematic: 1
+  m_IsKinematic: 0
   m_Interpolate: 0
   m_Constraints: 80
   m_CollisionDetection: 3
@@ -15881,7 +15880,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fc4120b55bc2adb4cbaedb95364f00f8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  spawnPosition: {x: 0, y: 5, z: 0}
+  designatedPosition: {x: 0, y: 0, z: 0}
   rightFist: {fileID: 1180307332}
   leftFist: {fileID: 905618574}
   fistDamage: 5
