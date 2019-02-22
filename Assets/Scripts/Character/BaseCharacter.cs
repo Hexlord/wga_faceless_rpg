@@ -5,25 +5,20 @@ using UnityEngine;
 
 public class BaseCharacter : MonoBehaviour
 {
+    [Tooltip ("The position in world space where the object will appear after reset.")]
     [SerializeField]
-    private Vector3 spawnPosition;
-    
-    public virtual void Spawn()
-    {
-        string name = gameObject.name;
-        Instantiate(gameObject, spawnPosition, gameObject.transform.rotation).name = name;
-    }
+    private Vector3 designatedPosition;
 
-    public virtual void Die()
+    private Vector3 originalPosition;
+    
+    public virtual void ResetPosition()
     {
-        Debug.Log("Died");
-        Spawn();
-        Destroy(gameObject);
+        transform.position = originalPosition;
     }
 
     void Start()
     {
-        spawnPosition.Set(5.8f, 3.0f, 0.0f);
+        originalPosition = transform.position;
     }
 
     void FixedUpdate()

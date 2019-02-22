@@ -5,15 +5,20 @@ using UnityEngine.UI;
 
 public class BasicStatusSystem : MonoBehaviour
 {
+    [Header ("Health Settings")]
+    [Tooltip ("The amount of Health Points the object has.")]
     [SerializeField]
     protected float healthPoints = 100.0f;
 
+    [Tooltip("The UI element which shows an amount of HP that object has.")]
     [SerializeField]
     protected Image Healthbar;
 
-    Vector3 originalPosition;
+    //Private
+
+    Vector3 originalPosition, originalScale;
     Quaternion originalRotation;
-    Vector3 originalScale;
+
     protected float originalAmountOfHP;
 
 
@@ -25,7 +30,7 @@ public class BasicStatusSystem : MonoBehaviour
         }
     }
 
-    public void DealDamage(float amount)
+    public virtual void DealDamage(float amount)
     {
         healthPoints -= amount;
         Debug.Log("Dealt");
@@ -35,7 +40,6 @@ public class BasicStatusSystem : MonoBehaviour
         }
 
         Healthbar.fillAmount = healthPoints / originalAmountOfHP;
-
     }
 
     public virtual void OnDeath()
