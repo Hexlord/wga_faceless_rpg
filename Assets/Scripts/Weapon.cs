@@ -4,15 +4,36 @@ using UnityEngine;
 
 public class Weapon : MonoBehaviour {
 
+    [SerializeField]
     private Transform wielder;
+
+    [SerializeField]
     private string targetTag;
+
+    [SerializeField]
     private bool isStriking = false;
+
+    [SerializeField]
     private float damage, concentration;
 
 
     private void Awake()
     {
         wielder = transform.parent;
+
+        if (wielder != null) IgnoreCollisionsWithWielder();
+    }
+
+    public void SetWielder(Transform value)
+    {
+        wielder = value;
+
+        IgnoreCollisionsWithWielder();
+    }
+
+    public bool CompareToWielderTag(string value)
+    {
+        return value == wielder.tag;
     }
 
     public float Damage
@@ -59,14 +80,13 @@ public class Weapon : MonoBehaviour {
             {
                 try
                 {
-                    col.attachedRigidbody.gameObject.GetComponent<HealthSystem>().DealDamage(damage);
+                    col.attachedRigidbody.gameObject.GetComponent<BasicStatusSystem>().DealDamage(damage);
                     isStriking = false;
                     if (wielder != null && wielder.tag == "Player")
                     {
                         try
                         {
-
-                            wielder.GetComponent<ConcentrationSystem>().StoreConcentration(concentration);
+                            wielder.GetComponent<PlayerStatusSystem>().StoreConcentration(concentration);
                         }
                         catch
                         {
@@ -97,6 +117,21 @@ public class Weapon : MonoBehaviour {
 
     private void OnTriggerEnter(Collider col)
     {
-        Strike(col);
+        if (col.tag != wielder.tag) Strike(col);
+    }
+
+    private void IgnoreCollisionsWithWielder()
+    {
+        GameObject[] wielderObjects = GameObject.FindGameObjectsWithTag(wielder.tag);
+        Collider col1 = gameObject.GetComponent<Collider>();
+        if (col1 != null)
+        {
+            foreach (GameObject obj in wielderObjects)
+            {
+                Collider col2 = obj.GetComponent<Collider>();
+                if (col2 != null) Physics.IgnoreCollision(col1, col2);
+
+            }
+        }
     }
 }
