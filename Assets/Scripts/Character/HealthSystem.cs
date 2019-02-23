@@ -4,7 +4,12 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class HealthSystem : MonoBehaviour {
-
+    /// <summary>
+    /// Implements HP logic.
+    /// Must be attached to gameobjects that can die
+    /// </summary>
+    
+        
     //Public
 
     [Header ("Health Settings")]

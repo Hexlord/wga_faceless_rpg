@@ -9,29 +9,35 @@ public class BaseCharacter : MonoBehaviour
     [SerializeField]
     private Vector3 designatedPosition;
 
-    private Vector3 direction;
+    protected Vector3 direction;
 
     [Tooltip("Character normal speed")]
     [SerializeField]
-    private float speed = 10.0f;
+    protected float speed = 10.0f;
 
-    private CharacterController charController;
-    private Vector3 originalPosition;
+    [Tooltip("Names of animation clips that are used for attacks")]
+    [SerializeField]
+    private string[] strikeAnimationClipsNames;
+
+    protected CharacterController charController;
+    protected Vector3 originalPosition;
+    protected Animator anim;
     
     public virtual void ResetPosition()
     {
         transform.position = originalPosition;
     }
 
-    void Start()
+    protected virtual void Start()
     {
         originalPosition = transform.position;
         charController = GetComponent<CharacterController>();
+        anim = gameObject.GetComponent<Animator>();
     }
 
-    void FixedUpdate()
+    protected virtual void FixedUpdate()
     {
-        Move(direction);
+        if (direction != Vector3.zero) Move();
     }
 
     public Vector3 CurrentDirection
@@ -39,18 +45,31 @@ public class BaseCharacter : MonoBehaviour
         set
         {
             direction = value;
-            if (direction.y == 0)
-            {
-                direction += (charController.isGrounded) ? Physics.gravity : Vector3.zero;
-            }
         }
     }
 
-    public virtual void Move(Vector3 direction)
+    protected virtual void Move()
     {
         direction *= speed;
-        
-        charController.Move(direction * Time.deltaTime);
+        if (charController != null)
+        {
+            direction += (!charController.isGrounded) ? Physics.gravity : Vector3.zero;
+        }
+        if (charController != null) charController.Move(direction * Time.deltaTime);
+        CurrentDirection = Vector3.zero;
+    }
+
+    public virtual bool IsStriking()
+    {
+        string currentAnimation = anim.GetCurrentAnimatorClipInfo(0)[0].clip.name;
+        for (int i = 0; i < strikeAnimationClipsNames.Length; i++)
+        {
+            if (strikeAnimationClipsNames[i] == currentAnimation)
+            {
+                return true;
+            }
+        }
+        return false;
     }
 }
 

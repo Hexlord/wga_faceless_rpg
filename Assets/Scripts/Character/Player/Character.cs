@@ -2,39 +2,72 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Character : BaseCharacter {
+public class Character : BaseCharacter
+{
 
-    //Handles player character behaviour
+    /// <summary>
+    /// Handles player character behaviour
+    /// </summary>
+
     //Public
-    public string target;
+    [Tooltip("Tag of the enemies")]
+    [SerializeField]
+    private string target;
 
     [Header("Projectile Settings")]
-    public GameObject playerProjectile;
-    public Transform ShootingPoint;
-    public float projectileSpeed = 12.0f;
-    public float projectileDamage = 15.0f;
 
-    [Header ("Sword Settings")]
-    public Weapon playerSword;
-    public float swordDamage = 25.0f;
-    public float swordConcentration = 12.5f;
+    [Tooltip("Projectile prefab")]
+    [SerializeField]
+    private GameObject playerProjectile;
+
+    [Tooltip("Transform projectiles are fired from")]
+    [SerializeField]
+    private Transform ShootingPoint;
+
+    [Tooltip("Speed of projectiles")]
+    [SerializeField]
+    private float projectileSpeed = 12.0f;
+
+    [Tooltip("Damage the projectiles deal")]
+    [SerializeField]
+    private float projectileDamage = 15.0f;
+
+    [Header("Sword Settings")]
+
+    [Tooltip("Gameobject that represent the sword of the player")]
+    [SerializeField]
+    private Weapon playerSword;
+
+    [Tooltip("Damage the sword deal")]
+    [SerializeField]
+    private float swordDamage = 25.0f;
+
+    [Tooltip("Concentration the player recieves upon attack")]
+    [SerializeField]
+    private float swordConcentration = 12.5f;
 
 
-    [Header ("SFX")]
-    public GameObject SwordParticles, MaskParticles;
+    [Header("SFX")]
+
+    [Tooltip("Particles that are active in Sword Stance")]
+    [SerializeField]
+    private GameObject SwordParticles;
+
+    [Tooltip("Particles that are active in Magical Stance")]
+    [SerializeField]
+    private GameObject MaskParticles;
 
     //Public enumerations that represent character states. Not using booleans for better code readability.
-    public enum CharacterState {SwordStance, MagicStance};
-    public enum SwordState {SheathedSword, UnsheathedSword};
+    public enum CharacterState { SwordStance, MagicStance };
+    public enum SwordState { SheathedSword, UnsheathedSword };
 
     //Private
 
     private Vector3 startingPos;
     private Quaternion startingRot;
+    private DefenseSystem defenseSystem;
 
-    private Animator anim;
-
-    [Header ("Debug")]
+    [Header("Debug")]
     [SerializeField]
     private CharacterState currentCharacterState = CharacterState.SwordStance;
 
@@ -50,7 +83,7 @@ public class Character : BaseCharacter {
         {
             return isSprinting;
         }
-        set 
+        set
         {
             isSprinting = value;
             anim.SetBool("isSprinting", value);
@@ -74,10 +107,11 @@ public class Character : BaseCharacter {
     }
 
     // Use this for initialization
-    void Start ()
+    protected override void Start()
     {
-        anim = GetComponent<Animator>();
+        base.Start();
 
+        defenseSystem = GetComponent<DefenseSystem>();
         startingPos = transform.position;
         startingRot = transform.rotation;
         currentCharacterState = CharacterState.SwordStance;
@@ -92,12 +126,12 @@ public class Character : BaseCharacter {
         GameObject.Find("Crosshair").GetComponent<CanvasRenderer>().SetAlpha(0);
     }
 
-    private bool isNotified = false;
+    //Status control
 
     public void SwapPlayerStatus()
     {
-       switch (currentCharacterState)
-       {
+        switch (currentCharacterState)
+        {
             case CharacterState.MagicStance:
                 {
                     currentCharacterState = CharacterState.SwordStance;
@@ -152,19 +186,20 @@ public class Character : BaseCharacter {
         }
         else
         {
-                SwordParticles.SetActive(false);
-                MaskParticles.SetActive(false);
-                anim.SetTrigger("SheatheSword");
-                currentSwordState = SwordState.SheathedSword;
-                GetComponent<SmartController>().SwitchState(SmartController.CameraState.Action);
+            SwordParticles.SetActive(false);
+            MaskParticles.SetActive(false);
+            anim.SetTrigger("SheatheSword");
+            currentSwordState = SwordState.SheathedSword;
+            GetComponent<SmartController>().SwitchState(SmartController.CameraState.Action);
         }
     }
+
+    //Attacks
 
     public void SwingSword()
     {
         GetComponent<SmartController>().TriggerPlayerAutoRotation();
         anim.SetTrigger("Swing");
-        playerSword.TriggerStricking();
     }
 
     public void ShootProjectile()
@@ -174,6 +209,7 @@ public class Character : BaseCharacter {
         Vector3 shootingDirection;
         int mask = LayerMask.GetMask("Enemy", "Environment");
         float dist = 1000.0f;
+
         if (Physics.Raycast(rayFromCenterOfTheScreen, out hit, dist, mask, QueryTriggerInteraction.Ignore))
         {
             shootingDirection = (hit.point - ShootingPoint.position).normalized;
@@ -182,19 +218,39 @@ public class Character : BaseCharacter {
         {
             shootingDirection = Camera.main.transform.forward;
         }
+
         magicProjectile = Instantiate(playerProjectile, ShootingPoint.position, ShootingPoint.rotation);
         Weapon projectileWeaponComponent = magicProjectile.GetComponent<Weapon>();
-        //Debug.Log(hit.collider.name);
-        projectileWeaponComponent.SetWielder(transform);
-        projectileWeaponComponent.TriggerStricking();
+        projectileWeaponComponent.SetWielder(this);
         projectileWeaponComponent.TargetTag = target;
         projectileWeaponComponent.Damage = projectileDamage;
         magicProjectile.GetComponent<Rigidbody>().AddForce(shootingDirection * projectileSpeed);
     }
 
+    //Movement
+
+    public void Move(bool isDashing)
+    {
+        if (!isDashing)
+        {
+            direction *= speed;
+            charController.Move(direction * Time.deltaTime);
+        }
+        else
+        {
+            charController.Move(defenseSystem.dashDirection * Time.deltaTime);
+        }
+    }
+
+    protected override void FixedUpdate()
+    {
+        if (direction != Vector3.zero) Move(defenseSystem.isDashing);
+    }
+
     void SwitchPhysicalLayer(string layer)
     {
-        foreach (Transform tf in transform.GetComponentInChildren<Transform>())
+        Transform[] transformChildren = transform.GetComponentsInChildren<Transform>();
+        foreach (Transform tf in transform.GetComponentsInChildren<Transform>())
         {
             tf.gameObject.layer = LayerMask.NameToLayer(layer);
         }

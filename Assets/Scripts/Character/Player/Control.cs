@@ -136,12 +136,9 @@ public class Control : MonoBehaviour
                 healthSystemWithConcentration.SpendConcentration(Time.deltaTime);
                 Direction = Vector3.zero;
             }
+
+            character.CurrentDirection = Direction;
         }
-        else
-        {
-            Direction = defenseSystem.dashDirection;
-        }
-        character.CurrentDirection = Direction;
     }
 
     void OnGUI()
@@ -151,7 +148,6 @@ public class Control : MonoBehaviour
 
     private void FixedUpdate()
     {
-
         if (Direction != Vector3.zero)
         {
             cameraController.TriggerPlayerAutoRotation();

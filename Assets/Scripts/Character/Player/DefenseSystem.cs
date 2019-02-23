@@ -4,6 +4,10 @@ using UnityEngine;
 
 public class DefenseSystem : MonoBehaviour
 {
+    /// <summary>
+    /// Handles defence 
+    /// </summary>
+
     public int physicalDefenseCharges = 3, magicalDefenseCharges = 3;
     public float dashCooldown = 3.0f, shieldCooldown = 3.0f;
     public bool[] physicalDefenseChargesAvailable, magicalDefenseChargesAvailable;
@@ -61,6 +65,7 @@ public class DefenseSystem : MonoBehaviour
     void Update()
     {
         isDashing = Time.time < dashStart + dashTime;
+
         if ((physicalDefenseChargesTimeLastUsed + shieldCooldown) < Time.time)
         {
             ShieldReloaded();
@@ -86,6 +91,7 @@ public class DefenseSystem : MonoBehaviour
             magicalDefenseChargesAvailable[magicalAvailableChargeIndex] = false;
             magicalAvailableChargeIndex++;
             isDashing = true;
+
             dashDirection = direction.normalized * dashSpeed;
             UIcontroller.UpdateUI();
         }

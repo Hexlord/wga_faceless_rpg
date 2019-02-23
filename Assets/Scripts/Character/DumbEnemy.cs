@@ -15,12 +15,8 @@ public class DumbEnemy : BaseCharacter
     private float damage;
 
     [SerializeField]
-    private float velocity;
-
-    [SerializeField]
     private float attackRange;
 
-    private Animator anim;
     private GameObject character;
     private CharacterController characterController;
     private HealthSystem healthSystem;
@@ -41,11 +37,10 @@ public class DumbEnemy : BaseCharacter
         }
     }
 
-    void Start()
+    protected override void Start()
     {
-        
+        base.Start();
         characterController = gameObject.GetComponent<CharacterController>();
-        anim = gameObject.GetComponent<Animator>();
         rightFist.Damage = fistDamage;
         leftFist.Damage = fistDamage;
     }
@@ -55,28 +50,26 @@ public class DumbEnemy : BaseCharacter
         InvokeRepeating("Attack", 0.0f, attackCooldown);
     }
 
-    void FixedUpdate()
+    protected override void FixedUpdate()
     {
         if (isNotified)
         {
             distanceToPlayer = (character.transform.position - gameObject.transform.position);
             distanceToPlayer.y = 0;
-            if (distanceToPlayer.magnitude > attackRange * 0.5)
+            if (distanceToPlayer.magnitude > attackRange)
             {
                 distanceToPlayer.Normalize();
                 transform.forward = distanceToPlayer;
-                Vector3 MoveDirection = distanceToPlayer;
-                characterController.Move(MoveDirection.normalized * (velocity * Time.fixedDeltaTime));
+                CurrentDirection = distanceToPlayer.normalized;
             }
         }
+        base.Move();
     }
 
     private void Attack()
     {
         if (distanceToPlayer.magnitude >= attackRange || isNotified == false)
             return;
-        rightFist.TriggerStricking();
-        leftFist.TriggerStricking();
         anim.SetTrigger("Attack");
     }
 }
