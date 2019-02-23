@@ -83,16 +83,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7bc7424053011804aaedaeafacc6a5e1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  spawnPosition: {x: 0, y: 0, z: 0}
   playerSword: {fileID: 201165506030449068}
   playerProjectile: {fileID: 3473170856130720857, guid: 554d3c36d571e484ba0c7ef086e79d49,
     type: 3}
   ShootingPoint: {fileID: 201165504979423957}
-  isBlocking: 0
   SwordParticles: {fileID: 201165505638699327}
   MaskParticles: {fileID: 201165507006469257}
   projectileSpeed: 200
   projectileDamage: 15
   swordDamage: 25
+  swordConcentration: 12.5
   target: Faceless
 --- !u!95 &201165505077994970
 Animator:
@@ -132,8 +133,6 @@ MonoBehaviour:
   sensitivity: 90
   CameraFollowRadius: 5
   sprintModifier: 2
-  dashModifier: 5.4
-  dashTime: 0.2
   PlayerCharacter: {fileID: 201165505077994972}
 --- !u!114 &201165505077994969
 MonoBehaviour:
@@ -149,28 +148,38 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mouseHorizontalSensitivity: 5
   mouseVerticalSensitivity: 5
-  playerMoveSpeed: 7
   playerRotationSpeed: 180
   playerAutoRotateEnabled: 1
   playerAutoRotatePassive: 0
   playerAutoRotateTimeout: 1
   playerImmediateAutoRotateEnabled: 1
   playerImmediateAutoRotateThreshold: 90
+  transitionTime: 0.33
+  actionMinimumDistance: 1.65
   actionHeight: 1.7
+  actionRightOffset: 0
   actionDistance: 7
   actionPitchLimit: 60
+  actionInitialPitchEnabled: 1
+  actionInitialPitch: -15
+  shootMinimumDistance: 0
   shootHeight: 2.17
   shootBackwardsOffset: 0.3
   shootRightOffset: 0.777
   shootPitchLimit: 80
+  shootInitialPitchEnabled: 1
+  shootInitialPitch: 0
   tacticsHeight: 1.7
   tacticsDistance: 18
   tacticsPitch: 90
   cameraAvoidanceSmoothAngle: 2
+  cameraAvoidanceSpeed: 12
+  cameraAvoidanceInstantSnap: 1
+  cameraAvoidanceOffset: 2
+  cameraAvoidanceNormalFactorReversed: 2
   cameraState: 0
   cameraStateNext: 0
   cameraStateTransition: 0
-  cameraRayDistanceDebug: 0
 --- !u!143 &201165505077994968
 CharacterController:
   m_ObjectHideFlags: 0
