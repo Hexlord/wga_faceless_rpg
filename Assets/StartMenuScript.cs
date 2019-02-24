@@ -30,6 +30,9 @@ public class StartMenuScript : MonoBehaviour
     public GameObject settingsMenuBack;
 
 
+    [Tooltip("Check to hide main menu when in settings menu")]
+    public bool settingsMenuHideMainMenu = false;
+
     void Start()
     {
         mainMenuStart.GetComponent<Button>().onClick.AddListener(PressedStart);
@@ -46,13 +49,13 @@ public class StartMenuScript : MonoBehaviour
 
     void PressedSettings()
     {
-        mainMenu.SetActive(false);
+        if(settingsMenuHideMainMenu) mainMenu.SetActive(false);
         settingsMenu.SetActive(true);
     }
     void PressedBack()
     {
         settingsMenu.SetActive(false);
-        mainMenu.SetActive(true);
+        if(settingsMenuHideMainMenu) mainMenu.SetActive(true);
     }
 
     void PressedExit()
