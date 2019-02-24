@@ -13,6 +13,9 @@ public class StartMenuScript : MonoBehaviour
     [Tooltip("Select main menu node")]
     public GameObject mainMenu;
 
+    [Tooltip("Select main menu background")]
+    public GameObject mainMenuBackground;
+
     [Tooltip("Select main menu start button")]
     public GameObject mainMenuStart;
     [Tooltip("Select main menu settings button")]
@@ -25,6 +28,9 @@ public class StartMenuScript : MonoBehaviour
 
     [Tooltip("Select settings menu node")]
     public GameObject settingsMenu;
+
+    [Tooltip("Select settings menu background")]
+    public GameObject settingsMenuBackground;
 
     [Tooltip("Select settings menu back button")]
     public GameObject settingsMenuBack;
@@ -40,6 +46,10 @@ public class StartMenuScript : MonoBehaviour
         mainMenuExit.GetComponent<Button>().onClick.AddListener(PressedExit);
 
         settingsMenuBack.GetComponent<Button>().onClick.AddListener(PressedBack);
+
+        mainMenuBackground.SetActive(true);
+        settingsMenuBackground.SetActive(true);
+        settingsMenuBackground.SetActive(false);
     }
     
     void PressedStart()
@@ -51,11 +61,13 @@ public class StartMenuScript : MonoBehaviour
     {
         if(settingsMenuHideMainMenu) mainMenu.SetActive(false);
         settingsMenu.SetActive(true);
+        settingsMenuBackground.SetActive(true);
     }
     void PressedBack()
     {
         settingsMenu.SetActive(false);
         if(settingsMenuHideMainMenu) mainMenu.SetActive(true);
+        settingsMenuBackground.SetActive(false);
     }
 
     void PressedExit()
