@@ -14,6 +14,10 @@ public class Character : BaseCharacter
     [SerializeField]
     private string target;
 
+    [Tooltip("How much sprinting is faster than standart running")]
+    [SerializeField]
+    private float sprintModifier = 1.25f;
+
     [Header("Projectile Settings")]
 
     [Tooltip("Projectile prefab")]
@@ -87,6 +91,14 @@ public class Character : BaseCharacter
         {
             isSprinting = value;
             anim.SetBool("isSprinting", value);
+        }
+    }
+
+    public float SprintModifier
+    {
+        get
+        {
+            return sprintModifier;
         }
     }
 
@@ -231,10 +243,17 @@ public class Character : BaseCharacter
 
     public void Move(bool isDashing)
     {
+
         if (!isDashing)
         {
-            direction *= speed;
-            charController.Move(direction * Time.deltaTime);
+            if (direction.magnitude > 1) direction.Normalize();
+            direction *= speed * ((isSprinting) ? sprintModifier : 1.0f);
+            if (charController != null)
+            {
+                direction += (!charController.isGrounded) ? Physics.gravity : Vector3.zero;
+            }
+            if (charController != null) charController.Move(direction * Time.deltaTime);
+            CurrentDirection = Vector3.zero;
         }
         else
         {

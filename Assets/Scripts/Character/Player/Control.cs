@@ -7,7 +7,6 @@ public class Control : MonoBehaviour
     //Handles user input
     //public variables   
     public float sensitivity = 60.0f;
-    public float sprintModifier = 1.25f;
 
     // private variables
     private Quaternion previousRotation;
@@ -42,8 +41,8 @@ public class Control : MonoBehaviour
         if (!defenseSystem.isDashing)
         {
             Direction = Vector3.zero;
-            Direction += CamDirectionRight * Input.GetAxis("Horizontal");
-            Direction += CamDirectionForward * Input.GetAxis("Vertical") * ((character.IsSprinting) ? sprintModifier : 1.0f);
+            Direction += CamDirectionRight * (Input.GetAxis("Horizontal"));
+            Direction += CamDirectionForward * Input.GetAxis("Vertical") * ((character.IsSprinting) ? character.SprintModifier : 1.0f);
             
             //Aiming down sights handling
 
@@ -90,13 +89,14 @@ public class Control : MonoBehaviour
 
             //Blocking handling
 
-            if (Input.GetButtonDown("Block") && (character.Status == Character.CharacterState.SwordStance))
+            if (Input.GetButtonDown("Block") && (character.Status == Character.CharacterState.SwordStance) && (character.SwordStatus != Character.SwordState.SheathedSword))
             {
-                if (character.SwordStatus == Character.SwordState.SheathedSword)
-                {
-                    character.DrawSword();
-                }
                 defenseSystem.IsBlocking = true;
+            }
+
+            if(defenseSystem.IsBlocking)
+            {
+                cameraController.TriggerPlayerAutoRotation();
             }
 
             if (Input.GetButtonUp("Block") && (character.Status == Character.CharacterState.SwordStance) && defenseSystem.IsBlocking)
@@ -112,12 +112,12 @@ public class Control : MonoBehaviour
                 defenseSystem.InitiateDash(Direction);
             }
 
-            if (Input.GetButtonDown("Sprint") && (character.SwordStatus == Character.SwordState.SheathedSword))
+            if (Input.GetButton("Sprint") && (character.SwordStatus == Character.SwordState.SheathedSword) && (Input.GetAxis("Vertical") > 0))
             {
                 character.IsSprinting = true;
             }
 
-            if (Input.GetButtonUp("Sprint") && character.SwordStatus == Character.SwordState.SheathedSword)
+            if ((Input.GetButtonUp("Sprint") && (character.SwordStatus == Character.SwordState.SheathedSword)) || (Input.GetAxis("Vertical") == 0))
             {
                 character.IsSprinting = false;
             }
