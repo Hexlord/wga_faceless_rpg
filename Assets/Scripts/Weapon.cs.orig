@@ -103,6 +103,17 @@ public class Weapon : MonoBehaviour {
         {
             if (col.tag == targetTag)
             {
+<<<<<<< HEAD
+                try
+                {
+                    col.attachedRigidbody.gameObject.GetComponent<BasicStatusSystem>().DealDamage(damage);
+                    isStriking = false;
+                    if (wielder != null && wielder.tag == "Player")
+                    {
+                        try
+                        {
+                            wielder.GetComponent<PlayerStatusSystem>().StoreConcentration(concentration);
+=======
                 col.transform.root.gameObject.GetComponent<HealthSystem>().DealDamage(damage);
                 Debug.Log(wielder.name + " dealt " + damage + " damage to " + col.name);
                 isStriking = false;
@@ -111,6 +122,7 @@ public class Weapon : MonoBehaviour {
                         try
                         {
                             wielder.GetComponent<HealthSystemWithConcentration>().StoreConcentration(concentration);
+>>>>>>> features/ranged_mob
                         }
                         catch
                         {

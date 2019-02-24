@@ -5,33 +5,28 @@ using UnityEngine;
 public class Control : MonoBehaviour
 {
     //Handles user input
-    //public variables
-    public float speed = 10.0f;
-    public Vector3 drag = new Vector3(1, 1, 1);
-    public Quaternion previousRotation;
-    public float mass = 10.0f;
+    //public variables   
     public float sensitivity = 60.0f;
-    public float CameraFollowRadius = 5.0f;
-    public float sprintModifier = 1.25f;
 
     // private variables
-    Vector3 Direction = Vector3.zero;
-    Vector3 CamDirectionForward, CamDirectionRight;
-    Camera mainCamera;
-    CharacterController charControl;
-    PlayerStatusSystem concentration;
-    SmartController cameraController;
-    Character character;
-    DefenseSystem defenseSystem;
-    public Transform PlayerCharacter;
+    private Quaternion previousRotation;
+    private Vector3 Direction = Vector3.zero;
+    private Vector3 CamDirectionForward, CamDirectionRight;
+    private Camera mainCamera;
+
+    private SmartController cameraController;
+    private HealthSystemWithConcentration healthSystemWithConcentration;
+    private Character character;
+    private DefenseSystem defenseSystem;
+    private Transform PlayerCharacter;
 
     // Use this for initialization
     void Start()
     {
-        concentration = gameObject.GetComponent<PlayerStatusSystem>();
+        PlayerCharacter = GameObject.Find("Player").transform;
         mainCamera = Camera.main;
+        healthSystemWithConcentration = gameObject.GetComponent<HealthSystemWithConcentration>();
         character = gameObject.GetComponent<Character>();
-        charControl = gameObject.GetComponent<CharacterController>();
         defenseSystem = gameObject.GetComponent<DefenseSystem>();
         cameraController = gameObject.GetComponent<SmartController>();
     }
@@ -46,9 +41,8 @@ public class Control : MonoBehaviour
         if (!defenseSystem.isDashing)
         {
             Direction = Vector3.zero;
-            Direction += CamDirectionRight * Input.GetAxis("Horizontal") * speed;
-            Direction += CamDirectionForward * Input.GetAxis("Vertical") * speed * ((character.IsSprinting) ? sprintModifier : 1.0f);
-            Direction += (!charControl.isGrounded) ? new Vector3(0, Physics.gravity.y * mass, 0) : Vector3.zero;
+            Direction += CamDirectionRight * (Input.GetAxis("Horizontal"));
+            Direction += CamDirectionForward * Input.GetAxis("Vertical") * ((character.IsSprinting) ? character.SprintModifier : 1.0f);
             
             //Aiming down sights handling
 
@@ -95,13 +89,14 @@ public class Control : MonoBehaviour
 
             //Blocking handling
 
-            if (Input.GetButtonDown("Block") && (character.Status == Character.CharacterState.SwordStance))
+            if (Input.GetButtonDown("Block") && (character.Status == Character.CharacterState.SwordStance) && (character.SwordStatus != Character.SwordState.SheathedSword))
             {
-                if (character.SwordStatus == Character.SwordState.SheathedSword)
-                {
-                    character.DrawSword();
-                }
                 defenseSystem.IsBlocking = true;
+            }
+
+            if(defenseSystem.IsBlocking)
+            {
+                cameraController.TriggerPlayerAutoRotation();
             }
 
             if (Input.GetButtonUp("Block") && (character.Status == Character.CharacterState.SwordStance) && defenseSystem.IsBlocking)
@@ -117,12 +112,12 @@ public class Control : MonoBehaviour
                 defenseSystem.InitiateDash(Direction);
             }
 
-            if (Input.GetButtonDown("Sprint") && (character.SwordStatus == Character.SwordState.SheathedSword))
+            if (Input.GetButton("Sprint") && (character.SwordStatus == Character.SwordState.SheathedSword) && (Input.GetAxis("Vertical") > 0))
             {
                 character.IsSprinting = true;
             }
 
-            if (Input.GetButtonUp("Sprint") && character.SwordStatus == Character.SwordState.SheathedSword)
+            if ((Input.GetButtonUp("Sprint") && (character.SwordStatus == Character.SwordState.SheathedSword)) || (Input.GetAxis("Vertical") == 0))
             {
                 character.IsSprinting = false;
             }
@@ -138,15 +133,12 @@ public class Control : MonoBehaviour
 
             if (Input.GetButton("Heal"))
             {
-                concentration.SpendConcentration(Time.deltaTime);
+                healthSystemWithConcentration.SpendConcentration(Time.deltaTime);
                 Direction = Vector3.zero;
             }
-        }
-        else
-        {
-            Direction = defenseSystem.dashDirection;
-        }
 
+            character.CurrentDirection = Direction;
+        }
     }
 
     void OnGUI()
@@ -156,10 +148,8 @@ public class Control : MonoBehaviour
 
     private void FixedUpdate()
     {
-
         if (Direction != Vector3.zero)
         {
-            charControl.Move(Direction * Time.deltaTime);
             cameraController.TriggerPlayerAutoRotation();
             previousRotation = transform.rotation;
         }
