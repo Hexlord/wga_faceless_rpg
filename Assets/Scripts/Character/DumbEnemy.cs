@@ -66,9 +66,9 @@ public class DumbEnemy : BaseCharacter
         base.Move();
     }
 
-    private void Attack()
+    protected virtual void Attack()
     {
-        if (distanceToPlayer.magnitude >= attackRange || isNotified == false)
+        if (distanceToPlayer.magnitude >= attackRange || !isNotified)
             return;
         anim.SetTrigger("Attack");
     }
