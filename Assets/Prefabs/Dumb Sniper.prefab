@@ -229,6 +229,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fb0abb1285882174da3ec300e819660f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  designatedPosition: {x: 0, y: 0, z: 0}
+  speed: 10
+  strikeAnimationClipsNames: []
+  ShootingPoint: {fileID: 4445609756223176791}
+  magicProjectile: {fileID: 8300673455396943202, guid: c55395441f692934fa67b64770ffabee,
+    type: 3}
+  magicalDamage: 25
+  physicalProjectile: {fileID: 3861566438358458710, guid: f34d2f4478f9b24419597c229ee27eac,
+    type: 3}
+  physicalDamage: 25
+  projectileSpeed: 2
+  attackCooldown: 1
+  target: Player
 --- !u!1 &2534976067928761031
 GameObject:
   m_ObjectHideFlags: 0
@@ -633,11 +646,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 8286795084692967089}
     m_Modifications:
-    - target: {fileID: 8300673455396943202, guid: c55395441f692934fa67b64770ffabee,
-        type: 3}
-      propertyPath: m_Name
-      value: EnemyProjectileMagical
-      objectReference: {fileID: 0}
     - target: {fileID: 6200062392357084766, guid: c55395441f692934fa67b64770ffabee,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -692,6 +700,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8300673455396943202, guid: c55395441f692934fa67b64770ffabee,
+        type: 3}
+      propertyPath: m_Name
+      value: EnemyProjectileMagical
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c55395441f692934fa67b64770ffabee, type: 3}
