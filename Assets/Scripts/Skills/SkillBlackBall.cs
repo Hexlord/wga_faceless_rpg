@@ -11,12 +11,12 @@ using UnityEngine;
  */
 public class SkillBlackBall : SkillBase
 {
-    private const float speed = 3.0f;
     private const float height = 2.0f;
     private Vector3 hand = new Vector3(0.4f, 0.0f, 0.5f);
+    private readonly GameObject projectilePrefab;
 
     public SkillBlackBall() :
-        base("blackball", false, 2.0f)
+        base("blackball", false, 10.0f)
     {
         projectilePrefab = (GameObject)Resources.Load("Prefabs/Fireball", typeof(GameObject));
     }
@@ -39,16 +39,13 @@ public class SkillBlackBall : SkillBase
             Quaternion.Euler(caster.transform.eulerAngles) * hand +
             caster.transform.position + new Vector3(0, height, 0), caster.transform.rotation);
 
-        projectile.GetComponent<Rigidbody>().velocity = caster.transform.forward * speed;
-        projectile.GetComponent<Rigidbody>().rotation = Quaternion.Euler(0, caster.transform.eulerAngles.y + 180.0f, 0);
+        projectile.transform.rotation = Quaternion.Euler(0, caster.transform.eulerAngles.y, 0);
     }
 
     public override void EndUpdate(GameObject caster, float delta, float time, float length)
     {
         Debug.Log("Ending blackball " + time + " / " + length);
     }
-
-    private readonly float damage = 50.0f;
-    private readonly GameObject projectilePrefab;
+    
 }
 

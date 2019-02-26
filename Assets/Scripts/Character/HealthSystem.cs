@@ -87,6 +87,7 @@ public class HealthSystem : MonoBehaviour {
 	// Update is called once per frame
 	void Update ()
     {
+
 	    if (healthPoints <= 0)
         {
             if (respawnAfterDeath)
@@ -98,5 +99,11 @@ public class HealthSystem : MonoBehaviour {
                 Destroy(gameObject);
             }
         }
-	}
+
+        if (gameObject.transform.position.y < -10.0f)
+        {
+            Debug.Log("Y <= -10, killing");
+            DealDamage(healthPoints + Mathf.Epsilon);
+        }
+    }
 }

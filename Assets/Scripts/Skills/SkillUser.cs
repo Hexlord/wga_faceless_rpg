@@ -38,6 +38,8 @@ public class SkillUser : MonoBehaviour
      * [interruptTrigger] -> (channelEnd) -> (default)
      */
 
+    [Header("Animation Settings")]
+
     public string skillAnimationStart = "skillStart";
     public string skillAnimationEnd = "skillEnd";
 
@@ -55,8 +57,13 @@ public class SkillUser : MonoBehaviour
     public string interruptTrigger = "interruptTrigger";
     public string interruptInstantTrigger = "interruptInstantTrigger";
 
+    [Header("Precision Settings")]
+
+    [Tooltip("Enabling makes skills tick even through missed ending frame")]
     public bool preciseEnding = false;
+    [Tooltip("Enabling makes skills tick even through missed channeling frame")]
     public bool preciseChanneling = false;
+    [Tooltip("Enabling makes skills use current animation time instead of internal state timer")]
     public bool useAnimationTime = false;
 
     public bool Casting
@@ -66,6 +73,7 @@ public class SkillUser : MonoBehaviour
 
     // Private
 
+    [Header("Debug")]
     public float skillAnimationStartLength = 0.0f;
     public float skillAnimationEndLength = 0.0f;
 
@@ -115,6 +123,7 @@ public class SkillUser : MonoBehaviour
         LoadAnimationLength(out channelAnimationEndLength, channelAnimationEnd);
 
         skills.Add(new SkillBlackBall());
+        skills.Add(new SkillCircleStrike());
     }
 
     private void SwitchState(SkillUserState state)
