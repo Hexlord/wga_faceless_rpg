@@ -82,6 +82,14 @@ public class HealthSystemWithConcentration : HealthSystem
         GameObject.Find("RestartButton").GetComponent<Button>().onClick.AddListener(Restart);
         deathScreen.SetActive(false);
     }
+
+    private void Update()
+    {
+        if (Input.GetKey("escape"))
+        {
+            ToMainMenu();
+        }
+    }
     protected override void OnDeath()
     {
         //base.OnDeath();

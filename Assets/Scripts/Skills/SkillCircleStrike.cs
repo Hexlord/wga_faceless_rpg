@@ -36,7 +36,7 @@ public class SkillCircleStrike : SkillBase
         var dummy = new GameObject("Dummy");
         dummy.transform.position = caster.transform.position;
         var attractor = dummy.AddComponent<EnemyAttractor>();
-        attractor.damagePerSecond = 100.0f;
+        attractor.damagePerSecond = 3000.0f;
         attractor.distanceHighpass = 5.0f;
         attractor.distancePower = 0.0f;
         attractor.strength = -500.0f;
