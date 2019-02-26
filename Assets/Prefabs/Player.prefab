@@ -423,7 +423,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   sensitivity: 90
-  sprintModifier: 2
 --- !u!143 &5519420895777628337
 CharacterController:
   m_ObjectHideFlags: 0
@@ -438,7 +437,7 @@ CharacterController:
   m_Height: 2
   m_Radius: 0.5
   m_SlopeLimit: 45
-  m_StepOffset: 0.3
+  m_StepOffset: 0.5
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0.001
   m_Center: {x: 0, y: 0.8, z: 0}
@@ -465,7 +464,7 @@ MonoBehaviour:
   transitionTime: 0.33
   actionMinimumDistance: 1.65
   actionHeight: 2.4
-  actionRightOffset: 0
+  actionRightOffset: 0.5
   actionDistance: 4.43
   actionPitchLimit: 60
   actionInitialPitchEnabled: 1
@@ -506,6 +505,7 @@ MonoBehaviour:
   - LeftSwing
   - RightSwing
   target: Faceless
+  sprintModifier: 1.25
   playerProjectile: {fileID: 3473170856130720857, guid: 554d3c36d571e484ba0c7ef086e79d49,
     type: 3}
   ShootingPoint: {fileID: 5519420895813277628}
@@ -538,6 +538,7 @@ MonoBehaviour:
   ConcentrationBar: {fileID: 0}
   exchangeRate: 1
   restorationRate: 10
+  deathScreen: {fileID: 0}
 --- !u!114 &5519420895777628333
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -557,7 +558,7 @@ MonoBehaviour:
   physicalDefenseChargesAvailable: 
   magicalDefenseChargesAvailable: 
   isDashing: 0
-  dashRange: 10
+  dashRange: 15
   dashTime: 0.2
   dashDirection: {x: 0, y: 0, z: 0}
 --- !u!114 &5519420895777628332

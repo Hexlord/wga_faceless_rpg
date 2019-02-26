@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class HealthSystemWithConcentration : HealthSystem
@@ -29,6 +30,8 @@ public class HealthSystemWithConcentration : HealthSystem
     [Tooltip("How fast healing will restore the object's HP.")]
     [SerializeField]
     private float restorationRate = 1.0f;
+
+    public GameObject deathScreen = null;
 
     public void SpendConcentration(float time)
     {
@@ -59,25 +62,43 @@ public class HealthSystemWithConcentration : HealthSystem
 
         if (healthPoints <= 0.0f)
         {
-            if (respawnAfterDeath)
-            {
-                healthPoints = 100.0f;
-                gameObject.GetComponent<BaseCharacter>().ResetPosition();
-                currentAmountOfConcentration = 0.0f;
-                ConcentrationBar.fillAmount = 0.0f;
-            }
+            OnDeath();
         }
 
         Healthbar.fillAmount = healthPoints / originalAmountOfHP;
     }
 
     // Use this for initialization
-    void Start()
+    new void Start()
     {
         originalAmountOfHP = healthPoints;
         currentAmountOfConcentration = 0;
 
         Healthbar.fillAmount = 1;
         ConcentrationBar.fillAmount = 0;
+
+        deathScreen.SetActive(true);
+        GameObject.Find("ToMainMenuButton").GetComponent<Button>().onClick.AddListener(ToMainMenu);
+        GameObject.Find("RestartButton").GetComponent<Button>().onClick.AddListener(Restart);
+        deathScreen.SetActive(false);
+    }
+    protected override void OnDeath()
+    {
+        //base.OnDeath();
+
+        Debug.Log("Player died");
+        deathScreen.SetActive(true);
+
+        GetComponent<SmartController>().enabled = false;
+        GetComponent<Control>().enabled = false;
+    }
+
+    void ToMainMenu()
+    {
+        SceneManager.LoadScene("MainMenu", LoadSceneMode.Single);
+    }
+    void Restart()
+    {
+        SceneManager.LoadScene("Game", LoadSceneMode.Single);
     }
 }

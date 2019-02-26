@@ -48,12 +48,7 @@ public class HealthSystem : MonoBehaviour {
 
         if(healthPoints <= 0.0f)
         {
-            
-            if(respawnAfterDeath)
-            {
-                healthPoints = 100.0f;
-                gameObject.GetComponent<BaseCharacter>().ResetPosition();
-            }
+            OnDeath();
         }
 
         Healthbar.fillAmount = healthPoints / originalAmountOfHP;
@@ -75,7 +70,7 @@ public class HealthSystem : MonoBehaviour {
     }
 
 	// Use this for initialization
-	void Start ()
+	protected void Start ()
     {
         originalAmountOfHP = healthPoints;
         originalPosition = transform.position;
@@ -83,21 +78,34 @@ public class HealthSystem : MonoBehaviour {
         originalScale = transform.localScale;
         Healthbar.fillAmount = 1;
     }
-	
-	// Update is called once per frame
-	void Update ()
+    virtual protected void OnDeath()
+    {
+        /*if (respawnAfterDeath)
+        {
+            Respawn();
+        }
+        else
+        {
+            Destroy(gameObject);
+        }*/
+
+        if (respawnAfterDeath)
+        {
+            healthPoints = 100.0f;
+            gameObject.GetComponent<BaseCharacter>().ResetPosition();
+        } else
+        {
+            Destroy(gameObject);
+        }
+    }
+
+    // Update is called once per frame
+    void Update ()
     {
 
 	    if (healthPoints <= 0)
         {
-            if (respawnAfterDeath)
-            {
-                Respawn();
-            }
-            else
-            {
-                Destroy(gameObject);
-            }
+            OnDeath();
         }
 
         if (gameObject.transform.position.y < -10.0f)
