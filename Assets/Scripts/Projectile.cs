@@ -4,7 +4,10 @@ using UnityEngine;
 
 public class Projectile : MonoBehaviour
 {
-    //Handles projectile logic
+    /// <summary>
+    /// Handles projectile logic
+    /// </summary>
+    
     [Tooltip("Time in seconds before the projectile will be destroyed.")]
     [SerializeField]
     private float timeBeforeDestruction = 10.0f;
@@ -27,10 +30,7 @@ public class Projectile : MonoBehaviour
     private void OnCollisionEnter(Collision collision)
     {
         Weapon weapon = GetComponent<Weapon>();
-        if((weapon = gameObject.GetComponent<Weapon>()) != null)
-        {
-            weapon.Strike(collision.collider);
-        }
+
         if (timesBounced >= timesToBounce)
         {
             Destroy(gameObject);

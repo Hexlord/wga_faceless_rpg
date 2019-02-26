@@ -4,27 +4,42 @@ using UnityEngine;
 
 public class Weapon : MonoBehaviour {
 
-    [SerializeField]
-    private Transform wielder;
+    /// <summary>
+    /// Implements damage dealing logic
+    /// 1. Must be attached to a gameobject with Trigger collider that acts as a weapon or to a projectile
+    /// 2. Must be set up via code during runtime
+    /// </summary>
+    
+    //Public
+
+    public enum WeaponMode {Melee, Projectile, Raycast}
 
     [SerializeField]
+    private WeaponMode Mode;
+
+    // Private
+
+    //gameobject that attacks the target
+    private BaseCharacter wielder;
+
+    //tag of an object that will recieve the damage (Faceless or Player)
     private string targetTag;
 
-    [SerializeField]
+    //Determines whether the damage should be dealt or not
     private bool isStriking = false;
 
-    [SerializeField]
-    private float damage, concentration;
+    //Damage the weapon deals when triggered
+    private float damage;
 
+    //Concentration that the wielder recieves upon dealing damage
+    private float concentration;
 
     private void Awake()
     {
-        wielder = transform.parent;
-
-        if (wielder != null) IgnoreCollisionsWithWielder();
+        if ((transform.parent != null) && ((wielder = transform.parent.GetComponent<BaseCharacter>()) != null)) IgnoreCollisionsWithWielder();
     }
 
-    public void SetWielder(Transform value)
+    public void SetWielder(BaseCharacter value)
     {
         wielder = value;
 
@@ -67,9 +82,19 @@ public class Weapon : MonoBehaviour {
         }
     }
 
-    public void TriggerStricking()
+    private void Update()
     {
-            isStriking = true;
+        switch (Mode)
+        {
+            case WeaponMode.Melee:
+                isStriking = wielder.IsStriking();
+                break;
+            case WeaponMode.Projectile:
+                if (!isStriking) isStriking = true;
+                break;
+            case WeaponMode.Raycast:
+                break;
+        }
     }
 
     public void Strike(Collider col)
@@ -78,26 +103,20 @@ public class Weapon : MonoBehaviour {
         {
             if (col.tag == targetTag)
             {
-                try
-                {
-                    col.attachedRigidbody.gameObject.GetComponent<BasicStatusSystem>().DealDamage(damage);
-                    isStriking = false;
-                    if (wielder != null && wielder.tag == "Player")
+                col.transform.root.gameObject.GetComponent<HealthSystem>().DealDamage(damage);
+                Debug.Log(wielder.name + " dealt " + damage + " damage to " + col.name);
+                isStriking = false;
+                if (wielder != null && wielder.tag == "Player")
                     {
                         try
                         {
-                            wielder.GetComponent<PlayerStatusSystem>().StoreConcentration(concentration);
+                            wielder.GetComponent<HealthSystemWithConcentration>().StoreConcentration(concentration);
                         }
                         catch
                         {
                             Debug.LogError("Concentration System is not attached");
                         }
                     }
-                }
-                catch
-                {
-                    Debug.LogError("NO HP SYSTEM ATTACHED TO GAMEOBJECT " + col.attachedRigidbody.gameObject.name);
-                }
             }
             if (col.tag == "Shield")
             {
@@ -108,7 +127,6 @@ public class Weapon : MonoBehaviour {
                     if ((anim = wielder.GetComponent<Animator>()) != null)
                     {
                         anim.SetTrigger("Blocked");
-                        isStriking = false;
                     }
                 }
             }
@@ -130,7 +148,6 @@ public class Weapon : MonoBehaviour {
             {
                 Collider col2 = obj.GetComponent<Collider>();
                 if (col2 != null) Physics.IgnoreCollision(col1, col2);
-
             }
         }
     }

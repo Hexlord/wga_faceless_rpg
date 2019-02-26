@@ -9,21 +9,68 @@ public class BaseCharacter : MonoBehaviour
     [SerializeField]
     private Vector3 designatedPosition;
 
-    private Vector3 originalPosition;
+    protected Vector3 direction;
+
+    [Tooltip("Character normal speed")]
+    [SerializeField]
+    protected float speed = 10.0f;
+
+    [Tooltip("Names of animation clips that are used for attacks")]
+    [SerializeField]
+    private string[] strikeAnimationClipsNames;
+
+    protected CharacterController charController;
+    protected Vector3 originalPosition;
+    protected Animator anim;
     
     public virtual void ResetPosition()
     {
         transform.position = originalPosition;
     }
 
-    void Start()
+    protected virtual void Start()
     {
         originalPosition = transform.position;
+        charController = GetComponent<CharacterController>();
+        anim = gameObject.GetComponent<Animator>();
     }
 
-    void FixedUpdate()
+    protected virtual void FixedUpdate()
     {
+        if (direction != Vector3.zero) Move();
+    }
 
+    public Vector3 CurrentDirection
+    {
+        set
+        {
+            direction = value;
+        }
+    }
+
+    protected virtual void Move()
+    {
+        if (direction.magnitude > 1) direction.Normalize();
+        direction *= speed;
+        if (charController != null)
+        {
+            direction += (!charController.isGrounded) ? Physics.gravity : Vector3.zero;
+        }
+        if (charController != null) charController.Move(direction * Time.deltaTime);
+        CurrentDirection = Vector3.zero;
+    }
+
+    public virtual bool IsStriking()
+    {
+        string currentAnimation = anim.GetCurrentAnimatorClipInfo(0)[0].clip.name;
+        for (int i = 0; i < strikeAnimationClipsNames.Length; i++)
+        {
+            if (strikeAnimationClipsNames[i] == currentAnimation)
+            {
+                return true;
+            }
+        }
+        return false;
     }
 }
 
