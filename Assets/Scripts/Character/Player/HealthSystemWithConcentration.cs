@@ -83,8 +83,10 @@ public class HealthSystemWithConcentration : HealthSystem
         deathScreen.SetActive(false);
     }
 
-    private void Update()
+    protected void Update()
     {
+        base.Update();
+
         if (Input.GetKey("escape"))
         {
             ToMainMenu();
