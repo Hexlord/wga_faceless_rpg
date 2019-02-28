@@ -168,6 +168,7 @@ public class Familiar : MonoBehaviour
                         }
                     }
                     else landTimer = landTimeout;
+                    transform.position = new Vector3(transform.position.x, Mathf.Min(height, transform.position.y + raiseSpeed * Time.fixedDeltaTime), transform.position.z);
                 }
                 break;
             case State.Land:
