@@ -50,7 +50,6 @@ public class BaseCharacter : MonoBehaviour
 
     protected virtual void Move()
     {
-        if (direction.magnitude > 1) direction.Normalize();
         direction *= speed;
         if (charController != null)
         {

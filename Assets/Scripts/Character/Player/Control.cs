@@ -6,10 +6,8 @@ public class Control : MonoBehaviour
 {
     //Handles user input
     //public variables   
-    public float sensitivity = 60.0f;
 
     // private variables
-    private Quaternion previousRotation;
     private Vector3 Direction = Vector3.zero;
     private Vector3 CamDirectionForward, CamDirectionRight;
     private Camera mainCamera;
@@ -137,6 +135,8 @@ public class Control : MonoBehaviour
                 Direction = Vector3.zero;
             }
 
+            if (Direction.magnitude > 1) Direction.Normalize();
+
             character.CurrentDirection = Direction;
         }
     }
@@ -151,7 +151,6 @@ public class Control : MonoBehaviour
         if (Direction != Vector3.zero)
         {
             cameraController.TriggerPlayerAutoRotation();
-            previousRotation = transform.rotation;
         }
     }
 }
