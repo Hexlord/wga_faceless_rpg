@@ -5,30 +5,72 @@ using UnityEngine;
 
 public class BaseCharacter : MonoBehaviour
 {
+    [Tooltip ("The position in world space where the object will appear after reset.")]
     [SerializeField]
-    private Vector3 spawnPosition;
+    private Vector3 designatedPosition;
+
+    protected Vector3 direction;
+
+    [Tooltip("Character normal speed")]
+    [SerializeField]
+    protected float speed = 10.0f;
+
+    [Tooltip("Names of animation clips that are used for attacks")]
+    [SerializeField]
+    private string[] strikeAnimationClipsNames;
+
+    protected CharacterController charController;
+    protected Vector3 originalPosition;
+    protected Animator anim;
     
-    public virtual void Spawn()
+    public virtual void ResetPosition()
     {
-        string name = gameObject.name;
-        Instantiate(gameObject, spawnPosition, gameObject.transform.rotation).name = name;
+        transform.position = originalPosition;
     }
 
-    public virtual void Die()
+    protected virtual void Start()
     {
-        Debug.Log("Died");
-        Spawn();
-        Destroy(gameObject);
+        originalPosition = transform.position;
+        charController = GetComponent<CharacterController>();
+        anim = gameObject.GetComponent<Animator>();
     }
 
-    void Start()
+    protected virtual void FixedUpdate()
     {
-        spawnPosition.Set(5.8f, 3.0f, 0.0f);
+        if (direction != Vector3.zero) Move();
     }
 
-    void FixedUpdate()
+    public Vector3 CurrentDirection
     {
+        set
+        {
+            direction = value;
+        }
+    }
 
+    protected virtual void Move()
+    {
+        if (direction.magnitude > 1) direction.Normalize();
+        direction *= speed;
+        if (charController != null)
+        {
+            direction += (!charController.isGrounded) ? Physics.gravity : Vector3.zero;
+        }
+        if (charController != null) charController.Move(direction * Time.deltaTime);
+        CurrentDirection = Vector3.zero;
+    }
+
+    public virtual bool IsStriking()
+    {
+        string currentAnimation = anim.GetCurrentAnimatorClipInfo(0)[0].clip.name;
+        for (int i = 0; i < strikeAnimationClipsNames.Length; i++)
+        {
+            if (strikeAnimationClipsNames[i] == currentAnimation)
+            {
+                return true;
+            }
+        }
+        return false;
     }
 }
 
