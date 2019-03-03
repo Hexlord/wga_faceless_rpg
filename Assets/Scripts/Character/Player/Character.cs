@@ -2,6 +2,15 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/*
+ * History:
+ * 
+ * Date         Author      Description
+ * 
+ * 03.03.2019   bkrylov     Created
+ * 03.03.2019   aknorre     Handling skill casting
+ * 
+ */
 public class Character : BaseCharacter
 {
 
