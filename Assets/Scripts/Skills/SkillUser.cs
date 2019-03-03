@@ -4,8 +4,11 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /*
- *  
+ * History:
  * 
+ * Date         Author      Description
+ * 
+ * 03.03.2019   aknorre     Created
  * 
  */
 public class SkillUser : MonoBehaviour
@@ -66,9 +69,18 @@ public class SkillUser : MonoBehaviour
     [Tooltip("Enabling makes skills use current animation time instead of internal state timer")]
     public bool useAnimationTime = false;
 
+    
+    [Tooltip("Skills known by this character")]
+    public Skill[] startSkills;
+
     public bool Casting
     {
         get { return state != SkillUserState.None; }
+    }
+
+    public IList<string> Skills
+    {
+        get { return skillNames; }
     }
 
     // Private
@@ -81,8 +93,8 @@ public class SkillUser : MonoBehaviour
     public float channelAnimationUpdateLength = 0.0f;
     public float channelAnimationEndLength = 0.0f;
 
-
     private readonly IList<SkillBase> skills = new List<SkillBase>();
+    private readonly IList<string> skillNames = new List<string>();
     private SkillBase activeSkill = null;
 
     private float stateTimer = 0.0f;
@@ -122,8 +134,11 @@ public class SkillUser : MonoBehaviour
         LoadAnimationLength(out channelAnimationUpdateLength, channelAnimationUpdate);
         LoadAnimationLength(out channelAnimationEndLength, channelAnimationEnd);
 
-        skills.Add(new SkillBlackBall());
-        skills.Add(new SkillCircleStrike());
+        foreach(Skill skill in startSkills)
+        {
+            skills.Add(skill.Instantiate());
+            skillNames.Add(skill.ToString());
+        }
     }
 
     private void SwitchState(SkillUserState state)
@@ -265,56 +280,48 @@ public class SkillUser : MonoBehaviour
         
         stateTimer += Time.fixedDeltaTime;
     }
-
-    private void Update()
-    {
-
-        SkillBase pressedSkill = null;
-        if (Input.GetButtonDown("Skill 1") && skills.Count >= 1)
-        {
-            pressedSkill = skills[0];
-        }
-        if (Input.GetButtonDown("Skill 2") && skills.Count >= 2)
-        {
-            pressedSkill = skills[1];
-        }
-        if(pressedSkill != null)
-        {
-            Cast(pressedSkill.Name);
-        }
-    }
-
+    
     public void Cast(string skillName)
     {
         Debug.Assert(!Casting);
 
-        foreach (SkillBase skill in skills)
+        for(int i = 0; i < skills.Count; ++i)
         {
-            if (skill.Name == skillName)
+            if(skills[i].Name == skillName)
             {
-                if (skill.OnCooldawn) return;
-
-                activeSkill = skill;
-                activeSkill.PrepareEvent(gameObject);
-                if (activeSkill.Channeling)
-                {
-                    SwitchState(SkillUserState.ChannelStart);
-                    animator.SetTrigger(channelAnimationStartTrigger);
-                    activeSkill.StartUpdate(gameObject, Time.fixedDeltaTime, 0.0f, channelAnimationStartLength);
-                }
-                else
-                {
-                    SwitchState(SkillUserState.SkillStart);
-                    animator.SetTrigger(skillAnimationStartTrigger);
-                    activeSkill.StartUpdate(gameObject, Time.fixedDeltaTime, 0.0f, skillAnimationStartLength);
-                }
-
+                Cast(i);
                 return;
             }
         }
 
         Debug.LogError("Skill " + skillName + " not found!");
         Debug.Assert(false);
+    }
+
+    public void Cast(int skillNumber)
+    {
+        Debug.Assert(!Casting);
+        Debug.Assert(skillNumber >= 0);
+        Debug.Assert(skills.Count > skillNumber);
+
+        SkillBase skill = skills[skillNumber];
+
+        if (skill.OnCooldawn) return;
+
+        activeSkill = skill;
+        activeSkill.PrepareEvent(gameObject);
+        if (activeSkill.Channeling)
+        {
+            SwitchState(SkillUserState.ChannelStart);
+            animator.SetTrigger(channelAnimationStartTrigger);
+            activeSkill.StartUpdate(gameObject, Time.fixedDeltaTime, 0.0f, channelAnimationStartLength);
+        }
+        else
+        {
+            SwitchState(SkillUserState.SkillStart);
+            animator.SetTrigger(skillAnimationStartTrigger);
+            activeSkill.StartUpdate(gameObject, Time.fixedDeltaTime, 0.0f, skillAnimationStartLength);
+        }
     }
 
     /*

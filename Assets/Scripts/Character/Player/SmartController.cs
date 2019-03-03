@@ -4,15 +4,21 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /*
+ * History:
+ * 
+ * Date         Author      Description
+ * 
+ * 03.03.2019   aknorre     Created
+ * 
+ */
+
+/*
  *  Basic character rotation algorithm is:
  *  
  *  1. After timeout of not moving mouse rotate character to match aim
  *  2. After X angle becoming 90+ degree rotate character to match aim continuously (aim can still move during character rotation) until reaching the aim
  *  3. After any movement rotate character to match aim
  *  
- *  Camera uses ray casting to determine 
- * 
- * 
  */
 public class SmartController : MonoBehaviour
 {
@@ -93,6 +99,10 @@ public class SmartController : MonoBehaviour
     [Range(-45.0f, 45.0f)]
     public float actionInitialPitch = -15.0f;
 
+    [Tooltip("Action camera field of view")]
+    [Range(1.0f, 115.0f)]
+    public float actionFOV = 90.0f;
+
     [Header("Camera State Settings: Shoot")]
 
     [Tooltip("Minimum distance to target for camera")]
@@ -121,6 +131,10 @@ public class SmartController : MonoBehaviour
     [Tooltip("Shoot camera pitch on state switch")]
     [Range(-45.0f, 45.0f)]
     public float shootInitialPitch = 0.0f;
+       
+    [Tooltip("Shoot camera field of view")]
+    [Range(1.0f, 115.0f)]
+    public float shootFOV = 90.0f;
 
     [Header("Camera State Settings: Tactics")]
 
@@ -135,6 +149,10 @@ public class SmartController : MonoBehaviour
     [Tooltip("Tactics camera pitch")]
     [Range(0.0f, 90.0f)]
     public float tacticsPitch = 90.0f;
+       
+    [Tooltip("Tactics camera field of view")]
+    [Range(1.0f, 115.0f)]
+    public float tacticsFOV = 90.0f;
 
     [Header("Camera Clipping Settings")]
 
@@ -176,6 +194,7 @@ public class SmartController : MonoBehaviour
 
     private float actionYaw = 0.0f;
     private float actionPitch = 0.0f;
+    private float shootYaw = 0.0f;
     private float shootPitch = 0.0f;
 
     private float playerAutoRotateTimer = 0.0f;
@@ -195,6 +214,7 @@ public class SmartController : MonoBehaviour
     private float startHeight = 0.0f;
     private Vector3 startPosition = Vector3.zero;
     private Quaternion startRotation = Quaternion.identity;
+    private float startFOV = 0.0f;
 
     /*
      * Camera rotation delta accumulated during state transition
@@ -211,6 +231,7 @@ public class SmartController : MonoBehaviour
 
     private new GameObject camera;
     private Transform cameraTransform;
+    private Camera cameraComponent;
 
     void Start()
     {
@@ -221,6 +242,7 @@ public class SmartController : MonoBehaviour
 
         camera = GameObject.Find("Main Camera");
         cameraTransform = camera.GetComponent<Transform>();
+        cameraComponent = camera.GetComponent<Camera>();
 
         actionYaw = playerTransform.eulerAngles.y;
         actionPitch = actionInitialPitch;
@@ -282,11 +304,11 @@ public class SmartController : MonoBehaviour
                 break;
             case CameraState.Shoot:
                 // Affect camera, player rotation
-                float shootYaw = playerTransform.eulerAngles.y + inputDeltaX;
+                shootYaw = Mathf.DeltaAngle(0.0f, shootYaw + inputDeltaX);
                 shootPitch = Mathf.DeltaAngle(0.0f, shootPitch + inputDeltaY);
                 shootPitch = Mathf.Clamp(shootPitch, -shootPitchLimit, shootPitchLimit);
 
-                playerTransform.rotation = Quaternion.Euler(playerTransform.eulerAngles.x, shootYaw, playerTransform.eulerAngles.z);
+                // playerTransform.rotation = Quaternion.Euler(playerTransform.eulerAngles.x, shootYaw, playerTransform.eulerAngles.z);
 
 
                 break;
@@ -536,6 +558,7 @@ public class SmartController : MonoBehaviour
         float desiredHeight = 0.0f;
         Vector3 desiredPosition = Vector3.zero;
         Quaternion desiredRotation = Quaternion.identity;
+        float desiredFOV = 0.0f;
         float desiredDistance = 0.0f;
         float minDistance = 0.0f;
         inputDeltaX = Input.GetAxis("Mouse X") * mouseHorizontalSensitivity;
@@ -551,14 +574,19 @@ public class SmartController : MonoBehaviour
                 desiredPosition = Quaternion.Euler(-actionPitch, actionYaw, 0.0f) * (Vector3.right * actionRightOffset + Vector3.forward * -actionDistance);
                 desiredRotation = Quaternion.Euler(-actionPitch, actionYaw, 0.0f);
 
+                desiredFOV = actionFOV;
                 desiredDistance = actionDistance;
                 minDistance = actionMinimumDistance;
                 break;
             case CameraState.Shoot:
                 desiredHeight = shootHeight;
-                desiredPosition = Quaternion.Euler(-shootPitch, playerTransform.eulerAngles.y, 0.0f) * (Vector3.right * shootRightOffset + Vector3.forward * -shootBackwardsOffset);
-                desiredRotation = Quaternion.Euler(-shootPitch, playerTransform.eulerAngles.y, 0.0f);
+                //desiredPosition = Quaternion.Euler(-shootPitch, playerTransform.eulerAngles.y, 0.0f) * (Vector3.right * shootRightOffset + Vector3.forward * -shootBackwardsOffset);
+                //desiredRotation = Quaternion.Euler(-shootPitch, playerTransform.eulerAngles.y, 0.0f);
 
+                desiredPosition = Quaternion.Euler(-shootPitch, shootYaw, 0.0f) * (Vector3.right * shootRightOffset + Vector3.forward * -shootBackwardsOffset);
+                desiredRotation = Quaternion.Euler(-shootPitch, shootYaw, 0.0f);
+
+                desiredFOV = shootFOV;
                 desiredDistance = shootBackwardsOffset;
                 minDistance = shootMinimumDistance;
                 break;
@@ -567,6 +595,7 @@ public class SmartController : MonoBehaviour
                 desiredPosition = Quaternion.Euler(tacticsPitch, playerTransform.eulerAngles.y, 0.0f) * (Vector3.forward * -tacticsDistance);
                 desiredRotation = Quaternion.Euler(tacticsPitch, playerTransform.eulerAngles.y, 0.0f);
 
+                desiredFOV = tacticsFOV;
                 desiredDistance = tacticsDistance;
                 break;
         }
@@ -597,6 +626,7 @@ public class SmartController : MonoBehaviour
         }
 
         currentHeight = Mathf.SmoothStep(startHeight, desiredHeight, tLinear);
+        cameraComponent.fieldOfView = Mathf.SmoothStep(startFOV, desiredFOV, tLinear);
         currentPosition = new Vector3(
                 Mathf.SmoothStep(startPosition.x, desiredPosition.x, tLinear),
                 Mathf.SmoothStep(startPosition.y, desiredPosition.y, tLinear),
@@ -730,6 +760,7 @@ public class SmartController : MonoBehaviour
                     if (actionInitialPitchEnabled) actionPitch = actionInitialPitch;
                     break;
                 case CameraState.Shoot:
+                    shootYaw = playerTransform.eulerAngles.y;
                     if (shootInitialPitchEnabled) shootPitch = shootInitialPitch;
                     break;
                 case CameraState.Tactics:
@@ -739,6 +770,7 @@ public class SmartController : MonoBehaviour
             startHeight = currentHeight;
             startPosition = currentPosition;
             startRotation = currentRotation;
+            startFOV = cameraComponent.fieldOfView;
 
             transitionDeltaYaw = float.MaxValue;
             transitionDeltaPitch = float.MaxValue;

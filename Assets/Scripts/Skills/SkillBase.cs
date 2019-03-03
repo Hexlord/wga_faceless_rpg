@@ -1,7 +1,17 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
+
+/*
+ * History:
+ * 
+ * Date         Author      Description
+ * 
+ * 03.03.2019   aknorre     Created
+ * 
+ */
 
 /*
  * Skill casting is:
@@ -15,12 +25,17 @@ using UnityEngine;
  */
 public class SkillBase
 {
+
+    private readonly GameObject textPrefab;
+
     public SkillBase(string name, bool channeling, float cooldawn)
     {
         this.name = name;
         this.channeling = channeling;
         this.cooldawn = cooldawn;
         this.cooldawnTimer = 0.0f;
+        
+        textPrefab = (GameObject)Resources.Load("Prefabs/FloatingText", typeof(GameObject));
     }
 
     public void Update(float delta)
@@ -50,7 +65,10 @@ public class SkillBase
      */
     public virtual void CastEvent(GameObject caster)
     {
-
+        GameObject text = UnityEngine.Object.Instantiate(textPrefab,
+            caster.transform.position + new Vector3(0, 3, 0),
+            Quaternion.identity);
+        text.GetComponent<TextMeshPro>().text = name;
     }
 
     /*
