@@ -152,14 +152,14 @@ public class Familiar : MonoBehaviour
                         {
                             direction.Normalize();
                             transform.position += new Vector3(direction.x, 0.0f, direction.y) * Mathf.Min(speed, distance);
-                            transform.rotation = Quaternion.Euler(0.0f, -Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg - 90, 0.0f);
+                            transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.Euler(0.0f, -Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg + 90, 0.0f), 0.1f);
 
                         }
                         followTimer -= Time.fixedDeltaTime;
                     }
                     if (distance <= speed)
                     {
-                        transform.rotation = playerTransform.rotation;
+                        transform.rotation = Quaternion.Lerp(transform.rotation, playerTransform.rotation, 0.1f);
                         followTimer = followTimeout;
                         landTimer -= Time.fixedDeltaTime;
                         if (landTimer <= 0)
@@ -168,6 +168,7 @@ public class Familiar : MonoBehaviour
                         }
                     }
                     else landTimer = landTimeout;
+                    transform.position = new Vector3(transform.position.x, Mathf.Min(height, transform.position.y + raiseSpeed * Time.fixedDeltaTime), transform.position.z);
                 }
                 break;
             case State.Land:
@@ -179,7 +180,7 @@ public class Familiar : MonoBehaviour
                 else
                 {
                     transform.position = new Vector3(target.x, Mathf.Max(target.y, transform.position.y - landSpeed * Time.fixedDeltaTime), target.z);
-                    transform.rotation = playerTransform.rotation;
+                    transform.rotation = Quaternion.Lerp(transform.rotation, playerTransform.rotation, 0.1f);
                     if (transform.position.y <= target.y)
                     {
                         state = State.Rest;

@@ -7,7 +7,7 @@ public class IntroScript : MonoBehaviour
 {
 
     [Tooltip("Time before switching scene")]
-    public float timeBeforeStart = 5.0f;
+    public float timeBeforeStart = 3.0f;
 
     private float timer = 0.0f;
 
