@@ -4,15 +4,21 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /*
+ * History:
+ * 
+ * Date         Author      Description
+ * 
+ * 03.03.2019   aknorre     Created
+ * 
+ */
+
+/*
  *  Basic character rotation algorithm is:
  *  
  *  1. After timeout of not moving mouse rotate character to match aim
  *  2. After X angle becoming 90+ degree rotate character to match aim continuously (aim can still move during character rotation) until reaching the aim
  *  3. After any movement rotate character to match aim
  *  
- *  Camera uses ray casting to determine 
- * 
- * 
  */
 public class SmartController : MonoBehaviour
 {

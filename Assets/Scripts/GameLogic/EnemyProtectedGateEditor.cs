@@ -5,6 +5,15 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
+/*
+ * History:
+ * 
+ * Date         Author      Description
+ * 
+ * 03.03.2019   aknorre     Created
+ * 
+ */
+
 [CustomEditor(typeof(EnemyProtectedGate))]
 public class EnemyProtectedGateEditor : Editor
 {
