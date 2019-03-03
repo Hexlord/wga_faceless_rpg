@@ -36,6 +36,10 @@ public class Character : BaseCharacter
     [SerializeField]
     private float projectileDamage = 15.0f;
 
+    [Tooltip("Concentration the player recieves upon attack")]
+    [SerializeField]
+    private float projectileConcentration = 2.5f;
+
     [Header("Sword Settings")]
 
     [Tooltip("Gameobject that represent the sword of the player")]
@@ -236,6 +240,7 @@ public class Character : BaseCharacter
         projectileWeaponComponent.SetWielder(this);
         projectileWeaponComponent.TargetTag = target;
         projectileWeaponComponent.Damage = projectileDamage;
+        projectileWeaponComponent.Concentration = projectileConcentration;
         magicProjectile.GetComponent<Rigidbody>().AddForce(shootingDirection * projectileSpeed);
     }
 
