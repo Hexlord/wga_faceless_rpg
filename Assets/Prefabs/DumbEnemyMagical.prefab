@@ -116,7 +116,7 @@ GameObject:
   - component: {fileID: 1979294554800456794}
   - component: {fileID: 1979294554800456796}
   - component: {fileID: 1979294554800456795}
-  m_Layer: 12
+  m_Layer: 14
   m_Name: HealthBarBackground (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -191,7 +191,7 @@ GameObject:
   - component: {fileID: 1979294555013587250}
   - component: {fileID: 1979294555013587249}
   - component: {fileID: 1979294555013587248}
-  m_Layer: 12
+  m_Layer: 14
   m_Name: HealthBar
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -264,9 +264,9 @@ GameObject:
   m_Component:
   - component: {fileID: 1979294555319475622}
   - component: {fileID: 1979294555319475623}
-  m_Layer: 12
-  m_Name: GameObject
-  m_TagString: Untagged
+  m_Layer: 14
+  m_Name: Trigger
+  m_TagString: Faceless
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -310,7 +310,7 @@ GameObject:
   - component: {fileID: 1979294555505146384}
   - component: {fileID: 1979294555505146383}
   - component: {fileID: 1979294555505146382}
-  m_Layer: 12
+  m_Layer: 14
   m_Name: Canvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -608,8 +608,8 @@ GameObject:
   - component: {fileID: 1979294556170477415}
   - component: {fileID: 1979294556170477414}
   - component: {fileID: 1979294556170477413}
-  - component: {fileID: 1979294556170477412}
-  m_Layer: 12
+  - component: {fileID: 2561675647744530084}
+  m_Layer: 14
   m_Name: DumbEnemyMagical
   m_TagString: Faceless
   m_Icon: {fileID: 0}
@@ -647,7 +647,7 @@ Rigidbody:
   m_Drag: 0
   m_AngularDrag: 0.05
   m_UseGravity: 1
-  m_IsKinematic: 0
+  m_IsKinematic: 1
   m_Interpolate: 0
   m_Constraints: 80
   m_CollisionDetection: 3
@@ -719,21 +719,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 696c12137798d2640a89224e0552696d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!143 &1979294556170477412
-CharacterController:
+--- !u!195 &2561675647744530084
+NavMeshAgent:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1979294556170477411}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 0
-  serializedVersion: 2
-  m_Height: 4
+  m_Enabled: 1
+  m_AgentTypeID: 0
   m_Radius: 1
-  m_SlopeLimit: 45
-  m_StepOffset: 0.3
-  m_SkinWidth: 0.08
-  m_MinMoveDistance: 0.001
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Speed: 3.5
+  m_Acceleration: 8
+  avoidancePriority: 50
+  m_AngularSpeed: 120
+  m_StoppingDistance: 0
+  m_AutoTraverseOffMeshLink: 1
+  m_AutoBraking: 1
+  m_AutoRepath: 1
+  m_Height: 4
+  m_BaseOffset: 2
+  m_WalkableMask: 4294967295
+  m_ObstacleAvoidanceType: 4

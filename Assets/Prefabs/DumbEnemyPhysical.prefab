@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 885713853847811300}
   - component: {fileID: 885713853847811303}
   - component: {fileID: 885713853847811302}
-  m_Layer: 12
+  m_Layer: 14
   m_Name: Body
   m_TagString: Faceless
   m_Icon: {fileID: 0}
@@ -208,7 +208,7 @@ GameObject:
   - component: {fileID: 885713854174393402}
   - component: {fileID: 885713854174393405}
   - component: {fileID: 885713854174393404}
-  m_Layer: 12
+  m_Layer: 14
   m_Name: HealthBar
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -387,7 +387,7 @@ GameObject:
   - component: {fileID: 885713854335178443}
   - component: {fileID: 885713854335178441}
   - component: {fileID: 885713854335178440}
-  m_Layer: 12
+  m_Layer: 14
   m_Name: HealthBarBackground (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -464,7 +464,7 @@ GameObject:
   - component: {fileID: 885713854590445401}
   - component: {fileID: 885713854590445400}
   - component: {fileID: 885713854590445223}
-  m_Layer: 12
+  m_Layer: 14
   m_Name: Canvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -573,9 +573,9 @@ GameObject:
   m_Component:
   - component: {fileID: 885713854937773636}
   - component: {fileID: 885713854937773637}
-  m_Layer: 12
-  m_Name: GameObject
-  m_TagString: Untagged
+  m_Layer: 14
+  m_Name: Trigger
+  m_TagString: Faceless
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -603,7 +603,7 @@ SphereCollider:
   m_GameObject: {fileID: 885713854937773639}
   m_Material: {fileID: 0}
   m_IsTrigger: 1
-  m_Enabled: 0
+  m_Enabled: 1
   serializedVersion: 2
   m_Radius: 10.938607
   m_Center: {x: 0, y: 0, z: 0}
@@ -621,8 +621,8 @@ GameObject:
   - component: {fileID: 885713854989276981}
   - component: {fileID: 885713854989276978}
   - component: {fileID: 885713854989276976}
-  - component: {fileID: 885713854989276979}
-  m_Layer: 12
+  - component: {fileID: 1310884796300817671}
+  m_Layer: 14
   m_Name: DumbEnemyPhysical
   m_TagString: Faceless
   m_Icon: {fileID: 0}
@@ -660,7 +660,7 @@ Rigidbody:
   m_Drag: 0
   m_AngularDrag: 0.05
   m_UseGravity: 1
-  m_IsKinematic: 0
+  m_IsKinematic: 1
   m_Interpolate: 0
   m_Constraints: 80
   m_CollisionDetection: 3
@@ -732,21 +732,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 696c12137798d2640a89224e0552696d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!143 &885713854989276979
-CharacterController:
+--- !u!195 &1310884796300817671
+NavMeshAgent:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 885713854989276969}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 0
-  serializedVersion: 2
-  m_Height: 4
+  m_Enabled: 1
+  m_AgentTypeID: 0
   m_Radius: 1
-  m_SlopeLimit: 45
-  m_StepOffset: 0.3
-  m_SkinWidth: 0.08
-  m_MinMoveDistance: 0.001
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Speed: 3.5
+  m_Acceleration: 8
+  avoidancePriority: 50
+  m_AngularSpeed: 120
+  m_StoppingDistance: 0
+  m_AutoTraverseOffMeshLink: 1
+  m_AutoBraking: 1
+  m_AutoRepath: 1
+  m_Height: 4
+  m_BaseOffset: 2
+  m_WalkableMask: 4294967295
+  m_ObstacleAvoidanceType: 4

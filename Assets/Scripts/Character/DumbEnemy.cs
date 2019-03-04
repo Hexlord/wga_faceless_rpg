@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class DumbEnemy : BaseCharacter
 {
@@ -18,7 +19,7 @@ public class DumbEnemy : BaseCharacter
     private float attackRange;
 
     private GameObject character;
-    private CharacterController characterController;
+    private NavMeshAgent navMeshAgent;
     private BasicStatusSystem healthSystem;
     private Vector3 distanceToPlayer;
     private bool isNotified = false;
@@ -39,7 +40,7 @@ public class DumbEnemy : BaseCharacter
     protected override void Start()
     {
         base.Start();
-        characterController = gameObject.GetComponent<CharacterController>();
+        navMeshAgent = gameObject.GetComponent<NavMeshAgent>();
         rightFist.Damage = fistDamage;
         leftFist.Damage = fistDamage;
     }
@@ -57,9 +58,7 @@ public class DumbEnemy : BaseCharacter
             distanceToPlayer.y = 0;
             if (distanceToPlayer.magnitude > attackRange)
             {
-                distanceToPlayer.Normalize();
-                transform.forward = distanceToPlayer;
-                CurrentDirection = distanceToPlayer.normalized;
+                navMeshAgent.SetDestination(character.transform.position);
             }
         }
         base.Move();
