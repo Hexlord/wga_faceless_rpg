@@ -2,6 +2,15 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/*
+ * History:
+ * 
+ * Date         Author      Description
+ * 
+ * 03.03.2019   bkrylov     Created
+ * 
+ */
+
 public class Control : MonoBehaviour
 {
     //Handles user input
@@ -16,6 +25,7 @@ public class Control : MonoBehaviour
     private HealthSystemWithConcentration healthSystemWithConcentration;
     private Character character;
     private DefenseSystem defenseSystem;
+    private SkillUser skillUser;
     private Transform PlayerCharacter;
 
     // Use this for initialization
@@ -26,6 +36,7 @@ public class Control : MonoBehaviour
         healthSystemWithConcentration = gameObject.GetComponent<HealthSystemWithConcentration>();
         character = gameObject.GetComponent<Character>();
         defenseSystem = gameObject.GetComponent<DefenseSystem>();
+        skillUser = gameObject.GetComponent<SkillUser>();
         cameraController = gameObject.GetComponent<SmartController>();
     }
 
@@ -126,6 +137,44 @@ public class Control : MonoBehaviour
             {
                 character.DrawSword();
             }
+
+            // Skill handling
+            if(!skillUser.Casting)
+            {
+                if (Input.GetButtonDown("Skill 1") && skillUser.Skills.Count >= 1)
+                {
+                    skillUser.Cast(0);
+                }
+                else if (Input.GetButtonDown("Skill 2") && skillUser.Skills.Count >= 2)
+                {
+                    skillUser.Cast(1);
+                }
+                else if (Input.GetButtonDown("Skill 3") && skillUser.Skills.Count >= 3)
+                {
+                    skillUser.Cast(2);
+                }
+                else if (Input.GetButtonDown("Skill 4") && skillUser.Skills.Count >= 4)
+                {
+                    skillUser.Cast(3);
+                }
+                else if (Input.GetButtonDown("Skill 5") && skillUser.Skills.Count >= 5)
+                {
+                    skillUser.Cast(4);
+                }
+                else if (Input.GetButtonDown("Skill 6") && skillUser.Skills.Count >= 6)
+                {
+                    skillUser.Cast(5);
+                }
+                else if (Input.GetButtonDown("Skill 7") && skillUser.Skills.Count >= 7)
+                {
+                    skillUser.Cast(6);
+                }
+                else if (Input.GetButtonDown("Skill 8") && skillUser.Skills.Count >= 8)
+                {
+                    skillUser.Cast(7);
+                }
+            }
+
 
             //Heal handling
 

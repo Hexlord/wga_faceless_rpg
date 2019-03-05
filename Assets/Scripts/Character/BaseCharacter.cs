@@ -2,7 +2,14 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-
+/*
+ * History:
+ * 
+ * Date         Author      Description
+ * 
+ * 03.03.2019   bkrylov     Created
+ * 
+ */
 public class BaseCharacter : MonoBehaviour
 {
     [Tooltip ("The position in world space where the object will appear after reset.")]
