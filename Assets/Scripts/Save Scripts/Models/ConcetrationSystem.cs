@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-interface ISaveable
+namespace CI.QuickSave.Core.Models
 {
-    SaveObject Save();
-    void Load(SaveObject saveObject);
+    public class ConcetrationSystem
+    {
+
+    }
 }
