@@ -3,6 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+/*
+ * History:
+ * 
+ * Date         Author      Description
+ * 
+ * 03.03.2019   bkrylov     Created
+ * 
+ */
 public class HealthSystem : MonoBehaviour {
     /// <summary>
     /// Implements HP logic.
@@ -100,7 +108,7 @@ public class HealthSystem : MonoBehaviour {
     }
 
     // Update is called once per frame
-    void Update ()
+    protected void Update ()
     {
 
 	    if (healthPoints <= 0)

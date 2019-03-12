@@ -4,6 +4,15 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
+/*
+ * History:
+ * 
+ * Date         Author      Description
+ * 
+ * 03.03.2019   bkrylov     Created
+ * 
+ */
+
 public class HealthSystemWithConcentration : HealthSystem
 {
 
@@ -68,6 +77,11 @@ public class HealthSystemWithConcentration : HealthSystem
         Healthbar.fillAmount = healthPoints / originalAmountOfHP;
     }
 
+    public void Kill()
+    {
+        DealDamage(healthPoints + Mathf.Epsilon);
+    }
+
     // Use this for initialization
     new void Start()
     {
@@ -83,8 +97,10 @@ public class HealthSystemWithConcentration : HealthSystem
         deathScreen.SetActive(false);
     }
 
-    private void Update()
+    protected void Update()
     {
+        base.Update();
+
         if (Input.GetKey("escape"))
         {
             ToMainMenu();
