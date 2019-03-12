@@ -22,6 +22,10 @@ namespace CI.QuickSave.Core.Models
         {
             Transform serializableTransform = new Transform();
 
+            serializableTransform.position = new Vector3();
+            serializableTransform.rotation = new Quaternion();
+            serializableTransform.scale = new Vector3();
+
             serializableTransform.position.x = transform.position.x;
             serializableTransform.position.y = transform.position.y;
             serializableTransform.position.z = transform.position.z;
@@ -35,7 +39,7 @@ namespace CI.QuickSave.Core.Models
             serializableTransform.scale.y = transform.localScale.y;
             serializableTransform.scale.z = transform.localScale.z;
 
-            return null;
+            return serializableTransform;
         }
     }
 }

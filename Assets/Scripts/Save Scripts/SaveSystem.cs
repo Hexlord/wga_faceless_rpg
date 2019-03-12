@@ -1,11 +1,13 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Reflection.Emit;
+using CI.QuickSave;
 using CI.QuickSave.Core.Serialisers;
 using CI.QuickSave.Core.Helpers;
 
 using UnityEngine;
 using System;
+using System.Linq;
 
 public class SaveSystem : MonoBehaviour
 {
@@ -30,29 +32,55 @@ public class SaveSystem : MonoBehaviour
     {
         if (Input.GetKeyDown(saveKeyCode))
         {
-            string path = folderPath + "\\" + folderName + "\\" + saveFileName1;
-            Save(path);
+            string path = folderPath + "//" + /*folderName + "/" +*/ saveFileName1;
+            Debug.Log("Save: " + Save(path));
         }
 
         if (Input.GetKeyDown(loadKeyCode))
         {
-            string path = folderPath + "\\" + folderName + "\\" + saveFileName1;
-            Load(path);
+            string path = folderPath + "//" + /*folderName + "/" +*/ saveFileName1;
+            Debug.Log("Load: " + Load(path));
         }
     }
 
     bool Save(string path)
     {
+        Debug.Log("Save: " + path);
 
-        return false;
+        GameObject[] gameObjects = FindObjectsOfType<GameObject>();
+
+        Dictionary<string, object> sceneDictionary = new Dictionary<string, object>();
+
+        foreach (GameObject gameObject in FindObjectsOfType<GameObject>())
+        {
+            if (QuickSaveWriter.TrySave(path, gameObject.name, DecomposeGameObject(gameObject)) == false)
+            {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     bool Load(string path)
     {
-        return false;
+        Debug.Log("Load: " + path);
+
+        Dictionary<string, object> sceneDictionary = new Dictionary<string, object>();
+
+        GameObject[] gameObjects = FindObjectsOfType<GameObject>();
+
+        for (int i = 0; i < gameObjects.Length; i++)
+        {
+            Dictionary<string, object> goDictionary;
+            if (QuickSaveReader.TryLoad(path, gameObjects[i].name, out goDictionary) == false)
+                return false;
+            ComposeGameObject(goDictionary, gameObjects[i]);
+        }
+        return true;
     }
 
-    void ComposeGameObject(Dictionary<string, object> items, ref GameObject gameObject)
+    void ComposeGameObject(Dictionary<string, object> items, GameObject gameObject)
     {
         foreach (var item in items)
         {
@@ -61,6 +89,12 @@ public class SaveSystem : MonoBehaviour
             {
                 try
                 {
+                    var a = AppDomain.CurrentDomain.GetAssemblies().SelectMany(x => x.GetTypes()).Where(t => t.Name == item.Key);
+                    Type ф = a.First();
+                    if (ф.GetMethod("ToUnityType") != null)
+                        ф = ф.GetMethod("ToUnityType").ReturnType;
+                    var й = ф.GetField(componentItem.Key);
+                    й.SetValue(component, componentItem.Value);
                     Type.GetType(item.Key).GetField(componentItem.Key).SetValue(component, componentItem.Value);
                 }
                 catch(Exception e)
@@ -76,7 +110,7 @@ public class SaveSystem : MonoBehaviour
     {
         Dictionary<string, object> items = new Dictionary<string, object>
         {
-            { "transform", TypeHelper.ReplaceIfUnityType(gameObject.transform) }
+            { "Transform", TypeHelper.ReplaceIfUnityType(gameObject.transform) }
         };
 
         foreach (Component component in gameObject.GetComponents<Component>())
