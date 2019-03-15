@@ -77,11 +77,6 @@ public class HealthSystemWithConcentration : HealthSystem
         Healthbar.fillAmount = healthPoints / originalAmountOfHP;
     }
 
-    public void Kill()
-    {
-        DealDamage(healthPoints + Mathf.Epsilon);
-    }
-
     // Use this for initialization
     new void Start()
     {

@@ -8,7 +8,7 @@ using UnityEngine;
  * 
  * Date         Author      Description
  * 
- * 01.01.2019   aknorre     Created
+ * 03.03.2019   aknorre     Created
  * 
  */
 
@@ -307,7 +307,10 @@ public class SmartController : MonoBehaviour
                 shootYaw = Mathf.DeltaAngle(0.0f, shootYaw + inputDeltaX);
                 shootPitch = Mathf.DeltaAngle(0.0f, shootPitch + inputDeltaY);
                 shootPitch = Mathf.Clamp(shootPitch, -shootPitchLimit, shootPitchLimit);
-                               
+
+                // playerTransform.rotation = Quaternion.Euler(playerTransform.eulerAngles.x, shootYaw, playerTransform.eulerAngles.z);
+
+
                 break;
             case CameraState.Tactics:
                 // Affect vector aim
@@ -650,6 +653,21 @@ public class SmartController : MonoBehaviour
         Vector3 target = playerTransform.position + new Vector3(0, currentHeight, 0);
 
         Vector3 finalPosition = currentPosition;
+
+        /*
+                desiredPosition = Quaternion.Euler(-actionPitch, actionYaw, 0.0f) * (Vector3.right * actionRightOffset + Vector3.forward * -actionDistance);
+                desiredRotation = Quaternion.Euler(-actionPitch, actionYaw, 0.0f);
+                break;
+            case CameraState.Shoot:
+                desiredHeight = shootHeight;
+                desiredPosition = Quaternion.Euler(-shootPitch, playerTransform.eulerAngles.y, 0.0f) * (Vector3.right * shootRightOffset + Vector3.forward * -shootBackwardsOffset);
+                desiredRotation = Quaternion.Euler(-shootPitch, playerTransform.eulerAngles.y, 0.0f);
+                break;
+            case CameraState.Tactics:
+                desiredHeight = tacticsHeight;
+                desiredPosition = Quaternion.Euler(tacticsPitch, playerTransform.eulerAngles.y, 0.0f) * (Vector3.forward * -tacticsDistance);
+                desiredRotation = Quaternion.Euler(tacticsPitch, playerTransform.eulerAngles.y, 0.0f);
+         */
 
         // Avoid clipping through simple forward directed camera ray hittest
         {
