@@ -83,7 +83,7 @@ public class NPC : MonoBehaviour
                 // currentNode = startNode;
                 break;
             case DialogAction.Death:
-                player.GetComponent<HealthSystemWithConcentration>().Kill();
+                player.GetComponent<HealthSystem>().Kill(gameObject);
                 break;
         }
     }
