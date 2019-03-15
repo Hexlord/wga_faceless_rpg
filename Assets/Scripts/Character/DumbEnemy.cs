@@ -14,7 +14,7 @@ using UnityEngine.AI;
 public class DumbEnemy : BaseCharacter
 {
 
-    public Weapon rightFist, leftFist;
+    //public Weapon rightFist, leftFist;
     public float fistDamage = 5.0f;
 
     [SerializeField]
@@ -28,7 +28,7 @@ public class DumbEnemy : BaseCharacter
 
     private GameObject character;
     private NavMeshAgent navMeshAgent;
-    private BasicStatusSystem healthSystem;
+    //private BasicStatusSystem healthSystem;
     private Vector3 distanceToPlayer;
     private bool isNotified = false;
 
@@ -37,10 +37,10 @@ public class DumbEnemy : BaseCharacter
         if (!isNotified)
         {
             isNotified = true;
-            rightFist.TargetTag = tag;
-            leftFist.TargetTag = tag;
-            character = GameObject.FindWithTag(tag);
-            healthSystem = character.GetComponent<BasicStatusSystem>();
+            //rightFist.TargetTag = tag;
+            //leftFist.TargetTag = tag;
+            //character = GameObject.FindWithTag(tag);
+            //healthSystem = character.GetComponent<BasicStatusSystem>();
             Debug.Log("notify");
         }
     }
@@ -49,8 +49,8 @@ public class DumbEnemy : BaseCharacter
     {
         base.Start();
         navMeshAgent = gameObject.GetComponent<NavMeshAgent>();
-        rightFist.Damage = fistDamage;
-        leftFist.Damage = fistDamage;
+        //rightFist.Damage = fistDamage;
+        //leftFist.Damage = fistDamage;
     }
 
     private void Awake()
