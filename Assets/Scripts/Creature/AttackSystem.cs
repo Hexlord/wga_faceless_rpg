@@ -27,7 +27,7 @@ public class AttackSystem : MonoBehaviour
     /*
      * Expected animation configuration:
      * 
-     * [attackTrigger] -> (attack) -> (default)
+     * [attackTrigger] -> (attack) -> (idle)
      * 
      */
 
@@ -42,7 +42,7 @@ public class AttackSystem : MonoBehaviour
     public string attackAnimation = "attack";
     public string attackAnimationTrigger = "attackTrigger";
 
-    public string defaultAnimation = "default";
+    public string idleAnimation = "idle";
 
     public bool Attacking
     {
@@ -57,31 +57,37 @@ public class AttackSystem : MonoBehaviour
     // Cache
 
     private Animator animator;
+    private MovementSystem movementSystem;
 
     void Start()
     {
         // Cache
 
         animator = GetComponent<Animator>();
+        movementSystem = GetComponent<MovementSystem>();
 
     }
 
     void FixedUpdate()
     {
+        bool transition = animator.IsInTransition(animationLayer);
         AnimatorClipInfo info = animator.GetCurrentAnimatorClipInfo(animationLayer)[0];
         AnimatorStateInfo animState = animator.GetCurrentAnimatorStateInfo(animationLayer);
         AnimationClip clip = info.clip;
         string clipName = clip.name;
 
-        bool isDefaultClip = clipName == defaultAnimation;
-        isDefaultClip = true; // TODO: remove when animations ready
+        bool isDefaultClip = clipName == idleAnimation;
 
         switch (state)
         {
             case AttackSystemState.None:
                 break;
             case AttackSystemState.Attacking:
-                if (isDefaultClip) state = AttackSystemState.None;
+                if (!transition &&
+                    isDefaultClip)
+                {
+                    state = AttackSystemState.None;
+                }
                 break;
         }
     }
@@ -91,6 +97,9 @@ public class AttackSystem : MonoBehaviour
         Debug.Assert(!Attacking);
 
         if (!canAttack) return;
+
+        if (movementSystem &&
+            movementSystem.Moving) return;
 
         state = AttackSystemState.Attacking;
         animator.SetTrigger(attackAnimationTrigger);

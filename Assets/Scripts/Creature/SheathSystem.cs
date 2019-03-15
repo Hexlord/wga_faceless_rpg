@@ -53,7 +53,8 @@ public class SheathSystem : MonoBehaviour
     public string unsheatheAnimation = "unsheathe";
     public string unsheatheAnimationTrigger = "unsheatheTrigger";
 
-    public string defaultAnimation = "default";
+    public string idleAnimation = "idle";
+    public string unarmedIdleAnimation = "unarmedIdle";
 
     [Header("Advanced Settings")]
     [Tooltip("Sheathed weapon object")]
@@ -75,8 +76,9 @@ public class SheathSystem : MonoBehaviour
     {
         get
         {
-            return !Busy &&
-              state == SheathSystemState.Sheathed;
+            return 
+                state == SheathSystemState.Sheathed ||
+                state == SheathSystemState.Sheathing;
         }
     }
 
@@ -115,15 +117,12 @@ public class SheathSystem : MonoBehaviour
         AnimationClip clip = info.clip;
         string clipName = clip.name;
 
-        bool isDefaultClip = clipName == defaultAnimation;
-        isDefaultClip = true; // TODO: remove when animations ready
-
         switch (state)
         {
             case SheathSystemState.Sheathed:
                 break;
             case SheathSystemState.Unsheathing:
-                if (isDefaultClip)
+                if (clipName == idleAnimation)
                 {
                     state = SheathSystemState.Unsheathed;
                     if (attackSystem) attackSystem.canAttack = true;
@@ -136,7 +135,7 @@ public class SheathSystem : MonoBehaviour
             case SheathSystemState.Unsheathed:
                 break;
             case SheathSystemState.Sheathing:
-                if (isDefaultClip)
+                if (clipName == unarmedIdleAnimation)
                 {
                     state = SheathSystemState.Sheathed;
                     if (attackSystem) attackSystem.canAttack = false;

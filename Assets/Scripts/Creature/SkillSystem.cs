@@ -53,7 +53,7 @@ public class SkillSystem : MonoBehaviour
     public string channelAnimationUpdate = "channelUpdate";
     public string channelAnimationEnd = "channelEnd";
 
-    public string defaultAnimation = "default";
+    public string idleAnimation = "idle";
 
     public string skillAnimationStartTrigger = "skillStartTrigger";
 
@@ -156,7 +156,7 @@ public class SkillSystem : MonoBehaviour
         string clipName = clip.name;
         time = useAnimationTime ? clip.length * animState.normalizedTime : stateTimer;
 
-        bool isDefaultClip = clipName == defaultAnimation;
+        bool isDefaultClip = clipName == idleAnimation;
         isDefaultClip = true; // TODO: remove when animations ready
 
         switch (state)
