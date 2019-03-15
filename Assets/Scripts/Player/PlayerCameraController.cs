@@ -92,7 +92,6 @@ public class PlayerCameraController : MonoBehaviour
     [Range(1.0f, 5.0f)]
     public float clippingAvoidanceNormalFactorReversed = 2.0f;
 
-    public ConstrainedCamera constrainedCamera;
 
     // Private
 
@@ -102,6 +101,7 @@ public class PlayerCameraController : MonoBehaviour
     private float clippingAvoidanceOffset = 0.0f;
 
     [Header("Debug")]
+    public ConstrainedCamera constrainedCamera;
     public float cameraTransition = 1.0f;
 
     /*
@@ -119,6 +119,8 @@ public class PlayerCameraController : MonoBehaviour
     private Vector3 transitionStartPosition = Vector3.zero;
     private float transitionStartFOV = 80.0f;
 
+    private float transitionSpeed = 0.0f;
+
     // Cache
 
     private new Camera camera;
@@ -130,6 +132,8 @@ public class PlayerCameraController : MonoBehaviour
 
         camera = Camera.main;
         body = GetComponent<Rigidbody>();
+
+        transitionSpeed = 1.0f / transitionTime;
     }
 
     void UpdatePlayerRotation(float delta)
@@ -158,7 +162,7 @@ public class PlayerCameraController : MonoBehaviour
             {
                 playerAutoRotateTimer = 0.0f;
             }
-        }
+        }        
 
         if (playerAutoRotateActive)
         {
@@ -434,20 +438,37 @@ public class PlayerCameraController : MonoBehaviour
 
     protected void LateUpdate()
     {
-        constrainedCamera.Yaw += Input.GetAxis("Mouse X") * mouseHorizontalSensitivity;
-        constrainedCamera.Pitch += Input.GetAxis("Mouse Y") * mouseVerticalSensitivity
+        float deltaYaw = Input.GetAxis("Mouse X") * mouseHorizontalSensitivity;
+        float deltaPitch = Input.GetAxis("Mouse Y") * mouseVerticalSensitivity
             * (mouseVerticalInversion
             ? -1
             : 1);
 
+        constrainedCamera.Yaw += deltaYaw;
+        constrainedCamera.Pitch += deltaPitch;
+
+        /*
+         * Rotation during transition can denormalize angle
+         */
+        transitionDeltaYaw += deltaYaw;
+        transitionDeltaPitch += deltaPitch;
+        
+        float targetPitch = cameraTransition < 1.0f
+            ? transitionStartPitch + transitionDeltaPitch
+            : constrainedCamera.Pitch;
+
+        float targetYaw = cameraTransition < 1.0f
+            ? transitionStartYaw + transitionDeltaYaw
+            : constrainedCamera.Yaw;
+
         Vector3 position = Vector3.Lerp(transitionStartPosition, constrainedCamera.Position, cameraTransition);
         camera.transform.rotation = Quaternion.Euler(
-            Mathf.Lerp(transitionStartPitch, constrainedCamera.Pitch, cameraTransition),
-            Mathf.Lerp(transitionStartYaw, constrainedCamera.Yaw, cameraTransition),
+            Mathf.SmoothStep(transitionStartPitch, targetPitch, cameraTransition),
+            Mathf.SmoothStep(transitionStartYaw, targetYaw, cameraTransition),
             0.0f);
         camera.fieldOfView = Mathf.Lerp(transitionStartFOV, constrainedCamera.constraintFieldOfView, cameraTransition);
 
-        cameraTransition = Mathf.MoveTowards(cameraTransition, 1.0f, Time.deltaTime);
+        cameraTransition = Mathf.MoveTowards(cameraTransition, 1.0f, Time.deltaTime * transitionSpeed);
 
         // Prevent camera clipping by moving camera position
 
@@ -518,19 +539,27 @@ public class PlayerCameraController : MonoBehaviour
         playerAutoRotateActive = true;
     }
 
-    public void ChangeCamera(ConstrainedCamera otherCamera)
+    public void ChangeCamera(ConstrainedCamera otherCamera, bool preserveRotation = false, bool instant = false)
     {
         if (constrainedCamera == otherCamera) return;
+
+        if(preserveRotation)
+        {
+            otherCamera.Pitch = constrainedCamera.Pitch;
+            otherCamera.Yaw = constrainedCamera.Yaw;
+        }
 
         transitionStartFOV = camera.fieldOfView;
         transitionStartYaw = camera.transform.eulerAngles.y;
         transitionStartPitch = camera.transform.eulerAngles.x;
         transitionStartPosition = camera.transform.position;
 
-        transitionDeltaYaw = 0.0f;
-        transitionDeltaPitch = 0.0f;
+        transitionDeltaYaw = Mathf.DeltaAngle(0, otherCamera.Yaw - transitionStartYaw);
+        transitionDeltaPitch = Mathf.DeltaAngle(0, otherCamera.Pitch - transitionStartPitch);
 
-        cameraTransition = 0.0f;
+        cameraTransition = instant 
+            ? 1.0f
+            : 0.0f;
         constrainedCamera = otherCamera;
     }
 

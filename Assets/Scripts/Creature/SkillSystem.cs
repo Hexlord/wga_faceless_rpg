@@ -28,7 +28,6 @@ public class SkillSystem : MonoBehaviour
         ChannelEnd
     }
 
-    public SkillSystemState state = SkillSystemState.None;
 
     /*
      * Expected animation configuration:
@@ -40,6 +39,10 @@ public class SkillSystem : MonoBehaviour
      * (channelUpdate) <loop>
      * [interruptTrigger] -> (channelEnd) -> (default)
      */
+
+    [Header("Basic Settings")]
+    [Tooltip("Toggles whether creature can cast spells")]
+    public bool canCast = true;
 
     [Header("Animation Settings")]
 
@@ -59,6 +62,8 @@ public class SkillSystem : MonoBehaviour
 
     public string interruptTrigger = "interruptTrigger";
     public string interruptInstantTrigger = "interruptInstantTrigger";
+
+    public int animationLayer = 0;
 
     [Header("Precision Settings")]
 
@@ -86,6 +91,8 @@ public class SkillSystem : MonoBehaviour
     // Private
 
     [Header("Debug")]
+    public SkillSystemState state = SkillSystemState.None;
+
     public float skillAnimationStartLength = 0.0f;
     public float skillAnimationEndLength = 0.0f;
 
@@ -104,22 +111,7 @@ public class SkillSystem : MonoBehaviour
 
     private Animator animator;
 
-    private void LoadAnimationLength(out float result, string name)
-    {
-        RuntimeAnimatorController ac = animator.runtimeAnimatorController;
-        for (int i = 0; i < ac.animationClips.Length; i++)
-        {
-            if (ac.animationClips[i].name == name)
-            {
-                result = ac.animationClips[i].length;
-                return;
-            }
-        }
-
-        result = 0.0f;
-        Debug.LogWarning("Animation " + name + " not found!");
-        // Debug.Assert(false);
-    }
+    
 
     void Start()
     {
@@ -127,12 +119,12 @@ public class SkillSystem : MonoBehaviour
 
         animator = GetComponent<Animator>();
 
-        LoadAnimationLength(out skillAnimationStartLength, skillAnimationStart);
-        LoadAnimationLength(out skillAnimationEndLength, skillAnimationEnd);
+        skillAnimationStartLength = animator.GetAnimationLength(skillAnimationStart);
+        skillAnimationEndLength = animator.GetAnimationLength(skillAnimationEnd);
 
-        LoadAnimationLength(out channelAnimationStartLength, channelAnimationStart);
-        LoadAnimationLength(out channelAnimationUpdateLength, channelAnimationUpdate);
-        LoadAnimationLength(out channelAnimationEndLength, channelAnimationEnd);
+        channelAnimationStartLength = animator.GetAnimationLength(channelAnimationStart);
+        channelAnimationUpdateLength = animator.GetAnimationLength(channelAnimationUpdate);
+        channelAnimationEndLength = animator.GetAnimationLength(channelAnimationEnd);
 
         foreach(Skill skill in startSkills)
         {
@@ -158,14 +150,14 @@ public class SkillSystem : MonoBehaviour
             skill.Update(Time.fixedDeltaTime);
         }
 
-        AnimatorClipInfo info = animator.GetCurrentAnimatorClipInfo(0)[0];
-        AnimatorStateInfo animState = animator.GetCurrentAnimatorStateInfo(0);
+        AnimatorClipInfo info = animator.GetCurrentAnimatorClipInfo(animationLayer)[0];
+        AnimatorStateInfo animState = animator.GetCurrentAnimatorStateInfo(animationLayer);
         AnimationClip clip = info.clip;
         string clipName = clip.name;
         time = useAnimationTime ? clip.length * animState.normalizedTime : stateTimer;
 
         bool isDefaultClip = clipName == defaultAnimation;
-        isDefaultClip = true;
+        isDefaultClip = true; // TODO: remove when animations ready
 
         switch (state)
         {
@@ -285,6 +277,8 @@ public class SkillSystem : MonoBehaviour
     {
         Debug.Assert(!Casting);
 
+        if (!canCast) return;
+
         for(int i = 0; i < skills.Count; ++i)
         {
             if(skills[i].Name == skillName)
@@ -303,6 +297,8 @@ public class SkillSystem : MonoBehaviour
         Debug.Assert(!Casting);
         Debug.Assert(skillNumber >= 0);
         Debug.Assert(skills.Count > skillNumber);
+
+        if (!canCast) return;
 
         SkillBase skill = skills[skillNumber];
 

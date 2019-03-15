@@ -12,6 +12,9 @@ using UnityEngine.UI;
  * 
  */
 
+/*
+ * Blended with other animations additively
+ */
 public class MovementSystem : MonoBehaviour
 {
 
@@ -22,14 +25,16 @@ public class MovementSystem : MonoBehaviour
     [Range(0.0f, 1.0f)]
     public float movementDesireThreshold = 0.2f;
 
-
     [Tooltip("Movement maximum speed")]
     [Range(0.0f, 30.0f)]
     public float movementSpeed = 7.0f;
 
+    [Tooltip("Body rotation stabilization")]
+    public bool rotationStabilization = true;
+
     public enum MovementSystemState
     {
-        Idle,
+        None,
 
 
         MovingForward,
@@ -38,8 +43,19 @@ public class MovementSystem : MonoBehaviour
         MovingRight,
     }
 
-    public MovementSystemState state = MovementSystemState.Idle;
-    
+    /*
+     * Expected animation configuration:
+     * 
+     * [moveForwardTrigger] -> (moveForward)
+     * [moveBackwardTrigger] -> (moveBackward)
+     * [moveLeftTrigger] -> (moveLeft)
+     * [moveRightTrigger] -> (moveRight)
+     * 
+     * [idleTrigger] -> (idle)
+     */
+
+    public MovementSystemState state = MovementSystemState.None;
+
     [Header("Animation Settings")]
 
     public string idleAnimation = "idle";
@@ -53,10 +69,12 @@ public class MovementSystem : MonoBehaviour
     public string movingBackwardAnimationTrigger = "moveBackwardTrigger";
     public string movingLeftAnimationTrigger = "moveLeftTrigger";
     public string movingRightAnimationTrigger = "moveRightTrigger";
-       
+
+    public int animationLayer = 1;
+
     public bool Moving
     {
-        get { return state != MovementSystemState.Idle; }
+        get { return state != MovementSystemState.None; }
     }
 
     /*
@@ -95,14 +113,17 @@ public class MovementSystem : MonoBehaviour
 
     private MovementSystemState CalculateState()
     {
-        float forward = desiredMovement.y;
-        float right = desiredMovement.x;
+        Vector2 desiredMovementBodySpace =
+            body.rotation * desiredMovement;
+
+        float forward = desiredMovementBodySpace.y;
+        float right = desiredMovementBodySpace.x;
 
         float forwardAbs = Mathf.Abs(forward);
         float rightAbs = Mathf.Abs(right);
 
         if (forwardAbs < movementDesireThreshold &&
-            rightAbs < movementDesireThreshold) return MovementSystemState.Idle;
+            rightAbs < movementDesireThreshold) return MovementSystemState.None;
 
         if (forwardAbs > rightAbs)
         {
@@ -120,7 +141,7 @@ public class MovementSystem : MonoBehaviour
 
     private void MoveBody(float delta)
     {
-        if (state == MovementSystemState.Idle) return;
+        if (state == MovementSystemState.None) return;
 
         Vector2 deltaVelocity = desiredMovement * movementSpeed -
             (new Vector2(body.velocity.x, body.velocity.z));
@@ -133,12 +154,20 @@ public class MovementSystem : MonoBehaviour
         body.AddForce(appliedVelocity.x, 0.0f, appliedVelocity.y, ForceMode.VelocityChange);
     }
 
+    private void RotateBody(float delta)
+    {
+        if(rotationStabilization)
+        {
+            body.angularVelocity = new Vector3(0.0f, Mathf.Lerp(body.angularVelocity.y, 0.0f, delta), 0.0f);
+        }
+    }
+
     protected void FixedUpdate()
     {
         string trigger = idleAnimationTrigger;
         switch (state)
         {
-            case MovementSystemState.Idle:
+            case MovementSystemState.None:
                 trigger = idleAnimationTrigger;
                 break;
             case MovementSystemState.MovingForward:
@@ -158,6 +187,7 @@ public class MovementSystem : MonoBehaviour
         animator.SetTrigger(trigger);
 
         MoveBody(Time.fixedDeltaTime);
+        RotateBody(Time.fixedDeltaTime);
     }
 
 }

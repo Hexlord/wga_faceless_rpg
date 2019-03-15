@@ -25,6 +25,9 @@ public class HealthSystem : MonoBehaviour
     [Header("UI Settings")]
     [Tooltip("Health bar anchor offset from transform origin")]
     public Vector3 uiAnchorOffset = new Vector3(0.0f, 3.0f, 0.0f);
+    
+    [Tooltip("Health bar enabled")]
+    public bool uiHealthBarEnabled = true;
 
     public bool Alive
     {
@@ -80,7 +83,15 @@ public class HealthSystem : MonoBehaviour
 
     protected virtual void OnDamage(GameObject source, float amount)
     {
-        // Intentionally left empty
+        if(source)
+        {
+            ConcentrationSystem concentrationSystem =
+                source.GetComponent<ConcentrationSystem>();
+            if(concentrationSystem)
+            {
+                concentrationSystem.Restore(amount * concentrationSystem.concentrationVampirism);
+            }
+        }
     }
 
     protected virtual void OnDeath(GameObject source)
@@ -95,14 +106,17 @@ public class HealthSystem : MonoBehaviour
 
     protected virtual void Start()
     {
-        healthPrefab = (GameObject)Resources.Load("Prefabs/UI/HealthBar", typeof(GameObject));
-        GameObject healthObject =
-            Instantiate(healthPrefab,
-                Vector3.zero,
-                Quaternion.identity,
-                transform);
-        healthBar = healthObject.transform.Find("HealthBar").GetComponent<Image>();
-        healthObject.transform.localPosition = uiAnchorOffset;
+        if (uiHealthBarEnabled)
+        {
+            healthPrefab = (GameObject)Resources.Load("Prefabs/UI/HealthBar", typeof(GameObject));
+            GameObject healthObject =
+                Instantiate(healthPrefab,
+                    Vector3.zero,
+                    Quaternion.identity,
+                    transform);
+            healthBar = healthObject.transform.Find("HealthBar").GetComponent<Image>();
+            healthObject.transform.localPosition = uiAnchorOffset;
+        }
 
         Health = healthMaximum;
     }

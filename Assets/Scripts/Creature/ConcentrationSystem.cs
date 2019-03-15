@@ -21,6 +21,10 @@ public class ConcentrationSystem : MonoBehaviour
     [Tooltip("The amount of concentration the object has")]
     [Range(0.0f, 10000.0f, order = 2)]
     public float concentrationMaximum = 100.0f;
+    
+    [Tooltip("The amount of concentration received relative to damage done")]
+    [Range(0.0f, 1.0f)]
+    public float concentrationVampirism = 0.2f;
 
     public float Concentration
     {
