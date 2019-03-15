@@ -47,7 +47,7 @@ public class EnemyProtectedGate : MonoBehaviour
                 {
                     if (health)
                     {
-                        if(health.HP > 0)
+                        if(health.Alive)
                         {
                             good = false;
                             break;

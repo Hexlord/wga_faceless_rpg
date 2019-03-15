@@ -24,7 +24,7 @@ public class Billboard : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    void LateUpdate()
     {
         transform.forward = flip ? cameraTransform.forward : -cameraTransform.forward;
     }

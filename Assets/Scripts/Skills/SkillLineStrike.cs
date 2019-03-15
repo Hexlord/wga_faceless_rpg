@@ -45,7 +45,7 @@ public class SkillLineStrike : SkillBase
         base.CastEvent(caster);
         var dummy = new GameObject("Dummy");
         dummy.transform.position = caster.transform.position;
-        var attractor = dummy.AddComponent<LineAttractor>();
+        var attractor = dummy.AddComponent<AttractorLine>();
         attractor.damagePerSecond = 2000.0f;
         attractor.distanceHighpass = 3.0f;
         attractor.distancePower = 0.0f;
