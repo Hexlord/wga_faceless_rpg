@@ -35,8 +35,7 @@ public class MovementSystem : MonoBehaviour
     public enum MovementSystemState
     {
         None,
-
-
+        
         MovingForward,
         MovingBackward,
         MovingLeft,
