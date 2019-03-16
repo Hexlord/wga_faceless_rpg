@@ -24,8 +24,22 @@ public class PlayerCharacterController : MonoBehaviour
     [Tooltip("Camera for aiming")]
     public ConstrainedCamera cameraThirdPersonAim;
 
+    public bool Freeze
+    {
+        get { return freeze;}
+        set
+        {
+            freeze = value;
+            if(freeze)
+            {
+                movementSystem.Movement = Vector2.zero;
+            }
+        }
+    }
 
     // Private
+
+    private bool freeze = false;
 
     private MovementSystem movementSystem;
     private new Camera camera;
@@ -37,6 +51,7 @@ public class PlayerCharacterController : MonoBehaviour
 
     private bool aiming = false;
     private bool wantToAttack = false;
+    private int wantToCast = -1;
 
     protected void Start()
     {
@@ -69,43 +84,67 @@ public class PlayerCharacterController : MonoBehaviour
         }
     }
 
+    private int GetUsedSkill()
+    {
+        if (InputManager.Get(InputAction.Skill_1) && skillSystem.Skills.Count >= 1)
+        {
+            return 0;
+        }
+        else if (InputManager.Get(InputAction.Skill_2) && skillSystem.Skills.Count >= 2)
+        {
+            return 1;
+        }
+        else if (InputManager.Get(InputAction.Skill_3) && skillSystem.Skills.Count >= 3)
+        {
+            return 2;
+        }
+        else if (InputManager.Get(InputAction.Skill_4) && skillSystem.Skills.Count >= 4)
+        {
+            return 3;
+        }
+        else if (InputManager.Get(InputAction.Skill_5) && skillSystem.Skills.Count >= 5)
+        {
+            return 4;
+        }
+        else if (InputManager.Get(InputAction.Skill_6) && skillSystem.Skills.Count >= 6)
+        {
+            return 5;
+        }
+        else if (InputManager.Get(InputAction.Skill_7) && skillSystem.Skills.Count >= 7)
+        {
+            return 6;
+        }
+        else if (InputManager.Get(InputAction.Skill_8) && skillSystem.Skills.Count >= 8)
+        {
+            return 7;
+        }
+        return -1;
+    }
+
     private void UpdateSkills()
     {
-        if (!attackSystem.Attacking && !movementSystem.Moving && !skillSystem.Casting)
+        int usedSkill = GetUsedSkill();
+
+        if (usedSkill >= 0 || wantToCast >= 0)
         {
-            if (InputManager.Get(InputAction.Skill_1) && skillSystem.Skills.Count >= 1)
+            if (sheathSystem.Sheathed)
             {
-                skillSystem.Cast(0);
+                if (!sheathSystem.Busy) sheathSystem.Unsheath();
+
+                wantToCast = usedSkill;
+                return;
             }
-            else if (InputManager.Get(InputAction.Skill_2) && skillSystem.Skills.Count >= 2)
+            
+            if (skillSystem.Casting || attackSystem.Attacking || movementSystem.Moving)
             {
-                skillSystem.Cast(1);
+                wantToCast = -1;
+                return;
             }
-            else if (InputManager.Get(InputAction.Skill_3) && skillSystem.Skills.Count >= 3)
-            {
-                skillSystem.Cast(2);
-            }
-            else if (InputManager.Get(InputAction.Skill_4) && skillSystem.Skills.Count >= 4)
-            {
-                skillSystem.Cast(3);
-            }
-            else if (InputManager.Get(InputAction.Skill_5) && skillSystem.Skills.Count >= 5)
-            {
-                skillSystem.Cast(4);
-            }
-            else if (InputManager.Get(InputAction.Skill_6) && skillSystem.Skills.Count >= 6)
-            {
-                skillSystem.Cast(5);
-            }
-            else if (InputManager.Get(InputAction.Skill_7) && skillSystem.Skills.Count >= 7)
-            {
-                skillSystem.Cast(6);
-            }
-            else if (InputManager.Get(InputAction.Skill_8) && skillSystem.Skills.Count >= 8)
-            {
-                skillSystem.Cast(7);
-            }
+
+            skillSystem.Cast(wantToCast);
+            wantToCast = -1;
         }
+
     }
 
     private void UpdateAim()
@@ -134,21 +173,19 @@ public class PlayerCharacterController : MonoBehaviour
 
     private void UpdateAttack()
     {
+
         if(InputManager.Get(InputAction.Attack) || wantToAttack)
         {
-            if (sheathSystem.Sheathed && !sheathSystem.Busy)
+            if (sheathSystem.Sheathed)
             {
-                sheathSystem.Unsheath();
+                if(!sheathSystem.Busy) sheathSystem.Unsheath();
+
                 wantToAttack = true;
                 return;
             }
 
-            if (sheathSystem.Busy)
-            {
-                return;
-            }
 
-            if (skillSystem.Casting || attackSystem.Attacking)
+            if (skillSystem.Casting || attackSystem.Attacking || movementSystem.Moving)
             {
                 wantToAttack = false;
                 return;
@@ -173,12 +210,15 @@ public class PlayerCharacterController : MonoBehaviour
 
     protected void FixedUpdate()
     {
-        UpdateMovement();
-        UpdateSkills();
-        UpdateAim();
-        UpdateSheathe();
-        UpdateBodyState();
-        UpdateAttack();
+        if (!freeze)
+        {
+            UpdateMovement();
+            UpdateSkills();
+            UpdateAim();
+            UpdateSheathe();
+            UpdateBodyState();
+            UpdateAttack();
+        }
 
 
     }

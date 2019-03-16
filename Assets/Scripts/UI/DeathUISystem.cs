@@ -13,7 +13,7 @@ using UnityEngine.SceneManagement;
  * 
  */
 
-public class EndScreenScript : MonoBehaviour
+public class DeathUISystem : MonoBehaviour
 {
     // Start is called before the first frame update
     void Start()
@@ -34,6 +34,6 @@ public class EndScreenScript : MonoBehaviour
     }
     void Restart()
     {
-        SceneManager.LoadScene("Game", LoadSceneMode.Single);
+        SceneManager.LoadScene("GameSasha", LoadSceneMode.Single);
     }
 }

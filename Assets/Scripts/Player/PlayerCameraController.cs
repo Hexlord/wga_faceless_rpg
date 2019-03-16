@@ -95,7 +95,19 @@ public class PlayerCameraController : MonoBehaviour
     [Tooltip("Camera distance offset normal angle factor baseline")]
     [Range(0.0f, 1.0f)]
     public float clippingAvoidanceNormalFactorBaseline = 0.1f;
+
+    public bool Freeze
+    {
+        get { return freeze; }
+        set
+        {
+            freeze = value;
+        }
+    }
+
     // Private
+
+    private bool freeze = false;
 
     private float playerAutoRotateTimer = 0.0f;
     private bool playerAutoRotateActive = false;
@@ -451,20 +463,23 @@ public class PlayerCameraController : MonoBehaviour
     {
         float delta = Time.deltaTime;
 
-        float deltaYaw = Input.GetAxis("Mouse X") * mouseHorizontalSensitivity;
-        float deltaPitch = Input.GetAxis("Mouse Y") * mouseVerticalSensitivity
-            * (mouseVerticalInversion
-            ? -1
-            : 1);
+        if (constrainedCamera.playerControlled && !freeze)
+        {
+            float deltaYaw = Input.GetAxis("Mouse X") * mouseHorizontalSensitivity;
+            float deltaPitch = Input.GetAxis("Mouse Y") * mouseVerticalSensitivity
+                * (mouseVerticalInversion
+                ? -1
+                : 1);
 
-        constrainedCamera.Yaw += deltaYaw;
-        constrainedCamera.Pitch += deltaPitch;
+            constrainedCamera.Yaw += deltaYaw;
+            constrainedCamera.Pitch += deltaPitch;
 
-        /*
-         * Rotation during transition can denormalize angle
-         */
-        transitionDeltaYaw += deltaYaw;
-        transitionDeltaPitch += deltaPitch;
+            /*
+             * Rotation during transition can denormalize angle
+             */
+            transitionDeltaYaw += deltaYaw;
+            transitionDeltaPitch += deltaPitch;
+        }
 
         float targetPitch = cameraTransition < 1.0f
             ? transitionStartPitch + transitionDeltaPitch
@@ -474,7 +489,7 @@ public class PlayerCameraController : MonoBehaviour
             ? transitionStartYaw + transitionDeltaYaw
             : constrainedCamera.Yaw;
 
-        Vector3 position = Vector3.Lerp(transitionStartPosition, constrainedCamera.Position, cameraTransition);
+        Vector3 position = Vector3Extensions.SmoothStep(transitionStartPosition, constrainedCamera.Position, cameraTransition);
         camera.transform.rotation = Quaternion.Euler(
             Mathf.SmoothStep(transitionStartPitch, targetPitch, cameraTransition),
             Mathf.SmoothStep(transitionStartYaw, targetYaw, cameraTransition),
