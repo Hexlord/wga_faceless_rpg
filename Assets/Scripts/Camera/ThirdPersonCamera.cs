@@ -40,7 +40,8 @@ public class ThirdPersonCamera : ConstrainedCamera
 
     protected override void OnRotationChange()
     {
-        Position = constraintTarget.transform.position + constraintTarget.transform.rotation * thirdPersonAnchorOffset +
+        target = constraintTarget.transform.position + constraintTarget.transform.rotation * thirdPersonAnchorOffset;
+        Position = target +
             Quaternion.Euler(Pitch, Yaw, 0.0f) * -Vector3.forward * thirdPersonDistance;
     }
 

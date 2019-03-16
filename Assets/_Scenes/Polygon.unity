@@ -292,7 +292,7 @@ GameObject:
   - component: {fileID: 405363068}
   m_Layer: 9
   m_Name: Cube (1)
-  m_TagString: Environment
+  m_TagString: Small
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -383,7 +383,7 @@ GameObject:
   - component: {fileID: 543555159}
   m_Layer: 9
   m_Name: Cube (3)
-  m_TagString: Environment
+  m_TagString: Small
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -551,6 +551,97 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 11
   m_LocalEulerAnglesHint: {x: -8.559, y: 0, z: 0}
+--- !u!1 &769478859
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 769478863}
+  - component: {fileID: 769478862}
+  - component: {fileID: 769478861}
+  - component: {fileID: 769478860}
+  m_Layer: 9
+  m_Name: Cube (6)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!65 &769478860
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 769478859}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!23 &769478861
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 769478859}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: 9257acd95069370478129d8f2969564b, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 0
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+--- !u!33 &769478862
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 769478859}
+  m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!4 &769478863
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 769478859}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 5, z: -5}
+  m_LocalScale: {x: 3.7746809, y: 13.718322, z: 3.7746809}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 12
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1342103594
 GameObject:
   m_ObjectHideFlags: 0
@@ -599,12 +690,12 @@ Camera:
     y: 0
     width: 1
     height: 1
-  near clip plane: 0.3
+  near clip plane: 0.01
   far clip plane: 1000
   field of view: 60
   orthographic: 0
   orthographic size: 5
-  m_Depth: -1
+  m_Depth: 0
   m_CullingMask:
     serializedVersion: 2
     m_Bits: 4294967295
@@ -667,14 +758,14 @@ MonoBehaviour:
   playerControlled: 1
   constraintTarget: {fileID: 61326190}
   constraintLookAtTarget: 0
-  constraintMinimumDistanceToTarget: 1
+  constraintMinimumDistanceToTarget: 0
   constraintPitchBaseline: 0
   constraintPitchLimit: 60
   constraintYawBaseline: 0
   constraintYawLimit: 180
   constraintFieldOfView: 80
-  thirdPersonDistance: 5
-  thirdPersonAnchorOffset: {x: 0, y: 3, z: 0}
+  thirdPersonDistance: 4
+  thirdPersonAnchorOffset: {x: 0, y: 2.5, z: 0}
 --- !u!81 &1400829953
 AudioListener:
   m_ObjectHideFlags: 0
@@ -773,14 +864,14 @@ MonoBehaviour:
   playerControlled: 1
   constraintTarget: {fileID: 61326190}
   constraintLookAtTarget: 0
-  constraintMinimumDistanceToTarget: 1
+  constraintMinimumDistanceToTarget: 0
   constraintPitchBaseline: 0
   constraintPitchLimit: 60
   constraintYawBaseline: 0
   constraintYawLimit: 180
   constraintFieldOfView: 60
   thirdPersonDistance: 2
-  thirdPersonAnchorOffset: {x: 0, y: 3, z: 0}
+  thirdPersonAnchorOffset: {x: 0, y: 2.5, z: 0}
 --- !u!81 &1430855804
 AudioListener:
   m_ObjectHideFlags: 0
@@ -1041,7 +1132,7 @@ GameObject:
   - component: {fileID: 2144348565}
   m_Layer: 9
   m_Name: Cube (2)
-  m_TagString: Environment
+  m_TagString: Small
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1133,17 +1224,17 @@ PrefabInstance:
     - target: {fileID: 4622916580663948683, guid: 596fdfc67fb4359458b83aa22ccf3e13,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: -2.8899915
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4622916580663948683, guid: 596fdfc67fb4359458b83aa22ccf3e13,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1.99
+      value: 1.07
       objectReference: {fileID: 0}
     - target: {fileID: 4622916580663948683, guid: 596fdfc67fb4359458b83aa22ccf3e13,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 1.9589572
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4622916580663948683, guid: 596fdfc67fb4359458b83aa22ccf3e13,
         type: 3}
