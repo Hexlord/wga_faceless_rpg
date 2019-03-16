@@ -150,6 +150,8 @@ public class SkillSystem : MonoBehaviour
             skill.Update(Time.fixedDeltaTime);
         }
 
+        bool transition = animator.IsInTransition(animationLayer);
+        
         AnimatorClipInfo info = animator.GetCurrentAnimatorClipInfo(animationLayer)[0];
         AnimatorStateInfo animState = animator.GetCurrentAnimatorStateInfo(animationLayer);
         AnimationClip clip = info.clip;
@@ -157,8 +159,11 @@ public class SkillSystem : MonoBehaviour
         time = useAnimationTime ? clip.length * animState.normalizedTime : stateTimer;
 
         bool isDefaultClip = clipName == idleAnimation;
-        isDefaultClip = true; // TODO: remove when animations ready
 
+        stateTimer += Time.fixedDeltaTime;
+
+        if (transition) return;
+        
         switch (state)
         {
             case SkillSystemState.None:
@@ -269,8 +274,6 @@ public class SkillSystem : MonoBehaviour
                 }
                 break;
         }
-        
-        stateTimer += Time.fixedDeltaTime;
     }
     
     public void Cast(string skillName)

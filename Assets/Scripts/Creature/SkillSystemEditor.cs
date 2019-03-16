@@ -59,6 +59,27 @@ public class SkillSystemEditor : Editor
     public override void OnInspectorGUI()
     {
         serializedObject.Update();
+        EditorGUILayout.PropertyField(serializedObject.FindProperty("skillAnimationStart"));
+        EditorGUILayout.PropertyField(serializedObject.FindProperty("skillAnimationEnd"));
+        EditorGUILayout.PropertyField(serializedObject.FindProperty("channelAnimationStart"));
+        EditorGUILayout.PropertyField(serializedObject.FindProperty("channelAnimationUpdate"));
+        EditorGUILayout.PropertyField(serializedObject.FindProperty("channelAnimationEnd"));
+        EditorGUILayout.PropertyField(serializedObject.FindProperty("idleAnimation"));
+        EditorGUILayout.PropertyField(serializedObject.FindProperty("skillAnimationStartTrigger"));
+        EditorGUILayout.PropertyField(serializedObject.FindProperty("channelAnimationStartTrigger"));
+        EditorGUILayout.PropertyField(serializedObject.FindProperty("interruptTrigger"));
+        EditorGUILayout.PropertyField(serializedObject.FindProperty("interruptInstantTrigger"));
+        EditorGUILayout.PropertyField(serializedObject.FindProperty("animationLayer"));
+        EditorGUILayout.PropertyField(serializedObject.FindProperty("preciseEnding"));
+        EditorGUILayout.PropertyField(serializedObject.FindProperty("preciseChanneling"));
+        EditorGUILayout.PropertyField(serializedObject.FindProperty("useAnimationTime"));
+        
+        EditorGUILayout.PropertyField(serializedObject.FindProperty("state"));
+        EditorGUILayout.PropertyField(serializedObject.FindProperty("skillAnimationStartLength"));
+        EditorGUILayout.PropertyField(serializedObject.FindProperty("skillAnimationEndLength"));
+        EditorGUILayout.PropertyField(serializedObject.FindProperty("channelAnimationStartLength"));
+        EditorGUILayout.PropertyField(serializedObject.FindProperty("channelAnimationUpdateLength"));
+        EditorGUILayout.PropertyField(serializedObject.FindProperty("channelAnimationEndLength"));
         Show(serializedObject.FindProperty("startSkills"));
         serializedObject.ApplyModifiedProperties();
     }

@@ -78,13 +78,14 @@ public class AttackSystem : MonoBehaviour
 
         bool isDefaultClip = clipName == idleAnimation;
 
+        if (transition) return;
+
         switch (state)
         {
             case AttackSystemState.None:
                 break;
             case AttackSystemState.Attacking:
-                if (!transition &&
-                    isDefaultClip)
+                if (isDefaultClip)
                 {
                     state = AttackSystemState.None;
                 }

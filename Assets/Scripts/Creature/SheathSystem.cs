@@ -112,10 +112,14 @@ public class SheathSystem : MonoBehaviour
 
     void FixedUpdate()
     {
+        bool transition = animator.IsInTransition(animationLayer);
+
         AnimatorClipInfo info = animator.GetCurrentAnimatorClipInfo(animationLayer)[0];
         AnimatorStateInfo animState = animator.GetCurrentAnimatorStateInfo(animationLayer);
         AnimationClip clip = info.clip;
         string clipName = clip.name;
+
+        if (transition) return;
 
         switch (state)
         {

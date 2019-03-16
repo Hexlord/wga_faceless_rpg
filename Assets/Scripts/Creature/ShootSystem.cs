@@ -75,6 +75,8 @@ public class ShootSystem : MonoBehaviour
 
     void FixedUpdate()
     {
+        bool transition = animator.IsInTransition(animationLayer);
+
         AnimatorClipInfo info = animator.GetCurrentAnimatorClipInfo(animationLayer)[0];
         AnimatorStateInfo animState = animator.GetCurrentAnimatorStateInfo(animationLayer);
         AnimationClip clip = info.clip;
@@ -82,6 +84,8 @@ public class ShootSystem : MonoBehaviour
 
         bool isDefaultClip = clipName == idleAnimation;
         isDefaultClip = true; // TODO: remove when animations ready
+
+        if (transition) return;
 
         switch (state)
         {

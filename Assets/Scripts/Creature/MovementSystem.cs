@@ -188,6 +188,8 @@ public class MovementSystem : MonoBehaviour
             skillSystem &&
             skillSystem.Casting) Movement = Vector2.zero;
 
+        bool transition = animator.IsInTransition(animationLayer);
+
         bool sheathed = sheathSystem.Sheathed;
 
         AnimatorClipInfo info = animator.GetCurrentAnimatorClipInfo(animationLayer)[0];
