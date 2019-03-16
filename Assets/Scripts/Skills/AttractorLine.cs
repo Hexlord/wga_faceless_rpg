@@ -9,10 +9,12 @@ using UnityEngine;
  * Date         Author      Description
  * 
  * 03.03.2019   aknorre     Created
+ * 16.03.2019   bkrylov     Allocated to Component Menu
  * 
  */
 public class AttractorLine : AttractorBase
 {
+    [AddComponentMenu("ProjectFaceless/Skills")]
 
     [Header("Line Settings")]
 

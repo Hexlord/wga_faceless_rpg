@@ -8,11 +8,13 @@ using UnityEngine;
  * Date         Author      Description
  * 
  * 03.03.2019   aknorre     Created
+ * 16.03.2019   bkrylov     Allocated to Component Menu
  * 
  */
 
 public class Lifespan : MonoBehaviour
 {
+    [AddComponentMenu("ProjectFaceless/Tools")]
     [Header("Basic Settings")]
 
     [Tooltip("Time of life")]

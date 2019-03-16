@@ -9,11 +9,12 @@ using UnityEngine;
  * Date         Author      Description
  * 
  * 15.03.2019   aknorre     Created
+ * 16.03.2019   bkrylov     Allocated to Component Menu
  * 
  */
 public class AttackSystem : MonoBehaviour
 {
-
+    [AddComponentMenu("ProjectFaceless/Creature")]
     // Public
 
     public enum AttackSystemState
@@ -30,7 +31,7 @@ public class AttackSystem : MonoBehaviour
      * [attackTrigger] -> (attack) -> (default)
      * 
      */
-
+    
     [Header("Basic Settings")]
     [Tooltip("Toggles whether creature can attack")]
     public bool canAttack = true;

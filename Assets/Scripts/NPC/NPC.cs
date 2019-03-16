@@ -10,11 +10,14 @@ using UnityEngine.UI;
  * Date         Author      Description
  * 
  * 10.03.2019   aknorre     Created
+ * 16.03.2019   bkrylov     Allocated to Component Menu
  * 
  */
 
 public class NPC : MonoBehaviour
 {
+    [AddComponentMenu("ProjectFaceless/NPC")]
+
     public enum DialogAction
     {
         None,

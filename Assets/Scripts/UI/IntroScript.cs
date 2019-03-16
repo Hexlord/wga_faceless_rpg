@@ -9,12 +9,13 @@ using UnityEngine.SceneManagement;
  * Date         Author      Description
  * 
  * 03.03.2019   aknorre     Created
+ * 16.03.2019   bkrylov     Allocated to Component Menu
  * 
  */
 
 public class IntroScript : MonoBehaviour
 {
-
+    [AddComponentMenu("ProjectFaceless/UI")]
     [Tooltip("Time before switching scene")]
     public float timeBeforeStart = 3.0f;
 

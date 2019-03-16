@@ -8,10 +8,10 @@ using UnityEngine;
  * Date         Author      Description
  * 
  * 03.03.2019   bkrylov     Created
+ * 16.03.2019   bkrylov     Allocated to Component Menu
  * 
  */
 
 public class Enemy : BaseCharacter
 {
-    
 }

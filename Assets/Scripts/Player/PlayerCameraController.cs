@@ -10,6 +10,7 @@ using UnityEngine;
  * 
  * 01.01.2019   aknorre     Created
  * 14.03.2019   aknorre     Reworked (separation from camera module)
+ * 16.03.2019   bkrylov     Allocated to Component Menu
  * 
  */
 
@@ -24,6 +25,7 @@ using UnityEngine;
 public class PlayerCameraController : MonoBehaviour
 {
     // Public
+    [AddComponentMenu("ProjectFaceless/Player")]
 
     [Header("Input Settings")]
 

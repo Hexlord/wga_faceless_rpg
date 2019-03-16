@@ -8,10 +8,13 @@ using UnityEngine;
  * Date         Author      Description
  * 
  * 03.03.2019   aknorre     Created
+ * 16.03.2019   bkrylov     Allocated to Component Menu
  * 
  */
 public class AttractorPoint : AttractorBase
 {
+    [AddComponentMenu("ProjectFaceless/Skills")]
+
     protected override void Attract(Rigidbody body, HealthSystem health)
     {
         base.Attract(body, health);

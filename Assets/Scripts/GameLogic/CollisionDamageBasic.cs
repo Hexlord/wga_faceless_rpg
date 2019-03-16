@@ -9,11 +9,12 @@ using UnityEngine;
  * Date         Author      Description
  * 
  * 15.03.2019   aknorre     Created
+ * 16.03.2019   bkrylov     Allocated to Component Menu
  * 
  */
 public class CollisionDamageBasic : MonoBehaviour
 {
-
+    [AddComponentMenu("ProjectFaceless/GameLogic")]
     // Public
 
     public enum DamageBodyState
@@ -101,7 +102,11 @@ public class CollisionDamageBasic : MonoBehaviour
             if (bodyStateSystem.State == BodyStateSystem.BodyState.Physical &&
                 damageBodyState == DamageBodyState.Magical ||
                 bodyStateSystem.State == BodyStateSystem.BodyState.Magical &&
-                damageBodyState == DamageBodyState.Physical) return;
+                damageBodyState == DamageBodyState.Physical)
+            {
+                //Add visual effects
+                return;
+            }
         }
         
         if (uniqueDamage &&

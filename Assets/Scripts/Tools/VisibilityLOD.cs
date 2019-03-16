@@ -8,11 +8,12 @@ using UnityEngine;
  * Date         Author      Description
  * 
  * 15.03.2019   aknorre     Created
- * 
+ * 16.03.2019   bkrylov     Allocated to Component Menu
  */
 
 public class VisibilityLOD : MonoBehaviour
 {
+    [AddComponentMenu("ProjectFaceless/Tools")]
     Transform cameraTransform;
 
     [Tooltip("Maximum distance from camera to be visible")]

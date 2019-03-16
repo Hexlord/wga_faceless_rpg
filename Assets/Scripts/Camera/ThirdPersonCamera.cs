@@ -9,6 +9,7 @@ using UnityEngine;
  * Date         Author      Description
  * 
  * 14.03.2019   aknorre     Created
+ * 16.03.2019   bkrylov     Allocated to Component Menu
  * 
  */
 
@@ -17,6 +18,7 @@ using UnityEngine;
  */
 public class ThirdPersonCamera : ConstrainedCamera
 {
+    [AddComponentMenu("ProjectFaceless/Camera")]
     // Public
 
     [Header("Player Settings")]

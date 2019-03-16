@@ -8,10 +8,13 @@ using UnityEngine;
  * Date         Author      Description
  * 
  * 03.03.2019   aknorre     Created
+ * 16.03.2019   bkrylov     Allocated to Component Menu
  * 
  */
 public class AttractorBase : MonoBehaviour
 {
+    [AddComponentMenu("ProjectFaceless/Skills")]
+
     [Header("Target settings")]
 
     [Tooltip("Tag to filter game objects")]

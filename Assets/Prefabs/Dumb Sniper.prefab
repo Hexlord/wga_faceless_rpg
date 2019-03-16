@@ -103,7 +103,7 @@ GameObject:
   - component: {fileID: 8286795084692967089}
   - component: {fileID: 6172868195127838820}
   - component: {fileID: 411561207026840966}
-  - component: {fileID: 2168837102017483226}
+  - component: {fileID: 7294309660740679242}
   m_Layer: 14
   m_Name: Dumb Sniper
   m_TagString: Faceless
@@ -163,24 +163,34 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
---- !u!143 &2168837102017483226
-CharacterController:
+--- !u!114 &7294309660740679242
+MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 785682206885849616}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 0
-  serializedVersion: 2
-  m_Height: 4
-  m_Radius: 1
-  m_SlopeLimit: 45
-  m_StepOffset: 0.3
-  m_SkinWidth: 0.08
-  m_MinMoveDistance: 0.001
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e6f8b787996174e448d79390c17ff979, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  movementDesireThreshold: 0.2
+  movementSpeed: 7
+  rotationStabilization: 1
+  state: 0
+  idleAnimation: idle
+  movingForwardAnimation: moveForward
+  movingBackwardAnimation: moveBackward
+  movingLeftAnimation: moveLeft
+  movingRightAnimation: moveRight
+  idleAnimationTrigger: idleTrigger
+  movingForwardAnimationTrigger: moveForwardTrigger
+  movingBackwardAnimationTrigger: moveBackwardTrigger
+  movingLeftAnimationTrigger: moveLeftTrigger
+  movingRightAnimationTrigger: moveRightTrigger
+  animationLayer: 1
+  desiredMovement: {x: 0, y: 0}
 --- !u!1 &2534976067928761031
 GameObject:
   m_ObjectHideFlags: 0

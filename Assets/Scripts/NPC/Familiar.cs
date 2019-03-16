@@ -8,6 +8,7 @@ using UnityEngine;
  * Date         Author      Description
  * 
  * 03.03.2019   aknorre     Created
+ * 16.03.2019   bkrylov     Allocated to Component Menu
  * 
  */
 
@@ -21,6 +22,8 @@ using UnityEngine;
 [RequireComponent(typeof(AudioSource))]
 public class Familiar : MonoBehaviour
 {
+    [AddComponentMenu("ProjectFaceless/NPC")]
+
     [Header("Basic Settings")]
 
     [Tooltip("Fly height")]

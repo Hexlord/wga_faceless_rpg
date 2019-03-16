@@ -9,7 +9,7 @@ using UnityEngine.UI;
  * Date         Author      Description
  * 
  * 15.03.2019   aknorre     Created
- * 
+ * 16.03.2019   bkrylov     Allocated to Component Menu
  */
 
 /*
@@ -19,7 +19,7 @@ public class MovementSystem : MonoBehaviour
 {
 
     // Public
-
+    [AddComponentMenu("ProjectFaceless/Creature")]
     [Header("Movement Settings")]
     [Tooltip("Movement desire threshold (default = 0.2)")]
     [Range(0.0f, 1.0f)]

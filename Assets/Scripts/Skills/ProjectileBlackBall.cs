@@ -8,10 +8,12 @@ using UnityEngine;
  * Date         Author      Description
  * 
  * 03.03.2019   aknorre     Created
+ * 16.03.2019   bkrylov     Allocated to Component Menu
  * 
  */
 public class ProjectileBlackBall : MonoBehaviour
 {
+    [AddComponentMenu("ProjectFaceless/Skills")]
 
     [Header("Basic Settings")]
 

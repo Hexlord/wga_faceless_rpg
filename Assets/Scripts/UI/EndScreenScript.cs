@@ -10,11 +10,13 @@ using UnityEngine.SceneManagement;
  * Date         Author      Description
  * 
  * 03.03.2019   aknorre     Created
+ * 16.03.2019   bkrylov     Allocated to Component Menu
  * 
  */
 
 public class EndScreenScript : MonoBehaviour
 {
+    [AddComponentMenu("ProjectFaceless/UI")]
     // Start is called before the first frame update
     void Start()
     {
