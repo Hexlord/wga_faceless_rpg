@@ -24,8 +24,9 @@ public class BodyStateSystem : MonoBehaviour
     }
 
     public GameObject physicalAppearance;
-    public GameObject physicalAppearanceSecond;
+    public GameObject physicalAppearanceSheathed;
     public GameObject magicalAppearance;
+    public GameObject magicalAppearanceSheathed;
 
 
     public BodyState State
@@ -35,13 +36,47 @@ public class BodyStateSystem : MonoBehaviour
 
     // Private
 
+    private SheathSystem sheathSystem;
     private BodyState state = BodyState.Physical;
+
+    private void Show(bool isSheathed, GameObject unsheathed, GameObject sheathed)
+    {
+        if (unsheathed && unsheathed == sheathed) unsheathed.SetActive(true);
+        else
+        {
+            if (unsheathed) unsheathed.SetActive(!isSheathed);
+            if (sheathed) sheathed.SetActive(isSheathed);
+        }
+    }
 
     protected void Start()
     {
-        if (physicalAppearance) physicalAppearance.SetActive(true);
-        if (physicalAppearanceSecond) physicalAppearanceSecond.SetActive(true);
+        sheathSystem = GetComponent<SheathSystem>();
+
+        bool sheathed = sheathSystem.Sheathed;
+
+        Show(sheathed, physicalAppearance, physicalAppearanceSheathed);
         if (magicalAppearance) magicalAppearance.SetActive(false);
+        if (magicalAppearanceSheathed) magicalAppearance.SetActive(false);
+    }
+
+    protected void FixedUpdate()
+    {
+        bool sheathed = sheathSystem.Sheathed;
+
+        if (state == BodyState.Physical)
+        {
+
+            Show(sheathed, physicalAppearance, physicalAppearanceSheathed);
+            if (magicalAppearance) magicalAppearance.SetActive(false);
+            if (magicalAppearanceSheathed) magicalAppearance.SetActive(false);
+        }
+        else
+        {
+            Show(sheathed, magicalAppearance, magicalAppearanceSheathed);
+            if (physicalAppearance) physicalAppearance.SetActive(false);
+            if (physicalAppearanceSheathed) physicalAppearanceSheathed.SetActive(false);
+        }
     }
 
     public void ChangeState(BodyState newState)
@@ -49,19 +84,7 @@ public class BodyStateSystem : MonoBehaviour
         if (state == newState) return;
 
         state = newState;
-
-        if (state == BodyState.Physical)
-        {
-            if (physicalAppearance) physicalAppearance.SetActive(true);
-            if (physicalAppearanceSecond) physicalAppearanceSecond.SetActive(true);
-            if (magicalAppearance) magicalAppearance.SetActive(false);
-        }
-        else
-        {
-            if (physicalAppearance) physicalAppearance.SetActive(false);
-            if (physicalAppearanceSecond) physicalAppearanceSecond.SetActive(false);
-            if (magicalAppearance) magicalAppearance.SetActive(true);
-        }
+        
     }
 
 

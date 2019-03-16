@@ -18,6 +18,7 @@ public enum InputAction
     Attack,
     Aim,
     Heal,
+    SkillMenu,
     Skill_1,
     Skill_2,
     Skill_3,
@@ -67,6 +68,8 @@ public static class InputManager
                 return "Enter";
             case InputAction.Attack:
                 return "LMB";
+            case InputAction.SkillMenu:
+                return "H";
         }
         return "none";
     }
@@ -74,5 +77,12 @@ public static class InputManager
     public static bool Get(InputAction action)
     {
         return Input.GetButtonDown(ActionToName(action));
+    }
+
+    public static Vector2 GetMovement()
+    {
+        return new Vector2(
+            Input.GetAxis("Horizontal"),
+            Input.GetAxis("Vertical"));
     }
 }

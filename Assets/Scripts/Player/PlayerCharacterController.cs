@@ -26,11 +26,11 @@ public class PlayerCharacterController : MonoBehaviour
 
     public bool Freeze
     {
-        get { return freeze;}
+        get { return freeze; }
         set
         {
             freeze = value;
-            if(freeze)
+            if (freeze)
             {
                 movementSystem.Movement = Vector2.zero;
             }
@@ -68,13 +68,14 @@ public class PlayerCharacterController : MonoBehaviour
 
     private void UpdateMovement()
     {
-        Vector3 input = new Vector3(
-            Input.GetAxis("Horizontal"),
+        Vector2 input = InputManager.GetMovement();
+        Vector3 movement = new Vector3(
+            input.x,
             0.0f,
-            Input.GetAxis("Vertical"));
+            input.y);
 
         Vector3 desire = Quaternion.Euler(0.0f, camera.transform.rotation.eulerAngles.y, 0.0f)
-            * input;
+            * movement;
 
         movementSystem.Movement = new Vector2(desire.x, desire.z);
 
@@ -124,24 +125,26 @@ public class PlayerCharacterController : MonoBehaviour
     private void UpdateSkills()
     {
         int usedSkill = GetUsedSkill();
+        if (usedSkill >= 0) wantToCast = usedSkill;
+        if (skillSystem.Casting || attackSystem.Attacking || movementSystem.Moving)
+        {
+            wantToCast = -1;
+            return;
+        }
 
-        if (usedSkill >= 0 || wantToCast >= 0)
+        if (wantToCast >= 0)
         {
             if (sheathSystem.Sheathed)
             {
                 if (!sheathSystem.Busy) sheathSystem.Unsheath();
 
-                wantToCast = usedSkill;
-                return;
-            }
-            
-            if (skillSystem.Casting || attackSystem.Attacking || movementSystem.Moving)
-            {
-                wantToCast = -1;
                 return;
             }
 
-            skillSystem.Cast(wantToCast);
+            if (wantToCast >= 0)
+            {
+                skillSystem.Cast(wantToCast);
+            }
             wantToCast = -1;
         }
 
@@ -174,11 +177,11 @@ public class PlayerCharacterController : MonoBehaviour
     private void UpdateAttack()
     {
 
-        if(InputManager.Get(InputAction.Attack) || wantToAttack)
+        if (InputManager.Get(InputAction.Attack) || wantToAttack)
         {
             if (sheathSystem.Sheathed)
             {
-                if(!sheathSystem.Busy) sheathSystem.Unsheath();
+                if (!sheathSystem.Busy) sheathSystem.Unsheath();
 
                 wantToAttack = true;
                 return;
@@ -199,7 +202,7 @@ public class PlayerCharacterController : MonoBehaviour
 
     private void UpdateBodyState()
     {
-        if(InputManager.Get(InputAction.ChangeBodyState))
+        if (InputManager.Get(InputAction.ChangeBodyState))
         {
             bodyStateSystem.ChangeState(
                 bodyStateSystem.State == BodyStateSystem.BodyState.Magical

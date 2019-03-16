@@ -78,7 +78,7 @@ public class SheathSystem : MonoBehaviour
         {
             return 
                 state == SheathSystemState.Sheathed ||
-                state == SheathSystemState.Sheathing;
+                state == SheathSystemState.Unsheathing;
         }
     }
 
