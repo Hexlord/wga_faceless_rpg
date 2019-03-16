@@ -71,7 +71,7 @@ public class PlayerCharacterController : MonoBehaviour
 
     private void UpdateSkills()
     {
-        if (!skillSystem.Casting)
+        if (!attackSystem.Attacking && !movementSystem.Moving && !skillSystem.Casting)
         {
             if (InputManager.Get(InputAction.Skill_1) && skillSystem.Skills.Count >= 1)
             {

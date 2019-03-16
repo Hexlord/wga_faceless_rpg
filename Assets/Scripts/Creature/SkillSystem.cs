@@ -161,8 +161,6 @@ public class SkillSystem : MonoBehaviour
         bool isDefaultClip = clipName == idleAnimation;
 
         stateTimer += Time.fixedDeltaTime;
-
-        if (transition) return;
         
         switch (state)
         {
@@ -184,6 +182,7 @@ public class SkillSystem : MonoBehaviour
                     activeSkill.CastEvent(gameObject);
                     activeSkill.EndUpdate(gameObject, Time.fixedDeltaTime, time, skillAnimationEndLength);
                 }
+                /*
                 else if (isDefaultClip)
                 {
                     if (preciseEnding)
@@ -194,6 +193,7 @@ public class SkillSystem : MonoBehaviour
                     SwitchState(SkillSystemState.None);
                     activeSkill.CastEvent(gameObject);
                 }
+                */
                 break;
             case SkillSystemState.SkillEnd:
                 if (clipName == skillAnimationEnd)
@@ -222,7 +222,6 @@ public class SkillSystem : MonoBehaviour
 
                 }
                 /* only happens due to no channel-loop animation */
-                // Debug.Assert(false);
                 else if (clipName == channelAnimationEnd)
                 {
                     if (preciseEnding) activeSkill.StartUpdate(gameObject, Time.fixedDeltaTime, channelAnimationStartLength, channelAnimationStartLength);
@@ -232,6 +231,7 @@ public class SkillSystem : MonoBehaviour
                     time = useAnimationTime ? clip.length * animState.normalizedTime : stateTimer;
                     activeSkill.EndUpdate(gameObject, Time.fixedDeltaTime, time, channelAnimationEndLength);
                 }
+                /*
                 else if (isDefaultClip)
                 {
                     if (preciseEnding) activeSkill.StartUpdate(gameObject, Time.fixedDeltaTime, channelAnimationStartLength, channelAnimationStartLength);
@@ -240,6 +240,7 @@ public class SkillSystem : MonoBehaviour
 
                     SwitchState(SkillSystemState.None);
                 }
+                */
                 break;
             case SkillSystemState.ChannelUpdate:
                 if (clipName == channelAnimationUpdate)
