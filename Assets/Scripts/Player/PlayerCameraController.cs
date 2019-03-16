@@ -80,8 +80,8 @@ public class PlayerCameraController : MonoBehaviour
     public float clippingAvoidanceSmoothAngle = 3.0f;
 
     [Tooltip("Camera distance change speed")]
-    [Range(0.1f, 50.0f)]
-    public float clippingAvoidanceSpeed = 12.0f;
+    [Range(0.1f, 100.0f)]
+    public float clippingAvoidanceSpeed = 2.0f;
 
     [Tooltip("Camera distance immediate snap for solid clipping")]
     public bool clippingAvoidanceInstantSnap = true;
@@ -94,7 +94,9 @@ public class PlayerCameraController : MonoBehaviour
     [Range(1.0f, 5.0f)]
     public float clippingAvoidanceNormalFactorReversed = 2.0f;
 
-
+    [Tooltip("Camera distance offset normal angle factor baseline")]
+    [Range(0.0f, 1.0f)]
+    public float clippingAvoidanceNormalFactorBaseline = 0.1f;
     // Private
 
     private float playerAutoRotateTimer = 0.0f;
@@ -164,7 +166,7 @@ public class PlayerCameraController : MonoBehaviour
             {
                 playerAutoRotateTimer = 0.0f;
             }
-        }        
+        }
 
         if (playerAutoRotateActive)
         {
@@ -221,7 +223,7 @@ public class PlayerCameraController : MonoBehaviour
                 float angle = Mathf.Abs(Vector3.Angle(hit.normal, cameraForward));
                 if (angle > 90.0f) angle = 180.0f - angle;
                 float factor = 1.0f - angle / 90.0f;
-                entry.angleFactor = Mathf.Pow(factor, 1.0f / clippingAvoidanceNormalFactorReversed);
+                entry.angleFactor = Mathf.Min(1.0f, clippingAvoidanceNormalFactorBaseline + Mathf.Pow(factor, 1.0f / clippingAvoidanceNormalFactorReversed));
 
                 if (entry.collider.gameObject.CompareTag("Planar"))
                 {
@@ -238,7 +240,7 @@ public class PlayerCameraController : MonoBehaviour
                 float angle = Mathf.Abs(Vector3.Angle(hit.normal, cameraForward));
                 if (angle > 90.0f) angle = 180.0f - angle;
                 float factor = 1.0f - angle / 90.0f;
-                entry.angleFactor = Mathf.Pow(factor, 1.0f / clippingAvoidanceNormalFactorReversed);
+                entry.angleFactor = Mathf.Min(1.0f, clippingAvoidanceNormalFactorBaseline + Mathf.Pow(factor, 1.0f / clippingAvoidanceNormalFactorReversed));
                 if (entry.collider.gameObject.CompareTag("Planar"))
                 {
                     rayEntries.Add(entry);
@@ -289,11 +291,13 @@ public class PlayerCameraController : MonoBehaviour
 
             if (currentColliders.Count == 0)
             {
+
                 // Finished segment
                 SnapEntry snapEntry = new SnapEntry
                 {
 
                     // Widen snap entries by cameraAvoidanceOffset
+
                     distanceStart = start - clippingAvoidanceRayAngleOffset * entry.angleFactor,
                     distanceEnd = entry.distance + clippingAvoidanceRayAngleOffset * entry.angleFactor
                 };
@@ -319,7 +323,7 @@ public class PlayerCameraController : MonoBehaviour
             if (!entry.collider.gameObject.CompareTag("Small") &&
                 !entry.collider.gameObject.CompareTag("Player"))
             {
-                snap = Mathf.Min(snap, entry.distance);
+                snap = Mathf.Min(snap, entry.distance - clippingAvoidanceRayAngleOffset * entry.angleFactor);
             }
         }
 
@@ -409,28 +413,35 @@ public class PlayerCameraController : MonoBehaviour
 
     }
 
-    private static Vector3 GetClosestPointOnLineSegment(Vector3 A, Vector3 B, Vector3 P)
+    private static Vector3 NearestPointOnFiniteLine(Vector3 start, Vector3 end, Vector3 pnt)
     {
-        Vector3 AP = P - A;
-        Vector3 AB = B - A;
+        var line = (end - start);
+        var len = line.magnitude;
+        line.Normalize();
 
-        float magnitudeABSqr = AB.sqrMagnitude;
-        float ABAPproduct = Vector2.Dot(AP, AB);   
-        float distance = ABAPproduct / magnitudeABSqr;
+        var v = pnt - start;
+        var d = Vector3.Dot(v, line);
+        d = Mathf.Clamp(d, 0f, len);
+        return start + line * d;
+    }
 
-        if (distance <= 0)   
-        {
-            return A;
+    private static void LineToLineIntersection(Vector3 P1, Vector3 P2, Vector3 P3, Vector3 P4, out Vector3 Pa, out Vector3 Pb)
+    {
+        Vector3 P13 = P3 - P1;
+        Vector3 P43 = P4 - P3;
+        Vector3 P21 = P2 - P1;
 
-        }
-        else if (distance >= 1)
-        {
-            return B;
-        }
-        else
-        {
-            return A + AB * distance;
-        }
+        float mua = (
+            Vector3.Dot(P13, P43) * Vector3.Dot(P43, P21) -
+            Vector3.Dot(P13, P21) * Vector3.Dot(P43, P43)) /
+            (Vector3.Dot(P21, P21) * Vector3.Dot(P43, P43) -
+            Vector3.Dot(P43, P21) * Vector3.Dot(P43, P21));
+
+        float mub = (Vector3.Dot(P13, P43) + mua * Vector3.Dot(P43, P21)) /
+            Vector3.Dot(P43, P43);
+
+        Pa = P1 + mua * (P2 - P1);
+        Pb = P3 + mub * (P4 - P3);
     }
 
     protected void FixedUpdate()
@@ -440,6 +451,8 @@ public class PlayerCameraController : MonoBehaviour
 
     protected void LateUpdate()
     {
+        float delta = Time.deltaTime;
+
         float deltaYaw = Input.GetAxis("Mouse X") * mouseHorizontalSensitivity;
         float deltaPitch = Input.GetAxis("Mouse Y") * mouseVerticalSensitivity
             * (mouseVerticalInversion
@@ -454,7 +467,7 @@ public class PlayerCameraController : MonoBehaviour
          */
         transitionDeltaYaw += deltaYaw;
         transitionDeltaPitch += deltaPitch;
-        
+
         float targetPitch = cameraTransition < 1.0f
             ? transitionStartPitch + transitionDeltaPitch
             : constrainedCamera.Pitch;
@@ -470,12 +483,12 @@ public class PlayerCameraController : MonoBehaviour
             0.0f);
         camera.fieldOfView = Mathf.Lerp(transitionStartFOV, constrainedCamera.constraintFieldOfView, cameraTransition);
 
-        cameraTransition = Mathf.MoveTowards(cameraTransition, 1.0f, Time.deltaTime * transitionSpeed);
+        cameraTransition = Mathf.MoveTowards(cameraTransition, 1.0f, delta * transitionSpeed);
 
         // Prevent camera clipping by moving camera position
 
         {
-            Vector3 forward = camera.transform.forward;
+            Vector3 forward = (constrainedCamera.Target - position).normalized;
 
             Vector3 dir1 = Quaternion.Euler(clippingAvoidanceSmoothAngle, 0.0f, 0.0f) * forward;
             Vector3 dir2 = Quaternion.Euler(-clippingAvoidanceSmoothAngle, 0.0f, 0.0f) * forward;
@@ -485,11 +498,12 @@ public class PlayerCameraController : MonoBehaviour
             float distance = 100.0f;
             float minDistance = 0.0f;
             Vector3 target = camera.transform.position + forward * distance;
-            if(constrainedCamera.constraintTarget)
+            if (constrainedCamera.constraintTarget)
             {
                 // keep at constraintMinimumDistanceToTarget distance from constraintTarget
-                target = GetClosestPointOnLineSegment(camera.transform.position, target, constrainedCamera.constraintTarget.transform.position);
-                distance = Vector3.Distance(camera.transform.position, target);
+                target = constrainedCamera.Target;
+
+                distance = Vector3.Distance(position, target);
                 minDistance = constrainedCamera.constraintMinimumDistanceToTarget;
             }
 
@@ -512,8 +526,8 @@ public class PlayerCameraController : MonoBehaviour
             snap = Mathf.Min(snap, s3);
             snap = Mathf.Min(snap, s4);
 
-            float compensation = distance - dist;
-            float snapCompensation = distance - snap;
+            float compensation = Mathf.Min(distance - minDistance, distance - dist);
+            float snapCompensation = Mathf.Min(distance - minDistance, distance - snap);
 
             if (clippingAvoidanceInstantSnap)
             {
@@ -523,13 +537,16 @@ public class PlayerCameraController : MonoBehaviour
                 }
             }
 
-            clippingAvoidanceOffset = Mathf.MoveTowards(clippingAvoidanceOffset, compensation, clippingAvoidanceSpeed * Time.deltaTime);
+            clippingAvoidanceOffset = Mathf.MoveTowards(clippingAvoidanceOffset, compensation, clippingAvoidanceSpeed * delta);
 
-            clippingAvoidanceOffset = Mathf.Min(clippingAvoidanceOffset, distance - minDistance);
+            /*
+             * This makes no sense, why was it written?
+             */
+            // clippingAvoidanceOffset = Mathf.Min(clippingAvoidanceOffset, distance - minDistance);
 
             position += forward * clippingAvoidanceOffset;
         }
-        
+
         camera.transform.position = position;
     }
 
@@ -545,7 +562,7 @@ public class PlayerCameraController : MonoBehaviour
     {
         if (constrainedCamera == otherCamera) return;
 
-        if(preserveRotation)
+        if (preserveRotation)
         {
             otherCamera.Pitch = constrainedCamera.Pitch;
             otherCamera.Yaw = constrainedCamera.Yaw;
@@ -559,7 +576,7 @@ public class PlayerCameraController : MonoBehaviour
         transitionDeltaYaw = Mathf.DeltaAngle(0, otherCamera.Yaw - transitionStartYaw);
         transitionDeltaPitch = Mathf.DeltaAngle(0, otherCamera.Pitch - transitionStartPitch);
 
-        cameraTransition = instant 
+        cameraTransition = instant
             ? 1.0f
             : 0.0f;
         constrainedCamera = otherCamera;

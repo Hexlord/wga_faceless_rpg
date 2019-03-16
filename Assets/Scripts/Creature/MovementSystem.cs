@@ -21,6 +21,9 @@ public class MovementSystem : MonoBehaviour
     // Public
     [AddComponentMenu("ProjectFaceless/Creature")]
     [Header("Movement Settings")]
+    [Tooltip("Toggles ability to move")]
+    public bool canMove = true;
+
     [Tooltip("Movement desire threshold (default = 0.2)")]
     [Range(0.0f, 1.0f)]
     public float movementDesireThreshold = 0.2f;
@@ -58,18 +61,27 @@ public class MovementSystem : MonoBehaviour
     [Header("Animation Settings")]
 
     public string idleAnimation = "idle";
-    public string movingForwardAnimation = "moveForward";
-    public string movingBackwardAnimation = "moveBackward";
-    public string movingLeftAnimation = "moveLeft";
-    public string movingRightAnimation = "moveRight";
-
     public string idleAnimationTrigger = "idleTrigger";
-    public string movingForwardAnimationTrigger = "moveForwardTrigger";
-    public string movingBackwardAnimationTrigger = "moveBackwardTrigger";
-    public string movingLeftAnimationTrigger = "moveLeftTrigger";
-    public string movingRightAnimationTrigger = "moveRightTrigger";
 
-    public int animationLayer = 1;
+    public string moveForwardAnimation = "moveForward";
+    public string moveForwardAnimationTrigger = "moveForwardTrigger";
+    public string moveBackwardAnimation = "moveBackward";
+    public string moveBackwardAnimationTrigger = "moveBackwardTrigger";
+    public string moveLeftAnimation = "moveLeft";
+    public string moveLeftAnimationTrigger = "moveLeftTrigger";
+    public string moveRightAnimation = "moveRight";
+    public string moveRightAnimationTrigger = "moveRightTrigger";
+
+    public string unarmedIdleAnimation = "unarmedIdle";
+    public string unarmedIdleAnimationTrigger = "unarmedIdleTrigger";
+    public string unarmedMoveForwardAnimation = "unarmedMoveForward";
+    public string unarmedMoveBackwardAnimation = "unarmedMoveBackward";
+    public string unarmedMoveLeftAnimation = "moveLeft";
+    public string unarmedMoveRightAnimation = "moveRight";
+
+
+
+    public int animationLayer = 0;
 
     public bool Moving
     {
@@ -84,9 +96,10 @@ public class MovementSystem : MonoBehaviour
     {
         get { return desiredMovement; }
         set
-        {
+        {        
             if (value.sqrMagnitude < Mathf.Epsilon) value = Vector2.zero;
             else if (value.sqrMagnitude > 1.0f) value = value.normalized;
+
             desiredMovement = value;
             state = CalculateState();
         }
@@ -101,6 +114,9 @@ public class MovementSystem : MonoBehaviour
 
     private Animator animator;
     private Rigidbody body;
+    private SheathSystem sheathSystem;
+    private AttackSystem attackSystem;
+    private SkillSystem skillSystem;
 
     protected void Start()
     {
@@ -108,14 +124,18 @@ public class MovementSystem : MonoBehaviour
 
         animator = GetComponent<Animator>();
         body = GetComponent<Rigidbody>();
+        sheathSystem = GetComponent<SheathSystem>();
+        attackSystem = GetComponent<AttackSystem>();
+        skillSystem = GetComponent<SkillSystem>();
     }
 
     private MovementSystemState CalculateState()
     {
-        Vector2 desiredMovementBodySpace =
-            body.rotation * desiredMovement;
+        Vector3 desiredMovementBodySpace =
+            Quaternion.Euler(0.0f, -transform.rotation.eulerAngles.y, 0.0f) * 
+            (new Vector3(desiredMovement.x, 0.0f, desiredMovement.y));
 
-        float forward = desiredMovementBodySpace.y;
+        float forward = desiredMovementBodySpace.z;
         float right = desiredMovementBodySpace.x;
 
         float forwardAbs = Mathf.Abs(forward);
@@ -163,25 +183,89 @@ public class MovementSystem : MonoBehaviour
 
     protected void FixedUpdate()
     {
+        if (attackSystem &&
+            attackSystem.Attacking ||
+            skillSystem &&
+            skillSystem.Casting) Movement = Vector2.zero;
+
+        bool transition = animator.IsInTransition(animationLayer);
+
+        bool sheathed = sheathSystem.Sheathed;
+
+        AnimatorClipInfo info = animator.GetCurrentAnimatorClipInfo(animationLayer)[0];
+        AnimatorStateInfo animState = animator.GetCurrentAnimatorStateInfo(animationLayer);
+        AnimationClip clip = info.clip;
+        string clipName = clip.name;
+
         string trigger = idleAnimationTrigger;
+
+        bool idle = clipName == (sheathed
+            ? unarmedIdleAnimation
+            : idleAnimation);
+
+        bool matches = false;
+        switch (state)
+        {
+            case MovementSystemState.None:
+                matches = clipName == (sheathed
+                    ? unarmedIdleAnimation
+                    : idleAnimation);
+                break;
+            case MovementSystemState.MovingForward:
+                matches = clipName == (sheathed
+                    ? unarmedMoveForwardAnimation
+                    : moveForwardAnimation);
+                break;
+            case MovementSystemState.MovingBackward:
+                matches = clipName == (sheathed
+                    ? unarmedMoveBackwardAnimation
+                    : moveBackwardAnimation);
+                break;
+            case MovementSystemState.MovingLeft:
+                matches = clipName == (sheathed
+                    ? unarmedMoveLeftAnimation
+                    : moveLeftAnimation);
+                break;
+            case MovementSystemState.MovingRight:
+                matches = clipName == (sheathed
+                    ? unarmedMoveRightAnimation
+                    : moveRightAnimation);
+                break;
+        }
+
+
         switch (state)
         {
             case MovementSystemState.None:
                 trigger = idleAnimationTrigger;
                 break;
             case MovementSystemState.MovingForward:
-                trigger = movingForwardAnimationTrigger;
+                trigger = idle || matches
+                    ? moveForwardAnimationTrigger
+                    : idleAnimationTrigger;
                 break;
             case MovementSystemState.MovingBackward:
-                trigger = movingBackwardAnimationTrigger;
+                trigger = idle || matches
+                    ? moveBackwardAnimationTrigger
+                    : idleAnimationTrigger;
                 break;
             case MovementSystemState.MovingLeft:
-                trigger = movingLeftAnimationTrigger;
+                trigger = idle || matches
+                    ? moveLeftAnimationTrigger
+                    : idleAnimationTrigger;
                 break;
             case MovementSystemState.MovingRight:
-                trigger = movingRightAnimationTrigger;
+                trigger = idle || matches
+                    ? moveRightAnimationTrigger
+                    : idleAnimationTrigger;
                 break;
         }
+
+        animator.ResetTrigger(moveForwardAnimationTrigger);
+        animator.ResetTrigger(moveBackwardAnimationTrigger);
+        animator.ResetTrigger(moveLeftAnimationTrigger);
+        animator.ResetTrigger(moveRightAnimationTrigger);
+        animator.ResetTrigger(idleAnimationTrigger);
 
         animator.SetTrigger(trigger);
 

@@ -81,6 +81,11 @@ public class ConstrainedCamera : MonoBehaviour
                 fromTargetToCamera * (constraintMinimumDistanceToTarget / length);
         }
     }
+
+    public Vector3 Target
+    {
+        get {  return target; }
+    }
     public float Yaw
     {
         get { return transform.rotation.eulerAngles.y; }
@@ -132,6 +137,8 @@ public class ConstrainedCamera : MonoBehaviour
 
     protected new Camera camera;
 
+    protected Vector3 target;
+
     protected virtual void Start()
     {
         // Cache
@@ -150,7 +157,7 @@ public class ConstrainedCamera : MonoBehaviour
 
     protected virtual void OnRotationChange()
     {
-        // Intentionally left empty
+        target = constraintTarget.transform.position;
     }
 
     protected virtual void Update()

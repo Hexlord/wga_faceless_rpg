@@ -32,15 +32,20 @@ public class PlayerCharacterController : MonoBehaviour
     private new Camera camera;
     private PlayerCameraController cameraController;
     private SkillSystem skillSystem;
+    private AttackSystem attackSystem;
     private SheathSystem sheathSystem;
+    private BodyStateSystem bodyStateSystem;
 
     private bool aiming = false;
+    private bool wantToAttack = false;
 
     protected void Start()
     {
         movementSystem = GetComponent<MovementSystem>();
         skillSystem = GetComponent<SkillSystem>();
+        attackSystem = GetComponent<AttackSystem>();
         sheathSystem = GetComponent<SheathSystem>();
+        bodyStateSystem = GetComponent<BodyStateSystem>();
         cameraController = GetComponent<PlayerCameraController>();
         camera = Camera.main;
 
@@ -67,7 +72,7 @@ public class PlayerCharacterController : MonoBehaviour
 
     private void UpdateSkills()
     {
-        if (!skillSystem.Casting)
+        if (!attackSystem.Attacking && !movementSystem.Moving && !skillSystem.Casting)
         {
             if (InputManager.Get(InputAction.Skill_1) && skillSystem.Skills.Count >= 1)
             {
@@ -128,12 +133,53 @@ public class PlayerCharacterController : MonoBehaviour
         }
     }
 
+    private void UpdateAttack()
+    {
+        if(InputManager.Get(InputAction.Attack) || wantToAttack)
+        {
+            if (sheathSystem.Sheathed && !sheathSystem.Busy)
+            {
+                sheathSystem.Unsheath();
+                wantToAttack = true;
+                return;
+            }
+
+            if (sheathSystem.Busy)
+            {
+                return;
+            }
+
+            if (skillSystem.Casting || attackSystem.Attacking)
+            {
+                wantToAttack = false;
+                return;
+            }
+
+            attackSystem.Attack();
+            wantToAttack = false;
+        }
+
+    }
+
+    private void UpdateBodyState()
+    {
+        if(InputManager.Get(InputAction.ChangeBodyState))
+        {
+            bodyStateSystem.ChangeState(
+                bodyStateSystem.State == BodyStateSystem.BodyState.Magical
+                ? BodyStateSystem.BodyState.Physical
+                : BodyStateSystem.BodyState.Magical);
+        }
+    }
+
     protected void FixedUpdate()
     {
         UpdateMovement();
         UpdateSkills();
         UpdateAim();
         UpdateSheathe();
+        UpdateBodyState();
+        UpdateAttack();
 
 
     }

@@ -15,6 +15,7 @@ public enum InputAction
 {
     ChangeBodyState,
     Sheathe,
+    Attack,
     Aim,
     Heal,
     Skill_1,
@@ -64,6 +65,8 @@ public static class InputManager
                 return "Escape";
             case InputAction.Enter:
                 return "Enter";
+            case InputAction.Attack:
+                return "LMB";
         }
         return "none";
     }

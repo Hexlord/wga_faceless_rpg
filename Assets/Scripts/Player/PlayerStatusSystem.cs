@@ -38,8 +38,8 @@ public class PlayerStatusSystem : MonoBehaviour
     }
     protected virtual void Update()
     {
-        healthBar.fillAmount = health.Health / health.healthMaximum;
-        concentrationBar.fillAmount = concentration.Concentration / concentration.concentrationMaximum;
+        if(healthBar) healthBar.fillAmount = health.Health / health.healthMaximum;
+        if(concentrationBar) concentrationBar.fillAmount = concentration.Concentration / concentration.concentrationMaximum;
     }
 
 }

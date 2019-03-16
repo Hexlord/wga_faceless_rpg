@@ -100,7 +100,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5519420894751782087}
-  - component: {fileID: 5519420894751782085}
   - component: {fileID: 5519420894751782086}
   m_Layer: 12
   m_Name: Sword
@@ -127,19 +126,6 @@ Transform:
   m_Father: {fileID: 5519420895777628341}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &5519420894751782085
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5519420894751782088}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e05b8acf9f01de448a39408902cde07d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Mode: 0
 --- !u!54 &5519420894751782086
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -357,13 +343,8 @@ GameObject:
   m_Component:
   - component: {fileID: 5519420895777628341}
   - component: {fileID: 5519420895777628339}
-  - component: {fileID: 5519420895777628338}
   - component: {fileID: 5519420895777628337}
   - component: {fileID: 5519420895777628336}
-  - component: {fileID: 5519420895777628340}
-  - component: {fileID: 5519420895777628335}
-  - component: {fileID: 5519420895777628333}
-  - component: {fileID: 5519420895777628332}
   - component: {fileID: 5519420895777628334}
   m_Layer: 14
   m_Name: Player
@@ -410,18 +391,6 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
---- !u!114 &5519420895777628338
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5519420895777628342}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3c870626a5402b74ebd1107e83845ffc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!143 &5519420895777628337
 CharacterController:
   m_ObjectHideFlags: 0
@@ -454,6 +423,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mouseHorizontalSensitivity: 5
   mouseVerticalSensitivity: 5
+  mouseVerticalInversion: 1
   playerRotationSpeed: 360
   playerAutoRotateEnabled: 0
   playerAutoRotatePassive: 0
@@ -461,141 +431,14 @@ MonoBehaviour:
   playerImmediateAutoRotateEnabled: 0
   playerImmediateAutoRotateThreshold: 90
   transitionTime: 0.33
-  actionMinimumDistance: 0.28
-  actionHeight: 2.4
-  actionRightOffset: 0.5
-  actionDistance: 4.43
-  actionPitchLimit: 60
-  actionInitialPitchEnabled: 1
-  actionInitialPitch: -15
-  actionFOV: 90
-  shootMinimumDistance: 0
-  shootHeight: 2.88
-  shootBackwardsOffset: 2.54
-  shootRightOffset: 1
-  shootPitchLimit: 80
-  shootInitialPitchEnabled: 1
-  shootInitialPitch: 0
-  shootFOV: 90
-  tacticsHeight: 1.7
-  tacticsDistance: 18
-  tacticsPitch: 90
-  tacticsFOV: 90
-  cameraAvoidanceSmoothAngle: 3
-  cameraAvoidanceSpeed: 12
-  cameraAvoidanceInstantSnap: 1
-  cameraAvoidanceOffset: 2
-  cameraAvoidanceNormalFactorReversed: 2
-  cameraState: 0
-  cameraStateNext: 0
-  cameraStateTransition: 0
---- !u!114 &5519420895777628340
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5519420895777628342}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7bc7424053011804aaedaeafacc6a5e1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  designatedPosition: {x: 0, y: 0, z: 0}
-  speed: 10
-  strikeAnimationClipsNames:
-  - LeftSwing
-  - RightSwing
-  target: Faceless
-  sprintModifier: 1.25
-  playerProjectile: {fileID: 3473170856130720857, guid: 554d3c36d571e484ba0c7ef086e79d49,
-    type: 3}
-  ShootingPoint: {fileID: 5519420895813277628}
-  projectileSpeed: 2
-  projectileDamage: 15
-  projectileConcentration: 2.5
-  playerSword: {fileID: 5519420894751782085}
-  swordDamage: 25
-  swordConcentration: 12.5
-  SwordParticles: {fileID: 5519420896489886806}
-  MaskParticles: {fileID: 5519420895726359008}
-  currentCharacterState: 0
-  currentSwordState: 0
---- !u!114 &5519420895777628335
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5519420895777628342}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cf7603be173864d4984155a6a629cde1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  healthPoints: 100
-  respawnAfterDeath: 1
-  Healthbar: {fileID: 0}
-  maxConcentration: 100
-  currentAmountOfConcentration: 0
-  ConcentrationBar: {fileID: 0}
-  exchangeRate: 1
-  restorationRate: 10
-  deathScreen: {fileID: 0}
---- !u!114 &5519420895777628333
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5519420895777628342}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b5d23db886cc1d64c9850cf18d0e8cd7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  physicalDefenseCharges: 3
-  magicalDefenseCharges: 3
-  dashCooldown: 3
-  shieldCooldown: 3
-  physicalDefenseChargesAvailable: 
-  magicalDefenseChargesAvailable: 
-  isDashing: 0
-  dashRange: 15
-  dashTime: 0.2
-  dashDirection: {x: 0, y: 0, z: 0}
---- !u!114 &5519420895777628332
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5519420895777628342}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c6767e809cdbe3d4c9436602855554b6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  state: 0
-  skillAnimationStart: skillStart
-  skillAnimationEnd: skillEnd
-  channelAnimationStart: channelStart
-  channelAnimationUpdate: channelUpdate
-  channelAnimationEnd: channelEnd
-  defaultAnimation: default
-  skillAnimationStartTrigger: skillStartTrigger
-  channelAnimationStartTrigger: channelStartTrigger
-  interruptTrigger: interruptTrigger
-  interruptInstantTrigger: interruptInstantTrigger
-  preciseEnding: 0
-  preciseChanneling: 1
-  useAnimationTime: 0
-  startSkills: 
-  skillAnimationStartLength: 0
-  skillAnimationEndLength: 0
-  channelAnimationStartLength: 0
-  channelAnimationUpdateLength: 0
-  channelAnimationEndLength: 0
+  clippingAvoidanceSmoothAngle: 3
+  clippingAvoidanceSpeed: 2
+  clippingAvoidanceInstantSnap: 1
+  clippingAvoidanceRayAngleOffset: 2
+  clippingAvoidanceNormalFactorReversed: 2
+  clippingAvoidanceNormalFactorBaseline: 0.1
+  constrainedCamera: {fileID: 0}
+  cameraTransition: 1
 --- !u!54 &5519420895777628334
 Rigidbody:
   m_ObjectHideFlags: 0

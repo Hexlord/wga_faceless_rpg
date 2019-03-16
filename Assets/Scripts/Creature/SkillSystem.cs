@@ -54,7 +54,7 @@ public class SkillSystem : MonoBehaviour
     public string channelAnimationUpdate = "channelUpdate";
     public string channelAnimationEnd = "channelEnd";
 
-    public string defaultAnimation = "default";
+    public string idleAnimation = "idle";
 
     public string skillAnimationStartTrigger = "skillStartTrigger";
 
@@ -151,15 +151,18 @@ public class SkillSystem : MonoBehaviour
             skill.Update(Time.fixedDeltaTime);
         }
 
+        bool transition = animator.IsInTransition(animationLayer);
+        
         AnimatorClipInfo info = animator.GetCurrentAnimatorClipInfo(animationLayer)[0];
         AnimatorStateInfo animState = animator.GetCurrentAnimatorStateInfo(animationLayer);
         AnimationClip clip = info.clip;
         string clipName = clip.name;
         time = useAnimationTime ? clip.length * animState.normalizedTime : stateTimer;
 
-        bool isDefaultClip = clipName == defaultAnimation;
-        isDefaultClip = true; // TODO: remove when animations ready
+        bool isDefaultClip = clipName == idleAnimation;
 
+        stateTimer += Time.fixedDeltaTime;
+        
         switch (state)
         {
             case SkillSystemState.None:
@@ -180,6 +183,7 @@ public class SkillSystem : MonoBehaviour
                     activeSkill.CastEvent(gameObject);
                     activeSkill.EndUpdate(gameObject, Time.fixedDeltaTime, time, skillAnimationEndLength);
                 }
+                /*
                 else if (isDefaultClip)
                 {
                     if (preciseEnding)
@@ -190,6 +194,7 @@ public class SkillSystem : MonoBehaviour
                     SwitchState(SkillSystemState.None);
                     activeSkill.CastEvent(gameObject);
                 }
+                */
                 break;
             case SkillSystemState.SkillEnd:
                 if (clipName == skillAnimationEnd)
@@ -218,7 +223,6 @@ public class SkillSystem : MonoBehaviour
 
                 }
                 /* only happens due to no channel-loop animation */
-                // Debug.Assert(false);
                 else if (clipName == channelAnimationEnd)
                 {
                     if (preciseEnding) activeSkill.StartUpdate(gameObject, Time.fixedDeltaTime, channelAnimationStartLength, channelAnimationStartLength);
@@ -228,6 +232,7 @@ public class SkillSystem : MonoBehaviour
                     time = useAnimationTime ? clip.length * animState.normalizedTime : stateTimer;
                     activeSkill.EndUpdate(gameObject, Time.fixedDeltaTime, time, channelAnimationEndLength);
                 }
+                /*
                 else if (isDefaultClip)
                 {
                     if (preciseEnding) activeSkill.StartUpdate(gameObject, Time.fixedDeltaTime, channelAnimationStartLength, channelAnimationStartLength);
@@ -236,6 +241,7 @@ public class SkillSystem : MonoBehaviour
 
                     SwitchState(SkillSystemState.None);
                 }
+                */
                 break;
             case SkillSystemState.ChannelUpdate:
                 if (clipName == channelAnimationUpdate)
@@ -270,8 +276,6 @@ public class SkillSystem : MonoBehaviour
                 }
                 break;
         }
-        
-        stateTimer += Time.fixedDeltaTime;
     }
     
     public void Cast(string skillName)
