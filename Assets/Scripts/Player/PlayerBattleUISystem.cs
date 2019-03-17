@@ -71,6 +71,8 @@ public class PlayerBattleUISystem : MonoBehaviour
 
         XP.fillAmount = 0;
 
+        battleUI.SetActive(true);
+
     }
     protected void Update()
     {

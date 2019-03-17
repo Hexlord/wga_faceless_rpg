@@ -144,7 +144,7 @@ public class PlayerCameraController : MonoBehaviour
     {
         // Cache
 
-        camera = Camera.main;
+        camera = GameObject.Find("MainCamera").GetComponent<Camera>();
         body = GetComponent<Rigidbody>();
 
         transitionSpeed = 1.0f / transitionTime;
@@ -574,8 +574,9 @@ public class PlayerCameraController : MonoBehaviour
     public void ChangeCamera(ConstrainedCamera otherCamera, bool preserveRotation = false, bool instant = false)
     {
         if (constrainedCamera == otherCamera) return;
+        Debug.Assert(otherCamera);
 
-        if (preserveRotation)
+        if (preserveRotation && constrainedCamera)
         {
             otherCamera.Pitch = constrainedCamera.Pitch;
             otherCamera.Yaw = constrainedCamera.Yaw;
