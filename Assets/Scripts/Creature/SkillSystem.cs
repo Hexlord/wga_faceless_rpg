@@ -112,7 +112,7 @@ public class SkillSystem : MonoBehaviour
 
     private Animator animator;
 
-    
+
 
     void Start()
     {

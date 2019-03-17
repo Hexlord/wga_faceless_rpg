@@ -79,7 +79,7 @@ public class SheathSystem : MonoBehaviour
         {
             return 
                 state == SheathSystemState.Sheathed ||
-                state == SheathSystemState.Sheathing;
+                state == SheathSystemState.Unsheathing;
         }
     }
 
@@ -106,9 +106,6 @@ public class SheathSystem : MonoBehaviour
 
         weaponSheathed.SetActive(true);
         weaponUnsheathed.SetActive(false);
-
-        if (attackSystem) attackSystem.canAttack = false;
-        if (skillSystem) skillSystem.canCast = false;
     }
 
     void FixedUpdate()
@@ -130,8 +127,6 @@ public class SheathSystem : MonoBehaviour
                 if (clipName == idleAnimation)
                 {
                     state = SheathSystemState.Unsheathed;
-                    if (attackSystem) attackSystem.canAttack = true;
-                    if (skillSystem) skillSystem.canCast = true;
                     
                     weaponSheathed.SetActive(false);
                     weaponUnsheathed.SetActive(true);
@@ -143,8 +138,6 @@ public class SheathSystem : MonoBehaviour
                 if (clipName == unarmedIdleAnimation)
                 {
                     state = SheathSystemState.Sheathed;
-                    if (attackSystem) attackSystem.canAttack = false;
-                    if (skillSystem) skillSystem.canCast = false;
 
                     weaponSheathed.SetActive(true);
                     weaponUnsheathed.SetActive(false);

@@ -18,6 +18,8 @@ public class HealthSystem : MonoBehaviour
     [AddComponentMenu("ProjectFaceless/Creature")]
     // Public
 
+    public static float deathVerticalThreshold = -20.0f;
+
     [Header("Basic Settings")]
     [Tooltip("The amount of health the object has")]
     [Range(0.0f, 10000.0f, order = 2)]
@@ -120,6 +122,11 @@ public class HealthSystem : MonoBehaviour
         }
 
         Health = healthMaximum;
+    }
+
+    protected void FixedUpdate()
+    {
+        if (gameObject.transform.position.y < deathVerticalThreshold) Kill(gameObject);
     }
 
 }
