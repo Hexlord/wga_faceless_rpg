@@ -37,10 +37,11 @@ public class ShootSystem : MonoBehaviour
     [Tooltip("Toggles whether creature can shoot")]
     public bool canShoot = true;
     //TO DO: randomize projectile spawner, add multiple projectile support
+    [Tooltip("Stores multiple prefabs to shoot with")]
     public GameObject[] projectilePrefabs = new GameObject[1];
+    [Tooltip ("Transform from which the creature shoots")]
     public Transform ShootingPoint;
-    public string targetTag;
-    
+    [Tooltip("Speed with which a projectile flies. Warning: scales down with rigidbody mass")]
     public float projectileSpeed = 12.0f;
 
     [Header("Animation Settings")]
