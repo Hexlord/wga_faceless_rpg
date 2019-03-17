@@ -9,9 +9,9 @@ using UnityEngine.UI;
  * Date         Author      Description
  * 
  * 15.03.2019   aknorre     Created
- * 
+ * 16.03.2019   bkrylov     Allocated to Component Menu
  */
-
+[AddComponentMenu("ProjectFaceless/Player/PlayerSkillsUISystem")]
 public class PlayerSkillsUISystem : MonoBehaviour
 {
 

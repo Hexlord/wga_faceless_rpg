@@ -14,11 +14,11 @@ using UnityEngine.SceneManagement;
  * 16.03.2019   bkrylov     Allocated to Component Menu
  * 
  */
-
+[AddComponentMenu("ProjectFaceless/UI/Start Menu")]
 public class StartMenuScript : MonoBehaviour
 {
     // Start is called before the first frame update
-    [AddComponentMenu("ProjectFaceless/UI")]
+    
 
     [Header("Main Menu Settings")]
 

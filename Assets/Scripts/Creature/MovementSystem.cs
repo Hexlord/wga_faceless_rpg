@@ -15,11 +15,12 @@ using UnityEngine.UI;
 /*
  * Blended with other animations additively
  */
+[AddComponentMenu("ProjectFaceless/Creature/Movement System")]
 public class MovementSystem : MonoBehaviour
 {
 
     // Public
-    [AddComponentMenu("ProjectFaceless/Creature")]
+    
     [Header("Movement Settings")]
     [Tooltip("Toggles ability to move")]
     public bool canMove = true;

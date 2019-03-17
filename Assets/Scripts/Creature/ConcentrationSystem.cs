@@ -12,10 +12,10 @@ using UnityEngine.UI;
  * 16.03.2019   bkrylov     Allocated to Component Menu
  * 
  */
-
+[AddComponentMenu("ProjectFaceless/Creature/Concentration System")]
 public class ConcentrationSystem : MonoBehaviour
 {
-    [AddComponentMenu("ProjectFaceless/Creature")]
+
     // Public
 
     [Header("Basic Settings")]

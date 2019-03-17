@@ -12,10 +12,10 @@ using UnityEngine.SceneManagement;
  * 16.03.2019   bkrylov     Allocated to Component Menu
  * 
  */
-
+[AddComponentMenu("ProjectFaceless/UI/Intro Script")]
 public class IntroScript : MonoBehaviour
 {
-    [AddComponentMenu("ProjectFaceless/UI")]
+    
     [Tooltip("Time before switching scene")]
     public float timeBeforeStart = 3.0f;
 

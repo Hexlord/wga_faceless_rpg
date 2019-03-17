@@ -16,9 +16,10 @@ using UnityEngine;
 /*
  * 
  */
+[AddComponentMenu("ProjectFaceless/Camera/Third Person")]
 public class ThirdPersonCamera : ConstrainedCamera
 {
-    [AddComponentMenu("ProjectFaceless/Camera")]
+    
     // Public
 
     [Header("Player Settings")]

@@ -12,9 +12,10 @@ using UnityEngine;
  * 16.03.2019   bkrylov     Allocated to Component Menu
  * 
  */
+[AddComponentMenu("ProjectFaceless/Skills/Line Attractor")]
 public class AttractorLine : AttractorBase
 {
-    [AddComponentMenu("ProjectFaceless/Skills")]
+    
 
     [Header("Line Settings")]
 

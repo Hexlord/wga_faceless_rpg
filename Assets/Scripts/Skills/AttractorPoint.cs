@@ -11,9 +11,10 @@ using UnityEngine;
  * 16.03.2019   bkrylov     Allocated to Component Menu
  * 
  */
+[AddComponentMenu("ProjectFaceless/Skills/Point Attractor")]
 public class AttractorPoint : AttractorBase
 {
-    [AddComponentMenu("ProjectFaceless/Skills")]
+    
 
     protected override void Attract(Rigidbody body, HealthSystem health)
     {

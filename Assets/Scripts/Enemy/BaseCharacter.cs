@@ -11,9 +11,10 @@ using UnityEngine;
  * 16.03.2019   bkrylov     Allocated to Component Menu
  * 
  */
+[AddComponentMenu("ProjectFaceless/Enemy/Basic")]
 public class BaseCharacter : MonoBehaviour
 {
-    [AddComponentMenu("ProjectFaceless/Enemy")]
+    
 
     [Tooltip ("The position in world space where the object will appear after reset.")]
     [SerializeField]

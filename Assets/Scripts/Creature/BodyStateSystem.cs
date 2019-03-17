@@ -12,10 +12,10 @@ using UnityEngine;
  * 16.03.2019   bkrylov     Allocated to Component Menu
  * 
  */
-
+[AddComponentMenu("ProjectFaceless/Creature/Body State System")]
 public class BodyStateSystem : MonoBehaviour
 {
-    [AddComponentMenu("ProjectFaceless/Creature")]
+
     // Public
 
     public enum BodyState

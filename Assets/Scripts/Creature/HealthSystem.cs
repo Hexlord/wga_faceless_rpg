@@ -12,10 +12,10 @@ using UnityEngine.UI;
  * 16.03.2019   bkrylov     Allocated to Component Menu
  * 
  */
-
+[AddComponentMenu("ProjectFaceless/Creature/Health System")]
 public class HealthSystem : MonoBehaviour
 {
-    [AddComponentMenu("ProjectFaceless/Creature")]
+
     // Public
 
     public static float deathVerticalThreshold = -20.0f;

@@ -10,12 +10,12 @@ using UnityEngine.UI;
  * 
  * 15.03.2019   aknorre     Created
  * 16.03.2019   bkrylov     Allocated to Component Menu
- * 
+ * 17.03.2019   bkrylov     Added shooting
  */
-
+[AddComponentMenu("ProjectFaceless/Player/Character Controller")]
 public class PlayerCharacterController : MonoBehaviour
 {
-    [AddComponentMenu("ProjectFaceless/Player")]
+    
     // Public
     [Header("Basic Settings")]
 
@@ -47,6 +47,7 @@ public class PlayerCharacterController : MonoBehaviour
     private PlayerCameraController cameraController;
     private SkillSystem skillSystem;
     private AttackSystem attackSystem;
+    private ShootSystem shootSystem;
     private SheathSystem sheathSystem;
     private BodyStateSystem bodyStateSystem;
 
@@ -59,9 +60,11 @@ public class PlayerCharacterController : MonoBehaviour
         movementSystem = GetComponent<MovementSystem>();
         skillSystem = GetComponent<SkillSystem>();
         attackSystem = GetComponent<AttackSystem>();
+        shootSystem = GetComponent<ShootSystem>();
         sheathSystem = GetComponent<SheathSystem>();
         bodyStateSystem = GetComponent<BodyStateSystem>();
         cameraController = GetComponent<PlayerCameraController>();
+        //Main camera can be accessed via Camera.main. Why do you use such an unorthodox and heavy method?
         camera = GameObject.Find("MainCamera").GetComponent<Camera>();
 
         cameraController.ChangeCamera(cameraThirdPerson, preserveRotation: false, instant: true);
@@ -189,13 +192,37 @@ public class PlayerCharacterController : MonoBehaviour
             }
 
 
-            if (skillSystem.Casting || attackSystem.Attacking || movementSystem.Moving)
+            if (skillSystem.Casting || attackSystem.Attacking || (movementSystem.Moving && bodyStateSystem.State != BodyStateSystem.BodyState.Magical))
             {
                 wantToAttack = false;
                 return;
             }
 
-            attackSystem.Attack();
+            if (bodyStateSystem.State == BodyStateSystem.BodyState.Physical)
+            {
+                attackSystem.Attack();
+            }
+            
+            if (bodyStateSystem.State == BodyStateSystem.BodyState.Magical)
+            {
+                Ray rayFromCenterOfTheScreen = camera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
+                RaycastHit hit;
+                Vector3 shootingDirection;
+                int mask = LayerMask.GetMask("Enemy", "Environment");
+                float dist = 1000.0f;
+
+                if (Physics.Raycast(rayFromCenterOfTheScreen, out hit, dist, mask, QueryTriggerInteraction.Ignore))
+                {
+                    shootingDirection = (hit.point - (shootSystem.ShootingPoint.position)).normalized;
+                }
+                else
+                {
+                    shootingDirection = camera.transform.forward;
+                }
+
+                shootSystem.Shoot(shootingDirection);
+            }
+
             wantToAttack = false;
         }
 

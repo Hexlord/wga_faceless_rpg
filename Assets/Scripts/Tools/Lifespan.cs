@@ -11,10 +11,10 @@ using UnityEngine;
  * 16.03.2019   bkrylov     Allocated to Component Menu
  * 
  */
-
+[AddComponentMenu("ProjectFaceless/Tools/Lifespan")]
 public class Lifespan : MonoBehaviour
 {
-    [AddComponentMenu("ProjectFaceless/Tools")]
+    
     [Header("Basic Settings")]
 
     [Tooltip("Time of life")]

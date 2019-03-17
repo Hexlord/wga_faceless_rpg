@@ -12,9 +12,10 @@ using UnityEngine;
  * 16.03.2019   bkrylov     Allocated to Component Menu
  * 
  */
+[AddComponentMenu("ProjectFaceless/Creature/Skill System")]
 public class SkillSystem : MonoBehaviour
 {
-    [AddComponentMenu("ProjectFaceless/Creature")]
+    
     // Public
 
     public enum SkillSystemState

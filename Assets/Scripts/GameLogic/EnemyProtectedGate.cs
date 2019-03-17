@@ -11,9 +11,10 @@ using UnityEngine;
  * 16.03.2019   bkrylov     Allocated to Component Menu
  * 
  */
+[AddComponentMenu("ProjectFaceless/GameLogic/Enemy Protected Gate")]
 public class EnemyProtectedGate : MonoBehaviour
 {
-    [AddComponentMenu("ProjectFaceless/GameLogic")]
+    
 
     [Header("Trigger Open Settings")]
 

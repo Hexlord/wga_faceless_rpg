@@ -11,9 +11,10 @@ using UnityEngine;
  * 16.03.2019   bkrylov     Allocated to Component Menu
  * 
  */
+[AddComponentMenu("ProjectFaceless/Skills/Base Attractor")]
 public class AttractorBase : MonoBehaviour
 {
-    [AddComponentMenu("ProjectFaceless/Skills")]
+    
 
     [Header("Target settings")]
 

@@ -11,9 +11,10 @@ using UnityEngine;
  * 16.03.2019   bkrylov     Allocated to Component Menu
  * 
  */
+[AddComponentMenu("ProjectFaceless/Enemy/Smart")]
 public class SmartEnemy : MonoBehaviour
 {
-    [AddComponentMenu("ProjectFaceless/Enemy")]
+    
     // Start is called before the first frame update
     void Start()
     {

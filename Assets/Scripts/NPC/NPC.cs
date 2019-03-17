@@ -13,10 +13,10 @@ using UnityEngine.UI;
  * 16.03.2019   bkrylov     Allocated to Component Menu
  * 
  */
-
+[AddComponentMenu("ProjectFaceless/NPC/NPC")]
 public class NPC : MonoBehaviour
 {
-    [AddComponentMenu("ProjectFaceless/NPC")]
+    
 
     public enum DialogAction
     {

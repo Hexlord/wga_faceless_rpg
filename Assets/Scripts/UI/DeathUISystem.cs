@@ -13,10 +13,10 @@ using UnityEngine.SceneManagement;
  * 16.03.2019   bkrylov     Allocated to Component Menu
  * 
  */
-
+[AddComponentMenu("ProjectFaceless/UI/DeathUI System")]
 public class DeathUISystem : MonoBehaviour
 {
-    [AddComponentMenu("ProjectFaceless/UI")]
+    
     // Start is called before the first frame update
     void Start()
     {

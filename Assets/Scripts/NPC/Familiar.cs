@@ -19,10 +19,11 @@ using UnityEngine;
  * 3d pathfinding is very complex, so it is outside of this project's scope
  * 
  */
+[AddComponentMenu("ProjectFaceless/NPC/Familiar")]
 [RequireComponent(typeof(AudioSource))]
 public class Familiar : MonoBehaviour
 {
-    [AddComponentMenu("ProjectFaceless/NPC")]
+    
 
     [Header("Basic Settings")]
 

@@ -10,10 +10,10 @@ using UnityEngine;
  * 15.03.2019   aknorre     Created
  * 16.03.2019   bkrylov     Allocated to Component Menu
  */
-
+[AddComponentMenu("ProjectFaceless/Tools/VisibilityLOD")]
 public class VisibilityLOD : MonoBehaviour
 {
-    [AddComponentMenu("ProjectFaceless/Tools")]
+    
     Transform cameraTransform;
 
     [Tooltip("Maximum distance from camera to be visible")]

@@ -11,10 +11,10 @@ using UnityEngine;
  * 16.03.2019   bkrylov     Allocated to Component Menu
  * 
  */
-
+[AddComponentMenu("ProjectFaceless/Tools/Billboard")]
 public class Billboard : MonoBehaviour
 {
-    [AddComponentMenu("ProjectFaceless/Tools")]
+    
     Transform cameraTransform;
 
     [Tooltip("Flip among z axis")]

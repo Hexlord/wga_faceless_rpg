@@ -12,9 +12,10 @@ using UnityEngine;
  * 16.03.2019   bkrylov     Allocated to Component Menu
  * 
  */
+[AddComponentMenu("ProjectFaceless/Tools/FloatingTMPro")]
 public class FloatingTMPro : FloatingTransform
 {
-    [AddComponentMenu("ProjectFaceless/Tools")]
+    
     [Header("Float Settings")]
 
     

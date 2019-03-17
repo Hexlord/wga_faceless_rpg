@@ -22,10 +22,10 @@ using UnityEngine;
  *  3. After any movement rotate character to match aim
  *  
  */
+[AddComponentMenu("ProjectFaceless/Player/Camera Controller")]
 public class PlayerCameraController : MonoBehaviour
 {
     // Public
-    [AddComponentMenu("ProjectFaceless/Player")]
 
     [Header("Input Settings")]
 

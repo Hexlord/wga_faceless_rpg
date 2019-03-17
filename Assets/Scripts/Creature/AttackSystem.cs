@@ -12,9 +12,10 @@ using UnityEngine;
  * 16.03.2019   bkrylov     Allocated to Component Menu
  * 
  */
+[AddComponentMenu("ProjectFaceless/Creature/Attack System")]
 public class AttackSystem : MonoBehaviour
 {
-    [AddComponentMenu("ProjectFaceless/Creature")]
+    
     // Public
 
     public enum AttackSystemState

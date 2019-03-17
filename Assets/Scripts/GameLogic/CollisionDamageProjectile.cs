@@ -12,9 +12,10 @@ using UnityEngine;
  * 16.03.2019   bkrylov     Allocated to Component Menu
  * 
  */
+[AddComponentMenu("ProjectFaceless/GameLogic/Projectile Damage")]
 public class CollisionDamageProjectile : CollisionDamageBasic
 {
-    [AddComponentMenu("ProjectFaceless/GameLogic")]
+
     // Public
 
     [Header("Projectile Settings")]

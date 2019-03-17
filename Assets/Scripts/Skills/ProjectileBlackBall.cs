@@ -11,9 +11,10 @@ using UnityEngine;
  * 16.03.2019   bkrylov     Allocated to Component Menu
  * 
  */
+[AddComponentMenu("ProjectFaceless/Skills/Black Ball Projectile")]
 public class ProjectileBlackBall : MonoBehaviour
 {
-    [AddComponentMenu("ProjectFaceless/Skills")]
+    
 
     [Header("Basic Settings")]
 

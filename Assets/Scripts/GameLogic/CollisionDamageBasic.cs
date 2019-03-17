@@ -12,9 +12,10 @@ using UnityEngine;
  * 16.03.2019   bkrylov     Allocated to Component Menu
  * 
  */
+[AddComponentMenu("ProjectFaceless/GameLogic/Collision Damage Basic")]
 public class CollisionDamageBasic : MonoBehaviour
 {
-    [AddComponentMenu("ProjectFaceless/GameLogic")]
+
     // Public
 
     public enum DamageBodyState

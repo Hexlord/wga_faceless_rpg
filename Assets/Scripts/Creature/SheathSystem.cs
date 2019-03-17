@@ -16,9 +16,10 @@ using UnityEngine;
 /*
  * Prevents AttackSystem or SkillSystem from attacking or casting until weapon is unsheathed
  */
+[AddComponentMenu("ProjectFaceless/Creature/Sheath System")]
 public class SheathSystem : MonoBehaviour
 {
-    [AddComponentMenu("ProjectFaceless/Creature")]
+    
     // Public
 
     public enum SheathSystemState

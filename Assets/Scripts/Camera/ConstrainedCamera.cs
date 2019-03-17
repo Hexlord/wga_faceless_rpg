@@ -16,9 +16,10 @@ using UnityEngine;
 /*
  * 
  */
+[AddComponentMenu("ProjectFaceless/Camera/Constrained")]
 public class ConstrainedCamera : MonoBehaviour
 {
-    [AddComponentMenu("ProjectFaceless/Camera")]
+
     // Public
 
     [Header("Input Settings")]

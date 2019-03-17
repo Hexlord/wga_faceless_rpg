@@ -10,12 +10,12 @@ using UnityEngine;
  * 
  * 15.03.2019   aknorre     Created
  * 16.03.2019   bkrylov     Allocated to Component Menu
+ * 17.03.2019   brylov      Made SpawnProjectile method added multiple projectile storage
  * 
  */
+[AddComponentMenu("ProjectFaceless/Creature/Shoot System")]
 public class ShootSystem : MonoBehaviour
-{
-    [AddComponentMenu("ProjectFaceless/Creature")]
-    // Public
+{    // Public
 
     public enum ShootSystemState
     {
@@ -36,6 +36,12 @@ public class ShootSystem : MonoBehaviour
     [Header("Basic Settings")]
     [Tooltip("Toggles whether creature can shoot")]
     public bool canShoot = true;
+    //TO DO: randomize projectile spawner, add multiple projectile support
+    public GameObject[] projectilePrefabs = new GameObject[1];
+    public Transform ShootingPoint;
+    public string targetTag;
+    
+    public float projectileSpeed = 12.0f;
 
     [Header("Animation Settings")]
 
@@ -46,6 +52,11 @@ public class ShootSystem : MonoBehaviour
     public string shootAnimationTrigger = "shootTrigger";
 
     public string idleAnimation = "idle";
+
+    //private
+
+    private GameObject projectile;
+    private Vector3 shootingDirection;
 
     public bool Shooting
     {
@@ -71,8 +82,10 @@ public class ShootSystem : MonoBehaviour
 
     private void SpawnProjectile()
     {
-
+        projectile = Instantiate(projectilePrefabs[0], ShootingPoint.position, ShootingPoint.rotation);
+        projectile.GetComponent<Rigidbody>().AddForce(shootingDirection * projectileSpeed);
     }
+
 
     void FixedUpdate()
     {
@@ -107,9 +120,10 @@ public class ShootSystem : MonoBehaviour
         }
     }
 
-    public void Shoot()
+    public void Shoot(Vector3 direction)
     {
         Debug.Assert(!Shooting);
+        shootingDirection = direction.normalized;
 
         if (!canShoot) return;
 
