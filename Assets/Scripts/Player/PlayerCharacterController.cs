@@ -61,7 +61,7 @@ public class PlayerCharacterController : MonoBehaviour
         sheathSystem = GetComponent<SheathSystem>();
         bodyStateSystem = GetComponent<BodyStateSystem>();
         cameraController = GetComponent<PlayerCameraController>();
-        camera = Camera.main;
+        camera = GameObject.Find("MainCamera").GetComponent<Camera>();
 
         cameraController.ChangeCamera(cameraThirdPerson, preserveRotation: false, instant: true);
     }

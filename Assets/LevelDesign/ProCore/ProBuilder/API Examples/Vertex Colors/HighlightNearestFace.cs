@@ -36,7 +36,7 @@ public class HighlightNearestFace : MonoBehaviour
 		target.Refresh();
 
 		// Orient the camera in a good position
-		Camera cam = Camera.main;
+		Camera cam = GameObject.Find("MainCamera").GetComponent<Camera>();
 		cam.transform.position = new Vector3(25f, 40f, 0f);
 		cam.transform.localRotation = Quaternion.Euler( new Vector3(65f, 0f, 0f) );
 	}
