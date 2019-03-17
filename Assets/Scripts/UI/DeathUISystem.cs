@@ -36,6 +36,6 @@ public class DeathUISystem : MonoBehaviour
     }
     void Restart()
     {
-        SceneManager.LoadScene("GameSasha", LoadSceneMode.Single);
+        SceneManager.LoadScene("Game", LoadSceneMode.Single);
     }
 }

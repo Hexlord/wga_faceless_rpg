@@ -25,7 +25,7 @@ public class VisibilityLOD : MonoBehaviour
 
     void Start()
     {
-        cameraTransform = Camera.main.transform;
+        cameraTransform = GameObject.Find("MainCamera").GetComponent<Camera>().transform;
     }
 
     // Update is called once per frame

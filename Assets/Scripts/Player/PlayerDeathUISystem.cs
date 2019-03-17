@@ -44,6 +44,8 @@ public class PlayerDeathUISystem : MonoBehaviour
         playerCharacterController = player.GetComponent<PlayerCharacterController>();
         playerCameraController = player.GetComponent<PlayerCameraController>();
 
+        deathUI.SetActive(false);
+
     }
 
     protected void Update()
