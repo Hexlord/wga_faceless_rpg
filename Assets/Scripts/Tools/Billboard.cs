@@ -8,11 +8,13 @@ using UnityEngine;
  * Date         Author      Description
  * 
  * 03.03.2019   aknorre     Created
+ * 16.03.2019   bkrylov     Allocated to Component Menu
  * 
  */
-
+[AddComponentMenu("ProjectFaceless/Tools/Billboard")]
 public class Billboard : MonoBehaviour
 {
+    
     Transform cameraTransform;
 
     [Tooltip("Flip among z axis")]
@@ -20,11 +22,11 @@ public class Billboard : MonoBehaviour
 
     void Start()
     {
-        cameraTransform = Camera.main.transform;
+        cameraTransform = GameObject.Find("MainCamera").GetComponent<Camera>().transform;
     }
 
     // Update is called once per frame
-    void Update()
+    void LateUpdate()
     {
         transform.forward = flip ? cameraTransform.forward : -cameraTransform.forward;
     }

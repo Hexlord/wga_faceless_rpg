@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿   
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -10,12 +11,14 @@ using UnityEngine.SceneManagement;
  * Date         Author      Description
  * 
  * 03.03.2019   aknorre     Created
+ * 16.03.2019   bkrylov     Allocated to Component Menu
  * 
  */
-
+[AddComponentMenu("ProjectFaceless/UI/Start Menu")]
 public class StartMenuScript : MonoBehaviour
 {
     // Start is called before the first frame update
+    
 
     [Header("Main Menu Settings")]
 
@@ -35,7 +38,7 @@ public class StartMenuScript : MonoBehaviour
     public GameObject mainMenuLoad;
     [Tooltip("Select main menu exit button")]
     public GameObject mainMenuExit;
-       
+
     [Tooltip("Select other menu background")]
     public GameObject otherMenuBackground;
 
@@ -83,7 +86,7 @@ public class StartMenuScript : MonoBehaviour
         mainMenuBackground.SetActive(true);
         otherMenuBackground.SetActive(false);
     }
-    
+
     void PressedStart()
     {
         SceneManager.LoadScene("Intro", LoadSceneMode.Single);
@@ -117,7 +120,7 @@ public class StartMenuScript : MonoBehaviour
         settingsMenu.SetActive(false);
         loadMenu.SetActive(false);
         saveMenu.SetActive(false);
-        if(settingsMenuHideMainMenu) mainMenu.SetActive(true);
+        if (settingsMenuHideMainMenu) mainMenu.SetActive(true);
         otherMenuBackground.SetActive(false);
     }
 

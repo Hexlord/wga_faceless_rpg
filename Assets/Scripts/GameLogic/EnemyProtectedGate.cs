@@ -8,10 +8,13 @@ using UnityEngine;
  * Date         Author      Description
  * 
  * 03.03.2019   aknorre     Created
+ * 16.03.2019   bkrylov     Allocated to Component Menu
  * 
  */
+[AddComponentMenu("ProjectFaceless/GameLogic/Enemy Protected Gate")]
 public class EnemyProtectedGate : MonoBehaviour
 {
+    
 
     [Header("Trigger Open Settings")]
 
@@ -47,7 +50,7 @@ public class EnemyProtectedGate : MonoBehaviour
                 {
                     if (health)
                     {
-                        if(health.HP > 0)
+                        if(health.Alive)
                         {
                             good = false;
                             break;

@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 
 /*
  * History:
@@ -13,7 +14,7 @@ using UnityEngine;
 public class DumbEnemy : BaseCharacter
 {
 
-    public Weapon rightFist, leftFist;
+    //public Weapon rightFist, leftFist;
     public float fistDamage = 5.0f;
 
     [SerializeField]
@@ -26,8 +27,8 @@ public class DumbEnemy : BaseCharacter
     private float attackRange;
 
     private GameObject character;
-    private CharacterController characterController;
-    private BasicStatusSystem healthSystem;
+    private NavMeshAgent navMeshAgent;
+    //private BasicStatusSystem healthSystem;
     private Vector3 distanceToPlayer;
     private bool isNotified = false;
 
@@ -36,10 +37,10 @@ public class DumbEnemy : BaseCharacter
         if (!isNotified)
         {
             isNotified = true;
-            rightFist.TargetTag = tag;
-            leftFist.TargetTag = tag;
-            character = GameObject.FindWithTag(tag);
-            healthSystem = character.GetComponent<BasicStatusSystem>();
+            //rightFist.TargetTag = tag;
+            //leftFist.TargetTag = tag;
+            //character = GameObject.FindWithTag(tag);
+            //healthSystem = character.GetComponent<BasicStatusSystem>();
             Debug.Log("notify");
         }
     }
@@ -47,9 +48,9 @@ public class DumbEnemy : BaseCharacter
     protected override void Start()
     {
         base.Start();
-        characterController = gameObject.GetComponent<CharacterController>();
-        rightFist.Damage = fistDamage;
-        leftFist.Damage = fistDamage;
+        navMeshAgent = gameObject.GetComponent<NavMeshAgent>();
+        //rightFist.Damage = fistDamage;
+        //leftFist.Damage = fistDamage;
     }
 
     private void Awake()
@@ -65,9 +66,7 @@ public class DumbEnemy : BaseCharacter
             distanceToPlayer.y = 0;
             if (distanceToPlayer.magnitude > attackRange)
             {
-                distanceToPlayer.Normalize();
-                transform.forward = distanceToPlayer;
-                CurrentDirection = distanceToPlayer.normalized;
+                navMeshAgent.SetDestination(character.transform.position);
             }
         }
         base.Move();
