@@ -4,10 +4,11 @@ using System.Reflection.Emit;
 using CI.QuickSave;
 using CI.QuickSave.Core.Serialisers;
 using CI.QuickSave.Core.Helpers;
-
+using 
 using UnityEngine;
 using System;
 using System.Linq;
+using System.Reflection;
 
 public class SaveSystem : MonoBehaviour
 {
@@ -53,10 +54,51 @@ public class SaveSystem : MonoBehaviour
 
         foreach (GameObject gameObject in FindObjectsOfType<GameObject>())
         {
-            if (QuickSaveWriter.TrySave(path, gameObject.name, DecomposeGameObject(gameObject)) == false)
+            Dictionary<string, Dictionary<string, object>> serializedObject;
+            bool success = TrySerializeGameObject(gameObject, out serializedObject);
+            if(success == true && serializedObject != null)
             {
-                return false;
+                if (QuickSaveWriter.TrySave(path, gameObject.name, serializedObject) == false)
+                {
+                    return false;
+                }
             }
+        }
+
+        return true;
+    }
+
+    bool TrySerializeGameObject(GameObject gameObject, out Dictionary<string, Dictionary<string, object>> serializedObject)
+    {
+        try
+        {
+            serializedObject = new Dictionary<string, Dictionary<string, object>>();
+            Component[] components = gameObject.GetComponents<Component>();
+            foreach (Component component in components)
+            {
+                serializedObject[component.name] = new Dictionary<string, object>();
+
+                FieldInfo[] fields = component.GetType().GetFields(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);
+                
+                foreach(FieldInfo fieldInfo in fields)
+                {
+                    Saveable[] attribute = fieldInfo.GetCustomAttributes(typeof(Saveable), true) as Saveable[];
+                    if (attribute.Length != 0)
+                    {
+                        object currentField = TypeHelper.ReplaceIfUnityType(fieldInfo.FieldType, fieldInfo.GetValue(component));
+                        string JSON = JsonUtility.ToJson(currentField, true);
+                        serializedObject[component.name][attribute[0].Name] = JsonUtility.FromJson<Dictionary<string, object>>(JSON);
+                    }
+                }
+            }
+            if (serializedObject.Count == 0)
+                serializedObject = null;
+        }
+        catch(Exception e)
+        {
+            Debug.Log("Failed in TrySerializeGameObject. Reason : " + e.Message);
+            serializedObject = null;
+            return false;
         }
 
         return true;

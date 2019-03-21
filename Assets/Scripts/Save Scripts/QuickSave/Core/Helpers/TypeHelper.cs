@@ -46,8 +46,21 @@ namespace CI.QuickSave.Core.Helpers
 
         };
 
+        public static object ReplaceIfUnityType(Type type, object value)
+        {
+            string typename = type.FullName;
+
+            if (_unityTypeToQuickSaveType.ContainsKey(typename))
+            {
+                return _unityTypeToQuickSaveType[typename](value);
+            }
+
+            return value;
+        }
+
         public static object ReplaceIfUnityType<T>(T value)
         {
+            string temp = typeof(T).Name;
             string typename = typeof(T).FullName;
 
             if (_unityTypeToQuickSaveType.ContainsKey(typename))

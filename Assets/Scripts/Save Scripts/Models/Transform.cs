@@ -1,6 +1,7 @@
 ﻿
 namespace CI.QuickSave.Core.Models
 {
+    [System.Serializable]
     public class Transform
     {
         public Vector3 position;

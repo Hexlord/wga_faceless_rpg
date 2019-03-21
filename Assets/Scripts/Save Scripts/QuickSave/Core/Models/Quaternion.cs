@@ -1,6 +1,7 @@
 ﻿
 namespace CI.QuickSave.Core.Models
 {
+    [System.Serializable]
     public class Quaternion
     {
         public float x;
