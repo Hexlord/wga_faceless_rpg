@@ -77,7 +77,7 @@ public class CollisionDamageBasic : MonoBehaviour
         if (negativeFilterTargetTag.Length > 0) collider.IgnoreCollisionsWith(negativeFilterTargetTag);
     }
 
-    protected virtual void OnDamage(GameObject source, float amount)
+    protected virtual void OnContact()
     {
         // Intentionally left empty
     }
@@ -115,7 +115,7 @@ public class CollisionDamageBasic : MonoBehaviour
 
         hitTargets.Add(target);
         healthSystem.Damage(source, damage);
-        OnDamage(source, damage);
+        OnContact();
     }
         
     /*
