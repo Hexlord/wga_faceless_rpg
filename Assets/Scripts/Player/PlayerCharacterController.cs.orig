@@ -49,7 +49,10 @@ public class PlayerCharacterController : MonoBehaviour
     private AttackSystem attackSystem;
     private ShootSystem shootSystem;
     private SheathSystem sheathSystem;
+<<<<<<< HEAD
     private DashSystem dashSystem;
+=======
+>>>>>>> origin/master
     private BodyStateSystem bodyStateSystem;
 
     private bool aiming = false;
@@ -63,7 +66,10 @@ public class PlayerCharacterController : MonoBehaviour
         attackSystem = GetComponent<AttackSystem>();
         shootSystem = GetComponent<ShootSystem>();
         sheathSystem = GetComponent<SheathSystem>();
+<<<<<<< HEAD
         dashSystem = GetComponent<DashSystem>();
+=======
+>>>>>>> origin/master
         bodyStateSystem = GetComponent<BodyStateSystem>();
         cameraController = GetComponent<PlayerCameraController>();
         //Main camera can be accessed via Camera.main. Why do you use such an unorthodox and heavy method?
@@ -82,6 +88,7 @@ public class PlayerCharacterController : MonoBehaviour
 
         Vector3 desire = Quaternion.Euler(0.0f, camera.transform.rotation.eulerAngles.y, 0.0f)
             * movement;
+<<<<<<< HEAD
         if ((bodyStateSystem.State == BodyStateSystem.BodyState.Magical) && 
             InputManager.Get(InputAction.Defend))
         {
@@ -95,6 +102,10 @@ public class PlayerCharacterController : MonoBehaviour
             movementSystem.Movement = new Vector2(desire.x, desire.z);
         }
 
+=======
+
+        movementSystem.Movement = new Vector2(desire.x, desire.z);
+>>>>>>> origin/master
 
         if (movementSystem.Moving)
         {

@@ -66,7 +66,11 @@ public class CollisionDamageBasic : MonoBehaviour
 
     private ArrayList hitTargets = new ArrayList();
 
+<<<<<<< HEAD
     protected void Awake()
+=======
+    protected void Start()
+>>>>>>> origin/master
     {
         // Cache
 
@@ -89,8 +93,13 @@ public class CollisionDamageBasic : MonoBehaviour
 
         GameObject target = other.gameObject.TraverseParent();
 
+<<<<<<< HEAD
         //if (filterTargetTag.Length > 0 &&
         //    target.tag != filterTargetTag) return;
+=======
+        if (filterTargetTag.Length > 0 &&
+            target.tag != filterTargetTag) return;
+>>>>>>> origin/master
         
         HealthSystem healthSystem = target.GetComponent<HealthSystem>();
         if (!healthSystem) return;

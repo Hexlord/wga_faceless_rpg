@@ -10,11 +10,14 @@ using UnityEngine.UI;
  * Date         Author      Description
  * 
  * 10.03.2019   aknorre     Created
+ * 16.03.2019   bkrylov     Allocated to Component Menu
  * 
  */
-
+[AddComponentMenu("ProjectFaceless/NPC/NPC")]
 public class NPC : MonoBehaviour
 {
+    
+
     public enum DialogAction
     {
         None,
@@ -30,6 +33,11 @@ public class NPC : MonoBehaviour
         public GameObject resultNode;
         public DialogAction action;
     }
+
+
+    [Header("Camera Settings")]
+    [Tooltip("Select NPC camera")]
+    public ConstrainedCamera dialogCamera;
 
     [Header("Activation Settings")]
 
@@ -47,12 +55,21 @@ public class NPC : MonoBehaviour
     public DialogEntry[] dialogEntries;
 
     private GameObject player;
+    private PlayerCharacterController playerCharacterController;
+    private PlayerCameraController playerCameraController;
+
+    private ConstrainedCamera dialogStartCamera;
+
     private GameObject currentNode;
     private bool inRange = false;
-    
+    private bool inDialog = false;
+
     void Start()
     {
         player = GameObject.Find("Player");
+        playerCharacterController = player.GetComponent<PlayerCharacterController>();
+        playerCameraController = player.GetComponent<PlayerCameraController>();
+
         currentNode = startNode;
 
         foreach (DialogEntry entry in dialogEntries)
@@ -61,7 +78,7 @@ public class NPC : MonoBehaviour
                 () =>
             {
                 currentNode.SetActive(false);
-                if(entry.resultNode)
+                if (entry.resultNode)
                 {
                     currentNode = entry.resultNode;
                     currentNode.SetActive(true);
@@ -78,33 +95,50 @@ public class NPC : MonoBehaviour
             case DialogAction.None:
                 break;
             case DialogAction.EndDialog:
-                currentNode.SetActive(false);
-                activationNode.SetActive(false);
-                // currentNode = startNode;
+                if (inDialog) OnDialogEnd();
                 break;
             case DialogAction.Death:
-                player.GetComponent<HealthSystemWithConcentration>().Kill();
+                if (inDialog) OnDialogEnd();
+                player.GetComponent<HealthSystem>().Kill(gameObject);
                 break;
         }
+    }
+
+    protected void OnDialogStart()
+    {
+        Debug.Assert(!inDialog);
+        playerCharacterController.Freeze = true;
+        dialogStartCamera = playerCameraController.constrainedCamera;
+        if (dialogCamera) playerCameraController.ChangeCamera(dialogCamera);
+        activationNode.SetActive(true);
+        currentNode.SetActive(true);
+        inDialog = true;
+
+    }
+    protected void OnDialogEnd()
+    {
+        Debug.Assert(inDialog);
+        playerCharacterController.Freeze = false;
+        playerCameraController.ChangeCamera(dialogStartCamera);
+        currentNode.SetActive(false);
+        activationNode.SetActive(false);
+        inDialog = false;
     }
 
     void Update()
     {
         bool inRangeCurrent = Vector3.Distance(player.transform.position, transform.position) < activationRange;
 
-        if(!inRange && inRangeCurrent)
+        if (!inRange && inRangeCurrent)
         {
             inRange = true;
-            activationNode.SetActive(true);
-            currentNode.SetActive(true);
+            if (!inDialog) OnDialogStart();
         }
 
-        if(!inRangeCurrent)
+        if (!inRangeCurrent)
         {
             inRange = false;
-            currentNode.SetActive(false);
-            activationNode.SetActive(false);
-            // currentNode = startNode;
+            if (inDialog) OnDialogEnd();
         }
     }
 }

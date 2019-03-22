@@ -8,12 +8,13 @@ using UnityEngine;
  * Date         Author      Description
  * 
  * 03.03.2019   aknorre     Created
+ * 16.03.2019   bkrylov     Allocated to Component Menu
  * 
  */
-
+[AddComponentMenu("ProjectFaceless/Tools/FloatingTransform")]
 public class FloatingTransform : MonoBehaviour
 {
-
+    
     [Header("Float Settings")]
 
     [Tooltip("Vertical speed baseline")]

@@ -16,7 +16,10 @@ public enum InputAction
     ChangeBodyState,
     Sheathe,
     Attack,
+<<<<<<< HEAD
     Defend,
+=======
+>>>>>>> origin/master
     Aim,
     Heal,
     SkillMenu,
@@ -69,8 +72,11 @@ public static class InputManager
                 return "Enter";
             case InputAction.Attack:
                 return "LMB";
+<<<<<<< HEAD
             case InputAction.Defend:
                 return "Shift";
+=======
+>>>>>>> origin/master
             case InputAction.SkillMenu:
                 return "H";
         }

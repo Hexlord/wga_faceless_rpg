@@ -77,6 +77,7 @@ public class NPCEdtior : Editor
     public override void OnInspectorGUI()
     {
         serializedObject.Update();
+        EditorGUILayout.PropertyField(serializedObject.FindProperty("dialogCamera"));
         EditorGUILayout.PropertyField(serializedObject.FindProperty("activationRange"));
         EditorGUILayout.PropertyField(serializedObject.FindProperty("activationNode"));
         EditorGUILayout.PropertyField(serializedObject.FindProperty("startNode"));
