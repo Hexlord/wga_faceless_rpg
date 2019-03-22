@@ -14207,7 +14207,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   canMove: 1
   movementDesireThreshold: 0.2
-  movementSpeed: 7
+  baseMovementSpeed: 7
   rotationStabilization: 1
   state: 0
   idleAnimation: idle
@@ -14386,6 +14386,25 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cameraThirdPerson: {fileID: 0}
   cameraThirdPersonAim: {fileID: 0}
+--- !u!114 &2887642975986288408
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4622916580663847339}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7c45af2a858bb6d43b254e5a55c7c9ca, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  dashDistance: 10
+  timeForDash: 0.2
+  numberOfCharges: 3
+  chargesAvailable: 0
+  reloadTime: 1
+  dashAnimationBool: 
+  animDash: 
 --- !u!1001 &4622916580663816019
 PrefabInstance:
   m_ObjectHideFlags: 0
