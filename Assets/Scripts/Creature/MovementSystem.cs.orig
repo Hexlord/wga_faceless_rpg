@@ -31,7 +31,11 @@ public class MovementSystem : MonoBehaviour
 
     [Tooltip("Movement maximum speed")]
     [Range(0.0f, 30.0f)]
+<<<<<<< HEAD
     public float baseMovementSpeed = 7.0f;
+=======
+    public float movementSpeed = 7.0f;
+>>>>>>> origin/master
 
     [Tooltip("Body rotation stabilization")]
     public bool rotationStabilization = true;
@@ -84,8 +88,11 @@ public class MovementSystem : MonoBehaviour
 
     public int animationLayer = 0;
 
+<<<<<<< HEAD
     private float currentMovementSpeed;
 
+=======
+>>>>>>> origin/master
     public bool Moving
     {
         get { return state != MovementSystemState.None; }
@@ -123,8 +130,13 @@ public class MovementSystem : MonoBehaviour
 
     protected void Start()
     {
+<<<<<<< HEAD
         currentMovementSpeed = baseMovementSpeed;
         // Cache
+=======
+        // Cache
+
+>>>>>>> origin/master
         animator = GetComponent<Animator>();
         body = GetComponent<Rigidbody>();
         sheathSystem = GetComponent<SheathSystem>();
@@ -165,13 +177,21 @@ public class MovementSystem : MonoBehaviour
     {
         if (state == MovementSystemState.None) return;
 
+<<<<<<< HEAD
         Vector2 deltaVelocity = desiredMovement * currentMovementSpeed -
+=======
+        Vector2 deltaVelocity = desiredMovement * movementSpeed -
+>>>>>>> origin/master
             (new Vector2(body.velocity.x, body.velocity.z));
 
         Vector2 appliedVelocity = Vector2.MoveTowards(
             Vector2.zero,
             deltaVelocity,
+<<<<<<< HEAD
             currentMovementSpeed);
+=======
+            movementSpeed);
+>>>>>>> origin/master
 
         body.AddForce(appliedVelocity.x, 0.0f, appliedVelocity.y, ForceMode.VelocityChange);
     }
@@ -276,6 +296,7 @@ public class MovementSystem : MonoBehaviour
         RotateBody(Time.fixedDeltaTime);
     }
 
+<<<<<<< HEAD
     public void SetSpeed(float newSpeed)
     {
         currentMovementSpeed = newSpeed;
@@ -286,4 +307,6 @@ public class MovementSystem : MonoBehaviour
         currentMovementSpeed = baseMovementSpeed;
     }
 
+=======
+>>>>>>> origin/master
 }

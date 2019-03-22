@@ -66,7 +66,11 @@ public class CollisionDamageBasic : MonoBehaviour
 
     private ArrayList hitTargets = new ArrayList();
 
+<<<<<<< HEAD
     protected void Awake()
+=======
+    protected void Start()
+>>>>>>> origin/master
     {
         // Cache
 
@@ -77,7 +81,7 @@ public class CollisionDamageBasic : MonoBehaviour
         if (negativeFilterTargetTag.Length > 0) collider.IgnoreCollisionsWith(negativeFilterTargetTag);
     }
 
-    protected virtual void OnContact()
+    protected virtual void OnDamage(GameObject source, float amount)
     {
         // Intentionally left empty
     }
@@ -89,8 +93,13 @@ public class CollisionDamageBasic : MonoBehaviour
 
         GameObject target = other.gameObject.TraverseParent();
 
+<<<<<<< HEAD
         //if (filterTargetTag.Length > 0 &&
         //    target.tag != filterTargetTag) return;
+=======
+        if (filterTargetTag.Length > 0 &&
+            target.tag != filterTargetTag) return;
+>>>>>>> origin/master
         
         HealthSystem healthSystem = target.GetComponent<HealthSystem>();
         if (!healthSystem) return;
@@ -115,7 +124,7 @@ public class CollisionDamageBasic : MonoBehaviour
 
         hitTargets.Add(target);
         healthSystem.Damage(source, damage);
-        OnContact();
+        OnDamage(source, damage);
     }
         
     /*
