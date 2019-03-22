@@ -10574,7 +10574,7 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 5519420896515551343}
+  m_Mass: 80
   - component: {fileID: 5519420896515551340}
   - component: {fileID: 5519420896515551341}
   - component: {fileID: 5519420896515551342}
@@ -10599,7 +10599,7 @@ Transform:
   - {fileID: 5519420895191869346}
   m_Father: {fileID: 5519420895777628341}
   m_RootOrder: 2
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  baseMovementSpeed: 7
 --- !u!33 &5519420896515551340
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -10750,3 +10750,22 @@ CapsuleCollider:
   m_Height: 2
   m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &5746866520949292934
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4622916580663847339}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7c45af2a858bb6d43b254e5a55c7c9ca, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  dashDistance: 10
+  timeForDash: 0.2
+  numberOfCharges: 3
+  chargesAvailable: 0
+  reloadTime: 2
+  dashAnimationBool: 
+  animDash: 
