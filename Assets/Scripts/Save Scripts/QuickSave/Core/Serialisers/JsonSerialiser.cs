@@ -7,6 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 using CI.QuickSave.Core.Helpers;
+using System;
 
 namespace CI.QuickSave.Core.Serialisers
 {
@@ -32,6 +33,23 @@ namespace CI.QuickSave.Core.Serialisers
             else
             {
                 return _serialiser.Deserialise<T>(json);
+            }
+        }
+
+        public static string Serialise(object value, Type type)
+        {
+            return _serialiser.Serialize(value, type);
+        }
+
+        public static object Deserialise(string json, Type type)
+        {
+            if (TypeHelper.IsUnityType(type))
+            {
+                return TypeHelper.DeserialiseUnityType(json, _serialiser, type);
+            }
+            else
+            {
+                return _serialiser.Deserialise(json, type);
             }
         }
     }

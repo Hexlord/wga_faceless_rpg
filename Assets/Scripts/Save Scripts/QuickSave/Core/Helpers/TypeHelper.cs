@@ -71,11 +71,25 @@ namespace CI.QuickSave.Core.Helpers
             return value;
         }
 
+        public static bool IsUnityType(Type type)
+        {
+            string typename = type.FullName;
+
+            return _unityTypeToQuickSaveType.ContainsKey(typename);
+        }
+
         public static bool IsUnityType<T>()
         {
             string typename = typeof(T).FullName;
 
             return _unityTypeToQuickSaveType.ContainsKey(typename);
+        }
+
+        public static object DeserialiseUnityType(string value, IJsonSerialiser jsonSerialiser, Type type)
+        {
+            string typename = type.FullName;
+
+            return Convert.ChangeType(_quickSaveTypeToUnityType[typename](value, jsonSerialiser), type);
         }
 
         public static T DeserialiseUnityType<T>(string value, IJsonSerialiser jsonSerialiser)

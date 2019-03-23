@@ -1,7 +1,7 @@
 ﻿
 namespace CI.QuickSave.Core.Models
 {
-    [System.Serializable]
+    
     public class Vector3
     {
         public float x;

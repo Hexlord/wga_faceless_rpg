@@ -1,10 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using System.Reflection.Emit;
 using CI.QuickSave;
-using CI.QuickSave.Core.Serialisers;
 using CI.QuickSave.Core.Helpers;
-using 
 using UnityEngine;
 using System;
 using System.Linq;
@@ -13,7 +10,7 @@ using System.Reflection;
 public class SaveSystem : MonoBehaviour
 {
     public string folderPath;
-    public string folderName = "Save Files";
+    public string folderName = "SaveFiles";
     public string saveFileName1 = "Save1";
     public string saveFileName2 = "Save2";
     public string saveFileName3 = "Save3";
@@ -21,164 +18,201 @@ public class SaveSystem : MonoBehaviour
     public KeyCode saveKeyCode = KeyCode.C;
 
     public KeyCode loadKeyCode = KeyCode.V;
-
-
+    
+    
     void Awake()
     {
-        folderPath = Application.persistentDataPath;
+        folderPath = System.IO.Path.Combine(Application.persistentDataPath, folderName);
+        UnityEngine.Windows.Directory.CreateDirectory(folderPath);
     }
-
+    
 
     void Update()
     {
         if (Input.GetKeyDown(saveKeyCode))
         {
-            string path = folderPath + "//" + /*folderName + "/" +*/ saveFileName1;
-            Debug.Log("Save: " + Save(path));
+            QuickSaveWriter saver = QuickSaveWriter.Create(System.IO.Path.Combine(folderPath, saveFileName1));
+            Debug.Log(Save(saver));
         }
 
         if (Input.GetKeyDown(loadKeyCode))
         {
-            string path = folderPath + "//" + /*folderName + "/" +*/ saveFileName1;
-            Debug.Log("Load: " + Load(path));
+            QuickSaveReader loader = QuickSaveReader.Create(System.IO.Path.Combine(folderPath, saveFileName1));
+            Debug.Log(Load(loader));
         }
     }
+    
 
-    bool Save(string path)
+    bool Save(QuickSaveWriter saver)
     {
-        Debug.Log("Save: " + path);
+        Debug.Log("Save");
 
-        GameObject[] gameObjects = FindObjectsOfType<GameObject>();
-
-        Dictionary<string, object> sceneDictionary = new Dictionary<string, object>();
-
-        foreach (GameObject gameObject in FindObjectsOfType<GameObject>())
+        GameObject[] gameObjects = GetSaveableGameObjects(FindObjectsOfType<GameObject>());
+        
+        foreach (GameObject gameObject in gameObjects)
         {
-            Dictionary<string, Dictionary<string, object>> serializedObject;
-            bool success = TrySerializeGameObject(gameObject, out serializedObject);
-            if(success == true && serializedObject != null)
+            if (TrySerializeGameObject(gameObject, saver) == false)
             {
-                if (QuickSaveWriter.TrySave(path, gameObject.name, serializedObject) == false)
+                return false;
+            }
+        }
+        return saver.TryCommit();
+    }
+
+    bool TrySerializeGameObject(GameObject gameObject, QuickSaveWriter saver)
+    {
+        foreach (Component component in gameObject.GetComponents<Component>())
+        {
+            if (IsComponentSaveble(component) == true)
+            {
+                if (TrySerializeComponent(component, saver) == false)
+                {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    bool TrySerializeComponent(Component component, QuickSaveWriter saver)
+    {
+        FieldInfo[] fields = component.GetType().GetFields(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);
+        foreach (FieldInfo fieldInfo in fields)
+        {
+            Saveable[] attribute = fieldInfo.GetCustomAttributes(typeof(Saveable), true) as Saveable[];
+            string fullFieldName = GetFullFieldName(component, fieldInfo.Name, attribute[0].Tag);
+            saver.Write(fullFieldName, TypeHelper.ReplaceIfUnityType(fieldInfo.FieldType, fieldInfo.GetValue(component)));
+            
+        }
+
+        try
+        {
+            ISaveable saveableComponent = component as ISaveable;
+            saveableComponent.OnSave();
+        }
+        catch (Exception e)
+        {
+            Debug.Log("failed call onSave, probably " + GetFieldPrefix(component) + " does not implement ISaveable. Exact Reason: " + e.Message);
+            return false;
+        }
+        return true;
+    }
+
+    
+    bool Load(QuickSaveReader loader)
+    {
+        Debug.Log("Load");
+
+        GameObject[] gameObjects = GetSaveableGameObjects(FindObjectsOfType<GameObject>());
+
+        foreach (GameObject gameObject in gameObjects)
+        {
+            if (TryDeserializeGameObject(gameObject, loader) == false)
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    bool TryDeserializeGameObject(GameObject gameObject, QuickSaveReader loader)
+    {
+        Component[] components = gameObject.GetComponents<Component>();
+        for (int i = 0; i < components.Length; i++)
+        {
+            if(IsComponentSaveble(components[i]) == true)
+            {
+                if (TryDeserializeComponent(components[i], loader) == false)
+                {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    bool TryDeserializeComponent(Component component, QuickSaveReader loader)
+    {
+        FieldInfo[] fields = component.GetType().GetFields(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);
+        foreach (FieldInfo fieldInfo in fields)
+        {
+            Saveable[] attribute = fieldInfo.GetCustomAttributes(typeof(Saveable), true) as Saveable[];
+            if (attribute.Length != 0)
+            {
+                string fullFieldName = GetFullFieldName(component, fieldInfo.Name, attribute[0].Tag);
+                object result;
+                if (loader.TryRead(fullFieldName, out result, fieldInfo.FieldType) == true)
+                {
+                    fieldInfo.SetValue(component, result);
+                }
+                else
                 {
                     return false;
                 }
             }
         }
 
-        return true;
-    }
-
-    bool TrySerializeGameObject(GameObject gameObject, out Dictionary<string, Dictionary<string, object>> serializedObject)
-    {
         try
         {
-            serializedObject = new Dictionary<string, Dictionary<string, object>>();
-            Component[] components = gameObject.GetComponents<Component>();
-            foreach (Component component in components)
-            {
-                serializedObject[component.name] = new Dictionary<string, object>();
-
-                FieldInfo[] fields = component.GetType().GetFields(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);
-                
-                foreach(FieldInfo fieldInfo in fields)
-                {
-                    Saveable[] attribute = fieldInfo.GetCustomAttributes(typeof(Saveable), true) as Saveable[];
-                    if (attribute.Length != 0)
-                    {
-                        object currentField = TypeHelper.ReplaceIfUnityType(fieldInfo.FieldType, fieldInfo.GetValue(component));
-                        string JSON = JsonUtility.ToJson(currentField, true);
-                        serializedObject[component.name][attribute[0].Name] = JsonUtility.FromJson<Dictionary<string, object>>(JSON);
-                    }
-                }
-            }
-            if (serializedObject.Count == 0)
-                serializedObject = null;
+            ISaveable saveableComponent = component as ISaveable;
+            saveableComponent.OnLoad();
         }
         catch(Exception e)
         {
-            Debug.Log("Failed in TrySerializeGameObject. Reason : " + e.Message);
-            serializedObject = null;
+            Debug.Log("failed call onLoad, probably " + GetFieldPrefix(component) + " does not implement ISaveable. Exact Reason: " + e.Message);
             return false;
         }
+       
 
         return true;
     }
 
-    bool Load(string path)
+    string GetFieldPrefix(Component component)
     {
-        Debug.Log("Load: " + path);
-
-        Dictionary<string, object> sceneDictionary = new Dictionary<string, object>();
-
-        GameObject[] gameObjects = FindObjectsOfType<GameObject>();
-
-        for (int i = 0; i < gameObjects.Length; i++)
-        {
-            Dictionary<string, object> goDictionary;
-            if (QuickSaveReader.TryLoad(path, gameObjects[i].name, out goDictionary) == false)
-                return false;
-            ComposeGameObject(goDictionary, gameObjects[i]);
-        }
-        return true;
+        return component.name + "." + component.GetType().Name;
     }
 
-    void ComposeGameObject(Dictionary<string, object> items, GameObject gameObject)
+    string GetFullFieldName(Component component, string fieldName, string fieldTag)
     {
-        foreach (var item in items)
+        return GetFieldPrefix(component) + "." + fieldName + "." + fieldTag;
+    }
+
+    GameObject[] GetSaveableGameObjects(GameObject[] gameObjects)
+    {
+        List<GameObject> result = new List<GameObject>();
+
+        foreach (GameObject gameObject in gameObjects)
         {
-            Component component = gameObject.GetComponent(item.Key);
-            foreach (KeyValuePair<string, object> componentItem in (IEnumerable)item.Value)
+            if (IsGOSaveable(gameObject) == true)
+                result.Add(gameObject);
+        }
+        return result.ToArray();
+    }
+
+    bool IsGOSaveable(GameObject gameObject)
+    {
+        Component[] components = gameObject.GetComponents<Component>();
+        foreach (Component component in components)
+        {
+            if(IsComponentSaveble(component) == true)
             {
-                try
-                {
-                    var a = AppDomain.CurrentDomain.GetAssemblies().SelectMany(x => x.GetTypes()).Where(t => t.Name == item.Key);
-                    Type ф = a.First();
-                    if (ф.GetMethod("ToUnityType") != null)
-                        ф = ф.GetMethod("ToUnityType").ReturnType;
-                    var й = ф.GetField(componentItem.Key);
-                    й.SetValue(component, componentItem.Value);
-                    Type.GetType(item.Key).GetField(componentItem.Key).SetValue(component, componentItem.Value);
-                }
-                catch(Exception e)
-                {
-                    Debug.Log("Composing gameObject failed. Reason: " + e.Message);
-                }
-               
+                return true;
             }
         }
+        return false;
     }
 
-    Dictionary<string, object> DecomposeGameObject(GameObject gameObject)
+    bool IsComponentSaveble(Component component)
     {
-        Dictionary<string, object> items = new Dictionary<string, object>
+        FieldInfo[] fields = component.GetType().GetFields(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance); string componentKey = component.name + "." + component.GetType().FullName;
+        foreach (FieldInfo fieldInfo in fields)
         {
-            { "Transform", TypeHelper.ReplaceIfUnityType(gameObject.transform) }
-        };
-
-        foreach (Component component in gameObject.GetComponents<Component>())
-        {
-            try
+            Saveable[] attribute = fieldInfo.GetCustomAttributes(typeof(Saveable), true) as Saveable[];
+            if (attribute.Length != 0)
             {
-                items.Add(component.name, component);
-            }
-            catch(Exception e)
-            {
-                Debug.Log("Failed to Save. Reason: " + e.Message);
+                return true;
             }
         }
-
-        return items;
+        return false;
     }
-
-    string DictionaryToJSON(Dictionary<string, object> items)
-    {
-        return JsonSerialiser.Serialise(items);
-    }
-
-    Dictionary<string, object> JSONtoDictionary(string json)
-    {
-        return JsonSerialiser.Deserialise<Dictionary<string, object>>(json);
-    }
-
-
 }

@@ -14,8 +14,9 @@ namespace CI.QuickSave.Core.Models
 
             dummy.transform.position = position.ToUnityType();
             dummy.transform.rotation = rotation.ToUnityType();
-            dummy.transform.position = scale.ToUnityType();
-
+            dummy.transform.localScale = scale.ToUnityType();
+            UnityEngine.Transform transform = dummy.transform;
+            UnityEngine.Object.Destroy(dummy);
             return dummy.transform;
         }
 

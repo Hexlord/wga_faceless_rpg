@@ -4,11 +4,15 @@
 [AttributeUsage(AttributeTargets.Field)]
 public class Saveable : Attribute
 {
-    public Saveable(string name)
+    public Saveable()
     {
-        Name = name;
+        Tag = "";
     }
-    public string Name
+    public Saveable(string tag)
+    {
+        Tag = tag;
+    }
+    public string Tag
     {
         get; private set;
     }

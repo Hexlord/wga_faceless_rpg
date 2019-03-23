@@ -167,8 +167,44 @@ namespace CI.QuickSave
         /// <param name="key">The key this object was saved under</param>
         /// <param name="result">The object that was loaded</param>
         /// <returns>Was the read successful</returns>
+        /// 
+
+        public static object GetDefault(Type type)
+        {
+            if (type.IsValueType)
+            {
+                return Activator.CreateInstance(type);
+            }
+            return null;
+        }
+
+        public bool TryRead(string key, out object result, Type type)
+        {
+            result = GetDefault(type);
+
+            if (!_items.ContainsKey(key))
+            {
+                return false;
+            }
+
+            try
+            {
+                string propertyJson = JsonSerialiser.Serialise(_items[key]);
+
+                result = JsonSerialiser.Deserialise(propertyJson, type);
+
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
         public bool TryRead<T>(string key, out T result)
         {
+            Type type = typeof(string);
+            var res = 
             result = default(T);
 
             if (!_items.ContainsKey(key))
