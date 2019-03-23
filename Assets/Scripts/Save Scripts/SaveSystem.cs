@@ -9,7 +9,7 @@ using System.Reflection;
 
 public class SaveSystem : MonoBehaviour
 {
-    public string folderPath;
+    private string folderPath;
     public string folderName = "SaveFiles";
     public string saveFileName1 = "Save1";
     public string saveFileName2 = "Save2";
@@ -80,7 +80,7 @@ public class SaveSystem : MonoBehaviour
         foreach (FieldInfo fieldInfo in fields)
         {
             Saveable[] attribute = fieldInfo.GetCustomAttributes(typeof(Saveable), true) as Saveable[];
-            string fullFieldName = GetFullFieldName(component, fieldInfo.Name, attribute[0].Tag);
+            string fullFieldName = GetFullFieldName(component, fieldInfo.Name);
             saver.Write(fullFieldName, TypeHelper.ReplaceIfUnityType(fieldInfo.FieldType, fieldInfo.GetValue(component)));
             
         }
@@ -139,7 +139,7 @@ public class SaveSystem : MonoBehaviour
             Saveable[] attribute = fieldInfo.GetCustomAttributes(typeof(Saveable), true) as Saveable[];
             if (attribute.Length != 0)
             {
-                string fullFieldName = GetFullFieldName(component, fieldInfo.Name, attribute[0].Tag);
+                string fullFieldName = GetFullFieldName(component, fieldInfo.Name);
                 object result;
                 if (loader.TryRead(fullFieldName, out result, fieldInfo.FieldType) == true)
                 {
@@ -172,9 +172,9 @@ public class SaveSystem : MonoBehaviour
         return component.name + "." + component.GetType().Name;
     }
 
-    string GetFullFieldName(Component component, string fieldName, string fieldTag)
+    string GetFullFieldName(Component component, string fieldName)
     {
-        return GetFieldPrefix(component) + "." + fieldName + "." + fieldTag;
+         return GetFieldPrefix(component) + "." + fieldName;
     }
 
     GameObject[] GetSaveableGameObjects(GameObject[] gameObjects)

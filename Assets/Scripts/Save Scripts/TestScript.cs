@@ -4,10 +4,10 @@ using UnityEngine;
 
 public class TestScript : MonoBehaviour, ISaveable
 {
-    [Saveable("Position")]
+    [Saveable]
     public Transform currentTransform;
 
-    [Saveable("VeryImportantVector")]
+    [Saveable]
     public Vector3 someVector;
 
     void Start()
