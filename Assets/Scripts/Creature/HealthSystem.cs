@@ -32,6 +32,8 @@ public class HealthSystem : MonoBehaviour
     [Tooltip("Health bar enabled")]
     public bool uiHealthBarEnabled = true;
 
+    public Image worldSpaceHealthBar;
+
     public bool Alive
     {
         get { return health > 0; }
@@ -77,6 +79,7 @@ public class HealthSystem : MonoBehaviour
         OnDamage(source, amount);
         if (Health <= 0.0f) OnDeath(source);
     }
+
     public void Heal(GameObject source, float amount)
     {
         Health += amount;
@@ -99,7 +102,10 @@ public class HealthSystem : MonoBehaviour
 
     protected virtual void OnDeath(GameObject source)
     {
-        // Intentionally left empty
+        if (source.tag == "Player")
+        {
+            Destroy(gameObject);
+        }
     }
 
     protected virtual void OnHeal(GameObject source, float amount)
@@ -119,6 +125,10 @@ public class HealthSystem : MonoBehaviour
                     transform);
             healthBar = healthObject.transform.Find("HealthBar").GetComponent<Image>();
             healthObject.transform.localPosition = uiAnchorOffset;
+        }
+        else
+        {
+            healthBar = worldSpaceHealthBar;
         }
 
         Health = healthMaximum;

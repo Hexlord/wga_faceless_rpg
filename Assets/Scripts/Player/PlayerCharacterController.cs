@@ -221,7 +221,7 @@ public class PlayerCharacterController : MonoBehaviour
                 Ray rayFromCenterOfTheScreen = camera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
                 RaycastHit hit;
                 Vector3 shootingDirection;
-                int mask = LayerMask.GetMask("Enemy", "Environment");
+                int mask = LayerMask.GetMask("Enemy", "Environment", "Character");
                 float dist = 1000.0f;
 
                 if (Physics.Raycast(rayFromCenterOfTheScreen, out hit, dist, mask, QueryTriggerInteraction.Ignore))
@@ -232,7 +232,7 @@ public class PlayerCharacterController : MonoBehaviour
                 {
                     shootingDirection = camera.transform.forward;
                 }
-
+                cameraController.TriggerPlayerAutoRotation();
                 shootSystem.Shoot(shootingDirection);
             }
 

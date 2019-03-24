@@ -18,20 +18,9 @@ public class CollisionDamageBasic : MonoBehaviour
 
     // Public
 
-    public enum DamageBodyState
-    {
-        Any,
-        Physical,
-        Magical
-    }
-
-
     [Header("Basic Settings")]
     [Tooltip("Toggles whether it does damage")]
     public bool canDamage = true;
-
-    [Tooltip("What body states can be damaged")]
-    public DamageBodyState damageBodyState = DamageBodyState.Any;
 
     [Tooltip("Object that does the damage")]
     public GameObject source;
@@ -41,12 +30,6 @@ public class CollisionDamageBasic : MonoBehaviour
 
     [Tooltip("Object tag that never receives the damage (if any)")]
     public string negativeFilterTargetTag;
-
-    [Tooltip("Object that receives the damage (if any)")]
-    public GameObject filterTarget;
-
-    [Tooltip("Object tag that receives the damage (if any)")]
-    public string filterTargetTag;
 
     [Tooltip("Amount of damage done on collision")]
     [Range(0.0f, 1000.0f, order = 2)]
@@ -84,37 +67,38 @@ public class CollisionDamageBasic : MonoBehaviour
 
     protected void OnTriggerEnter(Collider other)
     {
-        if (filterTarget &&
-            !other.IsPartOf(filterTarget)) return;
-
         GameObject target = other.gameObject.TraverseParent();
+        string hitTag = other.tag;
 
         //if (filterTargetTag.Length > 0 &&
         //    target.tag != filterTargetTag) return;
-        
+
         HealthSystem healthSystem = target.GetComponent<HealthSystem>();
         if (!healthSystem) return;
 
-        if(damageBodyState != DamageBodyState.Any)
+        switch (hitTag)
         {
-            BodyStateSystem bodyStateSystem = target.GetComponent<BodyStateSystem>();
-            if (!bodyStateSystem) return;
-
-            if (bodyStateSystem.State == BodyStateSystem.BodyState.Physical &&
-                damageBodyState == DamageBodyState.Magical ||
-                bodyStateSystem.State == BodyStateSystem.BodyState.Magical &&
-                damageBodyState == DamageBodyState.Physical)
-            {
-                //Add visual effects
-                return;
-            }
+            case "Body":
+                hitTargets.Add(target);
+                healthSystem.Damage(source, damage);
+                break;
+            case "Environment":
+                hitTargets.Add(target);
+                break;
+            case "Critical":
+                hitTargets.Add(target);
+                healthSystem.Damage(source, damage);
+                break;
+            case "Weapon":
+                break;
+            case "Shield":
+                break;
         }
-        
+               
         if (uniqueDamage &&
             hitTargets.Contains(target)) return;
 
-        hitTargets.Add(target);
-        healthSystem.Damage(source, damage);
+        
         OnContact();
     }
         

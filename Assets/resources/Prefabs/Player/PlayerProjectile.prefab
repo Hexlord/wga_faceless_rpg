@@ -15,9 +15,9 @@ GameObject:
   - component: {fileID: 2392233330068179986}
   - component: {fileID: 5743128681832032217}
   - component: {fileID: 119221554606052498}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: PlayerProjectile
-  m_TagString: Untagged
+  m_TagString: Weapon
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -107,7 +107,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   canDamage: 1
-  damageBodyState: 0
   source: {fileID: 0}
   negativeFilterTarget: {fileID: 0}
   negativeFilterTargetTag: Player
@@ -115,7 +114,7 @@ MonoBehaviour:
   filterTargetTag: faceless
   damage: 32
   uniqueDamage: 0
-  pierceCount: 2
+  pierceCount: 1
   projectile: {fileID: 0}
 --- !u!114 &5743128681832032217
 MonoBehaviour:

@@ -46,6 +46,8 @@ public class AttackSystem : MonoBehaviour
 
     public string idleAnimation = "idle";
 
+    public CollisionDamageBasic sword;
+
     public bool Attacking
     {
         get { return state != AttackSystemState.None; }
@@ -67,7 +69,7 @@ public class AttackSystem : MonoBehaviour
 
         animator = GetComponent<Animator>();
         movementSystem = GetComponent<MovementSystem>();
-
+        sword.canDamage = false;
     }
 
     void FixedUpdate()
@@ -90,6 +92,7 @@ public class AttackSystem : MonoBehaviour
                 if (isDefaultClip)
                 {
                     state = AttackSystemState.None;
+                    sword.canDamage = false;
                 }
                 break;
         }
@@ -97,6 +100,7 @@ public class AttackSystem : MonoBehaviour
 
     public void Attack()
     {
+        sword.canDamage = true;
         Debug.Assert(!Attacking);
 
         if (!canAttack) return;
