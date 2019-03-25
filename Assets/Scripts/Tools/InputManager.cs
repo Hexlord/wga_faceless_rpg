@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -19,6 +20,7 @@ public enum InputAction
     Aim,
     Heal,
     SkillMenu,
+    Use,
     Skill_1,
     Skill_2,
     Skill_3,
@@ -70,6 +72,10 @@ public static class InputManager
                 return "LMB";
             case InputAction.SkillMenu:
                 return "H";
+            case InputAction.Use:
+                return "E";
+            default:
+                throw new ArgumentOutOfRangeException("action", action, null);
         }
         return "none";
     }
