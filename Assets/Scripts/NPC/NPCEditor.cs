@@ -81,6 +81,7 @@ public class NPCEdtior : Editor
         EditorGUILayout.PropertyField(serializedObject.FindProperty("activationRange"));
         EditorGUILayout.PropertyField(serializedObject.FindProperty("activationNode"));
         EditorGUILayout.PropertyField(serializedObject.FindProperty("startNode"));
+        EditorGUILayout.PropertyField(serializedObject.FindProperty("talkNode"));
         Show(serializedObject.FindProperty("dialogEntries"));
         serializedObject.ApplyModifiedProperties();
     }
