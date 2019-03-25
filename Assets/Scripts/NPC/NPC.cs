@@ -47,12 +47,17 @@ public class NPC : MonoBehaviour
     [Tooltip("Select dialog root node")]
     public GameObject activationNode;
 
+    [Tooltip("Select dialog talk node")]
+    public GameObject talkNode;
+
     [Header("Basic Settings")]
     [Tooltip("Starting dialog")]
     public GameObject startNode;
 
     [Tooltip("Dialog list")]
     public DialogEntry[] dialogEntries;
+
+    // Private
 
     private GameObject player;
     private PlayerCharacterController playerCharacterController;
@@ -132,13 +137,21 @@ public class NPC : MonoBehaviour
         if (!inRange && inRangeCurrent)
         {
             inRange = true;
+            if (talkNode) talkNode.SetActive(true);
+        }
+
+        if (inRange && InputManager.Get(InputAction.Use))
+        {
             if (!inDialog) OnDialogStart();
+
         }
 
         if (!inRangeCurrent)
         {
             inRange = false;
             if (inDialog) OnDialogEnd();
+
+            if (talkNode) talkNode.SetActive(false);
         }
     }
 }
