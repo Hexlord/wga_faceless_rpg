@@ -9,6 +9,7 @@ using UnityEngine;
  * Date         Author      Description
  * 
  * 22.03.2019   bkrylov     Created
+ * 25.03.2019   bkrylov     Made ChargesAvailable a property
  * 
  */
 
@@ -21,7 +22,7 @@ public class DashSystem : MonoBehaviour
     public float timeForDash = 0.2f;
     [Tooltip("How many charges the character can have generally")]
     public int numberOfCharges = 3;
-    [Tooltip("How many times the character can dash right now. Changefor testing puroses.")]
+    [Tooltip("How many times the character can dash right now. Change for testing puroses only.")]
     public int chargesAvailable;
     [Tooltip("Time to reload dash")]
     public float reloadTime = 1.0f;
@@ -39,6 +40,11 @@ public class DashSystem : MonoBehaviour
     private MovementSystem movement;
     private Vector2 dashVector;
 
+    public int ChargesAvailabe
+    {
+        get { return chargesAvailable; }
+    }
+
     private void Start()
     {
         speed = dashDistance / timeForDash;
@@ -55,6 +61,7 @@ public class DashSystem : MonoBehaviour
 
     private void Update()
     {
+        //dash charge regen
         if (!isDashing && (chargesAvailable < numberOfCharges))
         {
             if (Time.time > lastTimeDashedOrReload + reloadTime)
@@ -85,6 +92,7 @@ public class DashSystem : MonoBehaviour
         {
             chargesAvailable--;
             timeDashInit = Time.time;
+            //Add additional conditions for setting up proper dash anim
             animator.SetBool(dashAnimationBool, true);
             dashVector = desiredDashVector;
             movement.SetSpeed(speed);

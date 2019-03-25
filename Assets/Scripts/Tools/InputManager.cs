@@ -8,6 +8,7 @@ using UnityEngine;
  * Date         Author      Description
  * 
  * 15.03.2019   aknorre     Created
+ * 25.03.2019   bkrylov     Added method that handles input action button release
  * 
  */
 
@@ -77,9 +78,14 @@ public static class InputManager
         return "none";
     }
 
-    public static bool Get(InputAction action)
+    public static bool GetInput(InputAction action)
     {
         return Input.GetButtonDown(ActionToName(action));
+    }
+
+    public static bool GetInputRelease(InputAction action)
+    {
+        return Input.GetButtonUp(ActionToName(action));
     }
 
     public static Vector2 GetMovement()

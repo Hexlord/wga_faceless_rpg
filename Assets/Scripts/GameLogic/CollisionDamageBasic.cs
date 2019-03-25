@@ -10,6 +10,7 @@ using UnityEngine;
  * 
  * 15.03.2019   aknorre     Created
  * 16.03.2019   bkrylov     Allocated to Component Menu
+ * 25.03.2019   bkrylov     Remade Component to better collider filtration
  * 
  */
 [AddComponentMenu("ProjectFaceless/GameLogic/Collision Damage Basic")]
@@ -35,6 +36,10 @@ public class CollisionDamageBasic : MonoBehaviour
     [Range(0.0f, 1000.0f, order = 2)]
     public float damage = 10.0f;
 
+    [Tooltip("Amount of damage to shield HP done on collision with shields. Always unique")]
+    [Range(0.0f, 1000.0f, order = 2)]
+    public float shieldDamage = 10.0f;
+
     [Tooltip("Unique damage (only damage each GameObject once per lifetime)")]
     public bool uniqueDamage = true;
 
@@ -43,7 +48,7 @@ public class CollisionDamageBasic : MonoBehaviour
     [Header("Debug")]
 
     // Cache
-
+    private AttackSystem sourceAttackSystem;
     private Animator animator;
     private new Collider collider;
 
@@ -52,12 +57,17 @@ public class CollisionDamageBasic : MonoBehaviour
     protected void Awake()
     {
         // Cache
-
-        animator = GetComponent<Animator>();
+        sourceAttackSystem = source.GetComponent<AttackSystem>();
+        animator = source.GetComponent<Animator>();
         collider = GetComponent<Collider>();
 
         if (negativeFilterTarget) collider.IgnoreCollisionsWith(negativeFilterTarget);
         if (negativeFilterTargetTag.Length > 0) collider.IgnoreCollisionsWith(negativeFilterTargetTag);
+    }
+
+    protected virtual void Interrupted(Collider other)
+    {
+        sourceAttackSystem.AttackInterrupted();
     }
 
     protected virtual void OnContact()
@@ -75,31 +85,41 @@ public class CollisionDamageBasic : MonoBehaviour
 
         HealthSystem healthSystem = target.GetComponent<HealthSystem>();
         if (!healthSystem) return;
-
-        switch (hitTag)
+        BodyStateSystem bodyState = target.GetComponent<BodyStateSystem>();
+        if ((!bodyState) || (BodyStateSystem.StateToLayer(bodyState.State) == this.gameObject.layer))
         {
-            case "Body":
-                hitTargets.Add(target);
-                healthSystem.Damage(source, damage);
-                break;
-            case "Environment":
-                hitTargets.Add(target);
-                break;
-            case "Critical":
-                hitTargets.Add(target);
-                healthSystem.Damage(source, damage);
-                break;
-            case "Weapon":
-                break;
-            case "Shield":
-                break;
-        }
-               
-        if (uniqueDamage &&
-            hitTargets.Contains(target)) return;
 
-        
-        OnContact();
+            if (uniqueDamage &&
+                hitTargets.Contains(target)) return;
+
+            switch (hitTag)
+            {
+                case "Body":
+                    hitTargets.Add(target);
+                    healthSystem.Damage(source, damage);
+                    break;
+                case "Environment":
+                    hitTargets.Add(target);
+                    break;
+                case "Critical":
+                    hitTargets.Add(target);
+                    healthSystem.Damage(source, damage);
+                    break;
+                case "Weapon":
+                    break;
+                case "Shield":
+                    Interrupted(other);
+                    target.GetComponent<ShieldSystem>().RecieveDamage(shieldDamage);
+                    break;
+            }
+
+            OnContact();
+        }
+        else
+        {
+            //TO DO: Show VFX if damage isn't dealt;
+        }
+
     }
         
     /*

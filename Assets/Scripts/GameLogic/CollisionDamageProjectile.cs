@@ -10,6 +10,7 @@ using UnityEngine;
  * 
  * 15.03.2019   aknorre     Created
  * 16.03.2019   bkrylov     Allocated to Component Menu
+ * 25.03.2019   bkrylov     Remade Component for better collider filtration;
  * 
  */
 [AddComponentMenu("ProjectFaceless/GameLogic/Projectile Damage")]
@@ -41,7 +42,12 @@ public class CollisionDamageProjectile : CollisionDamageBasic
             Destroy(projectile ? projectile : gameObject);
         }
     }
-       
+
+    protected override void Interrupted(Collider other)
+    {
+        Destroy(this.gameObject);
+    }
+
 
 
 }

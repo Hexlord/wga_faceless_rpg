@@ -10,6 +10,7 @@ using UnityEngine;
  * 
  * 15.03.2019   aknorre     Created
  * 16.03.2019   bkrylov     Allocated to Component Menu
+ * 25.03.2019   bkrylov     Remade Component for better collider filtration. 
  * 
  */
 [AddComponentMenu("ProjectFaceless/Creature/Body State System")]
@@ -28,6 +29,8 @@ public class BodyStateSystem : MonoBehaviour
     public GameObject physicalAppearanceSheathed;
     public GameObject magicalAppearance;
     public GameObject magicalAppearanceSheathed;
+    public GameObject physicalHitbox;
+    public GameObject magicalHitbox;
 
 
     public BodyState State
@@ -59,6 +62,19 @@ public class BodyStateSystem : MonoBehaviour
         Show(sheathed, physicalAppearance, physicalAppearanceSheathed);
         if (magicalAppearance) magicalAppearance.SetActive(false);
         if (magicalAppearanceSheathed) magicalAppearance.SetActive(false);
+
+        //Consistency checks
+        if (!magicalHitbox) Debug.LogError("No magical hitbox attached!");
+        else
+        {
+            if (magicalHitbox.layer != LayerMask.NameToLayer("Magical")) Debug.LogError("Magical hitbox isn't placed on proper layer");
+        }
+
+        if (!magicalHitbox) Debug.LogError("No physical hitbox attached!");
+        else
+        {
+            if (magicalHitbox.layer != LayerMask.NameToLayer("Physical")) Debug.LogError("Physical hitbox isn't placed on proper layer");
+        }
     }
 
     protected void FixedUpdate()
@@ -88,5 +104,10 @@ public class BodyStateSystem : MonoBehaviour
         
     }
 
-
+    public static int StateToLayer(BodyState state)
+    {
+        if (state == BodyState.Magical) return LayerMask.NameToLayer("Magical");
+        if (state == BodyState.Physical) return LayerMask.NameToLayer("Physical");
+        else return 0;
+    }
 }

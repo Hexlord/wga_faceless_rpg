@@ -10,6 +10,7 @@ using UnityEngine;
  * 
  * 15.03.2019   aknorre     Created
  * 16.03.2019   bkrylov     Allocated to Component Menu
+ * 25.03.2019   bkrylov     fixed bug: player can damage mobs while being idle by brushing sword hitbox against enemy hitbox
  * 
  */
 [AddComponentMenu("ProjectFaceless/Creature/Attack System")]
@@ -43,6 +44,8 @@ public class AttackSystem : MonoBehaviour
 
     public string attackAnimation = "attack";
     public string attackAnimationTrigger = "attackTrigger";
+    public string interruptAnimation = "interruptedAttack";
+    public string interruptAnimationTrigger = "interruptedAttackTrigger";
 
     public string idleAnimation = "idle";
 
@@ -93,6 +96,7 @@ public class AttackSystem : MonoBehaviour
                 {
                     state = AttackSystemState.None;
                     sword.canDamage = false;
+                    sword.ResetHitTargets();
                 }
                 break;
         }
@@ -112,5 +116,8 @@ public class AttackSystem : MonoBehaviour
         animator.SetTrigger(attackAnimationTrigger);
     }
 
-
+    public void AttackInterrupted()
+    {
+        //TO DO: Interrupt attack;
+    }
 }

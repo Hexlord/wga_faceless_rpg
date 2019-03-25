@@ -10,6 +10,7 @@ using UnityEngine.UI;
  * 
  * 15.03.2019   aknorre     Created
  * 16.03.2019   bkrylov     Allocated to Component Menu
+ * 25.03.2019   bkrylov     Added worldspace healthbar for mobs and targets. Added object destruction is HP == 0. Testing purposes only.
  * 
  */
 [AddComponentMenu("ProjectFaceless/Creature/Health System")]
@@ -38,6 +39,7 @@ public class HealthSystem : MonoBehaviour
     {
         get { return health > 0; }
     }
+
     public bool Dead
     {
         get { return !Alive; }
@@ -102,6 +104,7 @@ public class HealthSystem : MonoBehaviour
 
     protected virtual void OnDeath(GameObject source)
     {
+        //Added for testing purposes
         if (source.tag == "Player")
         {
             Destroy(gameObject);
@@ -132,6 +135,8 @@ public class HealthSystem : MonoBehaviour
         }
 
         Health = healthMaximum;
+
+
     }
 
     protected void FixedUpdate()
