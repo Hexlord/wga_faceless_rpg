@@ -183,9 +183,9 @@ public class PlayerCameraController : MonoBehaviour
         if (playerAutoRotateActive)
         {
             body.rotation = Quaternion.Euler(
-                        body.rotation.eulerAngles.x,
-                        Mathf.MoveTowardsAngle(body.rotation.eulerAngles.y, camera.transform.rotation.eulerAngles.y, playerRotationSpeed * delta),
-                        body.rotation.eulerAngles.z);
+                body.rotation.eulerAngles.x,
+                Mathf.MoveTowards(body.rotation.eulerAngles.y, body.rotation.eulerAngles.y + Mathf.DeltaAngle(0.0f, camera.transform.rotation.eulerAngles.y - body.rotation.eulerAngles.y), playerRotationSpeed * delta),
+                body.rotation.eulerAngles.z);
             yawDelta = Mathf.DeltaAngle(body.rotation.eulerAngles.y, camera.transform.rotation.eulerAngles.y);
             if (Mathf.Abs(yawDelta) <= Mathf.Epsilon)
             {
