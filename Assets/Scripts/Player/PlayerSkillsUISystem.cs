@@ -74,7 +74,7 @@ public class PlayerSkillsUISystem : MonoBehaviour
 
     protected void Update()
     {
-        if (InputManager.Get(InputAction.SkillMenu))
+        if (InputManager.GetInputRelease(InputAction.SkillMenu))
         {
             if (open) OnClose();
             else OnOpen();

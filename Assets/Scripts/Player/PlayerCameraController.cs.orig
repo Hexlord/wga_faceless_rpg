@@ -584,7 +584,10 @@ public class PlayerCameraController : MonoBehaviour
             otherCamera.Yaw = constrainedCamera.Yaw;
         }
 
+<<<<<<< HEAD
         //fix: NullReferenceException
+=======
+>>>>>>> origin/master
         transitionStartFOV = camera.fieldOfView;
         transitionStartYaw = camera.transform.eulerAngles.y;
         transitionStartPitch = camera.transform.eulerAngles.x;

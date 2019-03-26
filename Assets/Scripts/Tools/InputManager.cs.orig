@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -9,7 +8,6 @@ using UnityEngine;
  * Date         Author      Description
  * 
  * 15.03.2019   aknorre     Created
- * 25.03.2019   bkrylov     Added method that handles input action button release
  * 
  */
 
@@ -18,11 +16,13 @@ public enum InputAction
     ChangeBodyState,
     Sheathe,
     Attack,
+<<<<<<< HEAD
     Defend,
+=======
+>>>>>>> origin/master
     Aim,
     Heal,
     SkillMenu,
-    Use,
     Skill_1,
     Skill_2,
     Skill_3,
@@ -72,26 +72,20 @@ public static class InputManager
                 return "Enter";
             case InputAction.Attack:
                 return "LMB";
+<<<<<<< HEAD
             case InputAction.Defend:
                 return "Shift";
+=======
+>>>>>>> origin/master
             case InputAction.SkillMenu:
                 return "H";
-            case InputAction.Use:
-                return "E";
-            default:
-                throw new ArgumentOutOfRangeException("action", action, null);
         }
         return "none";
     }
 
-    public static bool GetInput(InputAction action)
+    public static bool Get(InputAction action)
     {
         return Input.GetButtonDown(ActionToName(action));
-    }
-
-    public static bool GetInputRelease(InputAction action)
-    {
-        return Input.GetButtonUp(ActionToName(action));
     }
 
     public static Vector2 GetMovement()
