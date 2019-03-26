@@ -72,7 +72,7 @@ public class AttackSystem : MonoBehaviour
 
         animator = GetComponent<Animator>();
         movementSystem = GetComponent<MovementSystem>();
-        sword.canDamage = false;
+        sword.Active = false;
     }
 
     void FixedUpdate()
@@ -95,7 +95,7 @@ public class AttackSystem : MonoBehaviour
                 if (isDefaultClip)
                 {
                     state = AttackSystemState.None;
-                    sword.canDamage = false;
+                    sword.Active = false;
                     sword.ResetHitTargets();
                 }
                 break;
@@ -104,7 +104,7 @@ public class AttackSystem : MonoBehaviour
 
     public void Attack()
     {
-        sword.canDamage = true;
+        sword.Active = true;
         Debug.Assert(!Attacking);
 
         if (!canAttack) return;
