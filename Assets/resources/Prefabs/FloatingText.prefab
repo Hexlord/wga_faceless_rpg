@@ -13,9 +13,8 @@ GameObject:
   - component: {fileID: 2656677311407436618}
   - component: {fileID: 4056779588608379295}
   - component: {fileID: 1209402763156227543}
-  - component: {fileID: 3267079869271497731}
-  - component: {fileID: 8867512078893754247}
-  - component: {fileID: 1911134139938043858}
+  - component: {fileID: 1287132483120625028}
+  - component: {fileID: 61336408829372268}
   m_Layer: 9
   m_Name: FloatingText
   m_TagString: Untagged
@@ -210,7 +209,7 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   m_maskType: 0
---- !u!114 &3267079869271497731
+--- !u!114 &1287132483120625028
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -219,42 +218,30 @@ MonoBehaviour:
   m_GameObject: {fileID: 3255531437931929264}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 45ed228571396e944b05cd1891232236, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  verticalSpeed: 0.9
-  verticalSin: 0
-  verticalSinFactor: 0
-  verticalAccel: 0.2
-  horizontalSpeed: 0
-  horizontalSin: 3
-  horizontalSinFactor: 0.33
-  horizontalAccel: 0
-  lifespan: 3
-  lifespanFade: 1
-  mesh: {fileID: 1209402763156227543}
---- !u!114 &8867512078893754247
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3255531437931929264}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0a3dc5ab4d2b83a4ea6dd2fcbad913cf, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &1911134139938043858
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3255531437931929264}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cfbcfcfba20841545a1d5da15ceb8565, type: 3}
+  m_Script: {fileID: 11500000, guid: 04f11c12e1476194f8fbe859521d1d46, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   flip: 1
+--- !u!114 &61336408829372268
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3255531437931929264}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 42a75fb45712a934784ed1a7281a0f32, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  verticalSpeed: 1
+  verticalSin: 0
+  verticalSinFactor: 0
+  verticalAccel: 0.1
+  horizontalSpeed: 0
+  horizontalSin: 2.5
+  horizontalSinFactor: 0.5
+  horizontalAccel: 0
+  lifespan: 1
+  lifespanFade: 1
+  mesh: {fileID: 1209402763156227543}

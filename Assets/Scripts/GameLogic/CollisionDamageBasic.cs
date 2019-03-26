@@ -25,7 +25,7 @@ public class CollisionDamageBasic : MonoBehaviour
 
     [Tooltip("Object that does the damage")]
     public GameObject source;
-    
+
     [Tooltip("Object that never receives the damage (if any)")]
     public GameObject negativeFilterTarget;
 
@@ -43,16 +43,25 @@ public class CollisionDamageBasic : MonoBehaviour
     [Tooltip("Unique damage (only damage each GameObject once per lifetime)")]
     public bool uniqueDamage = true;
 
-    // Private
+    public bool Active
+    {
+        get { return active; }
+        set { active = value; }
+    }
 
-    [Header("Debug")]
 
     // Cache
     private AttackSystem sourceAttackSystem;
     private Animator animator;
     private new Collider collider;
 
+    // Private
+
+    [Header("Debug")]
+    
     private ArrayList hitTargets = new ArrayList();
+
+    private bool active = true;
 
     protected void Awake()
     {
@@ -77,7 +86,9 @@ public class CollisionDamageBasic : MonoBehaviour
 
     protected void OnTriggerEnter(Collider other)
     {
-        GameObject target = other.gameObject.TraverseParent();
+        if (!canDamage || !active) return;
+
+        GameObject target = other.gameObject.TraverseParent("Faceless");
         string hitTag = other.tag;
 
         //if (filterTargetTag.Length > 0 &&
