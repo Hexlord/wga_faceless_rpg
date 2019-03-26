@@ -18,4 +18,11 @@ public static class GameObjectExtensions
         if (gameObject.transform.parent) return gameObject.transform.parent.gameObject.TraverseParent();
         return gameObject;
     }
+
+    public static GameObject TraverseParent(this GameObject gameObject, string tag)
+    {
+        if (gameObject.transform.parent &&
+            gameObject.transform.parent.tag == tag) return gameObject.transform.parent.gameObject.TraverseParent(tag);
+        return gameObject;
+    }
 }
