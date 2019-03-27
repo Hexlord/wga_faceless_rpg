@@ -12,7 +12,7 @@ using UnityEngine;
  * 
  */
 [AddComponentMenu("ProjectFaceless/Skills/Black Ball Projectile")]
-public class ProjectileBlackBall : MonoBehaviour
+public class TransformMovement : MonoBehaviour
 {
     
 

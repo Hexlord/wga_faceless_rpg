@@ -83,13 +83,17 @@ public static class InputManager
         }
         return "none";
     }
+    public static bool Down(InputAction action)
+    {
+        return Input.GetButton(ActionToName(action));
+    }
 
-    public static bool GetInput(InputAction action)
+    public static bool Pressed(InputAction action)
     {
         return Input.GetButtonDown(ActionToName(action));
     }
 
-    public static bool GetInputRelease(InputAction action)
+    public static bool Released(InputAction action)
     {
         return Input.GetButtonUp(ActionToName(action));
     }

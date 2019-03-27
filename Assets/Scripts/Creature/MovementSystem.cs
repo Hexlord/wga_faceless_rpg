@@ -190,7 +190,7 @@ public class MovementSystem : MonoBehaviour
         if (attackSystem &&
             attackSystem.Attacking ||
             skillSystem &&
-            skillSystem.Casting) Movement = Vector2.zero;
+            skillSystem.Busy) Movement = Vector2.zero;
 
         bool transition = animator.IsInTransition(animationLayer);
 

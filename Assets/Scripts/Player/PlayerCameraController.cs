@@ -107,6 +107,11 @@ public class PlayerCameraController : MonoBehaviour
         }
     }
 
+    public Camera Camera
+    {
+        get { return camera; }
+    }
+
     // Private
 
     private bool freeze = false;

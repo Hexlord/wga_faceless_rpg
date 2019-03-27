@@ -39,9 +39,7 @@ public class PlayerCharacterController : MonoBehaviour
         }
     }
 
-    // Private
-
-    private bool freeze = false;
+    // Cache
 
     private MovementSystem movementSystem;
     private new Camera camera;
@@ -53,7 +51,11 @@ public class PlayerCharacterController : MonoBehaviour
     private DashSystem dashSystem;
     private ShieldSystem shieldSystem;
     private BodyStateSystem bodyStateSystem;
+    private AimSystem aimSystem;
 
+    // Private
+
+    private bool freeze = false;
     private bool aiming = false;
     private bool wantToAttack = false;
     private int wantToCast = -1;
@@ -69,6 +71,7 @@ public class PlayerCharacterController : MonoBehaviour
         shieldSystem = GetComponent<ShieldSystem>();
         bodyStateSystem = GetComponent<BodyStateSystem>();
         cameraController = GetComponent<PlayerCameraController>();
+        aimSystem = GetComponent<AimSystem>();
         //Main camera can be accessed via Camera.main. Why do you use such an unorthodox and heavy method?
         camera = GameObject.Find("MainCamera").GetComponent<Camera>();
 
@@ -86,7 +89,7 @@ public class PlayerCharacterController : MonoBehaviour
         Vector3 desire = Quaternion.Euler(0.0f, camera.transform.rotation.eulerAngles.y, 0.0f)
             * movement;
         if ((bodyStateSystem.State == BodyStateSystem.BodyState.Magical) && 
-            InputManager.GetInputRelease(InputAction.Defend))
+            InputManager.Released(InputAction.Defend))
         {
             if (sheathSystem.state == SheathSystem.SheathSystemState.Unsheathed)
             {
@@ -111,7 +114,7 @@ public class PlayerCharacterController : MonoBehaviour
         {
             if (!shieldSystem.CanShield)
             {
-                if (InputManager.GetInput(InputAction.Defend))
+                if (InputManager.Pressed(InputAction.Defend))
                 {
                     shieldSystem.RaiseShield();
                     Debug.Log("Full shield Charges: " + shieldSystem.GetFullShieldCharges());
@@ -121,7 +124,7 @@ public class PlayerCharacterController : MonoBehaviour
             }
             else
             {
-                if (InputManager.GetInputRelease(InputAction.Defend)) shieldSystem.LowerShield();
+                if (InputManager.Released(InputAction.Defend)) shieldSystem.LowerShield();
                 else
                 {
                     cameraController.TriggerPlayerAutoRotation();
@@ -132,35 +135,35 @@ public class PlayerCharacterController : MonoBehaviour
 
     private int GetUsedSkill()
     {
-        if (InputManager.GetInputRelease(InputAction.Skill_1) && skillSystem.Skills.Count >= 1)
+        if (InputManager.Down(InputAction.Skill_1) && skillSystem.Skills.Count >= 1)
         {
             return 0;
         }
-        else if (InputManager.GetInputRelease(InputAction.Skill_2) && skillSystem.Skills.Count >= 2)
+        else if (InputManager.Down(InputAction.Skill_2) && skillSystem.Skills.Count >= 2)
         {
             return 1;
         }
-        else if (InputManager.GetInputRelease(InputAction.Skill_3) && skillSystem.Skills.Count >= 3)
+        else if (InputManager.Down(InputAction.Skill_3) && skillSystem.Skills.Count >= 3)
         {
             return 2;
         }
-        else if (InputManager.GetInputRelease(InputAction.Skill_4) && skillSystem.Skills.Count >= 4)
+        else if (InputManager.Down(InputAction.Skill_4) && skillSystem.Skills.Count >= 4)
         {
             return 3;
         }
-        else if (InputManager.GetInputRelease(InputAction.Skill_5) && skillSystem.Skills.Count >= 5)
+        else if (InputManager.Down(InputAction.Skill_5) && skillSystem.Skills.Count >= 5)
         {
             return 4;
         }
-        else if (InputManager.GetInputRelease(InputAction.Skill_6) && skillSystem.Skills.Count >= 6)
+        else if (InputManager.Down(InputAction.Skill_6) && skillSystem.Skills.Count >= 6)
         {
             return 5;
         }
-        else if (InputManager.GetInputRelease(InputAction.Skill_7) && skillSystem.Skills.Count >= 7)
+        else if (InputManager.Down(InputAction.Skill_7) && skillSystem.Skills.Count >= 7)
         {
             return 6;
         }
-        else if (InputManager.GetInputRelease(InputAction.Skill_8) && skillSystem.Skills.Count >= 8)
+        else if (InputManager.Down(InputAction.Skill_8) && skillSystem.Skills.Count >= 8)
         {
             return 7;
         }
@@ -170,10 +173,17 @@ public class PlayerCharacterController : MonoBehaviour
     private void UpdateSkills()
     {
         int usedSkill = GetUsedSkill();
+
         if (usedSkill >= 0) wantToCast = usedSkill;
-        if (skillSystem.Casting || attackSystem.Attacking || movementSystem.Moving)
+        if (skillSystem.Busy || attackSystem.Attacking || movementSystem.Moving)
         {
             wantToCast = -1;
+
+            if (skillSystem.Channeling && usedSkill != skillSystem.ActiveSkillNumber)
+            {
+                skillSystem.Interrupt(false);
+            }
+
             return;
         }
 
@@ -197,7 +207,9 @@ public class PlayerCharacterController : MonoBehaviour
 
     private void UpdateAim()
     {
-        if (InputManager.GetInputRelease(InputAction.Aim))
+        aimSystem.Aim = cameraController.Camera.transform.rotation;
+
+        if (InputManager.Released(InputAction.Aim))
         {
             aiming = !aiming;
         }
@@ -212,7 +224,7 @@ public class PlayerCharacterController : MonoBehaviour
     {
         if (sheathSystem.Busy) return;
 
-        if (InputManager.GetInputRelease(InputAction.Sheathe))
+        if (InputManager.Released(InputAction.Sheathe))
         {
             if (sheathSystem.Sheathed) sheathSystem.Unsheath();
             else sheathSystem.Sheath();
@@ -222,7 +234,7 @@ public class PlayerCharacterController : MonoBehaviour
     private void UpdateAttack()
     {
 
-        if (InputManager.GetInputRelease(InputAction.Attack) || wantToAttack)
+        if (InputManager.Released(InputAction.Attack) || wantToAttack)
         {
             if (sheathSystem.Sheathed)
             {
@@ -233,7 +245,7 @@ public class PlayerCharacterController : MonoBehaviour
             }
 
 
-            if (skillSystem.Casting || attackSystem.Attacking || (movementSystem.Moving && bodyStateSystem.State != BodyStateSystem.BodyState.Magical) || shieldSystem.IsRaised)
+            if (skillSystem.Busy || attackSystem.Attacking || (movementSystem.Moving && bodyStateSystem.State != BodyStateSystem.BodyState.Magical) || shieldSystem.IsRaised)
             {
                 wantToAttack = false;
                 return;
@@ -254,7 +266,8 @@ public class PlayerCharacterController : MonoBehaviour
 
                 if (Physics.Raycast(rayFromCenterOfTheScreen, out hit, dist, mask, QueryTriggerInteraction.Ignore))
                 {
-                    shootingDirection = (hit.point - (shootSystem.ShootingPoint.position)).normalized;
+                    shootingDirection = (hit.point - (shootSystem.ShootingPoint.position));
+                    if(shootingDirection.sqrMagnitude > Mathf.Epsilon) shootingDirection.Normalize();
                 }
                 else
                 {
@@ -271,7 +284,7 @@ public class PlayerCharacterController : MonoBehaviour
 
     private void UpdateBodyState()
     {
-        if (InputManager.GetInputRelease(InputAction.ChangeBodyState))
+        if (InputManager.Released(InputAction.ChangeBodyState))
         {
             bodyStateSystem.ChangeState(
                 bodyStateSystem.State == BodyStateSystem.BodyState.Magical

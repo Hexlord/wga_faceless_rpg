@@ -20,7 +20,7 @@ public class SkillCircleStrike : SkillBase
     public SkillCircleStrike() :
         base(Skill.CircleStrike.ToString(), false, 10.0f)
     {
-        effectPrefab = (GameObject)Resources.Load("Prefabs/CircleStrike", typeof(GameObject));
+        effectPrefab = (GameObject)Resources.Load("Prefabs/Skills/CircleStrike", typeof(GameObject));
     }
     
     public override void PrepareEvent(GameObject caster)
@@ -47,6 +47,8 @@ public class SkillCircleStrike : SkillBase
         attractor.distancePower = 0.0f;
         attractor.strength = -500.0f;
         attractor.useForce = true;
+        attractor.ignoreY = true;
+        attractor.source = caster;
         var lifespan = dummy.AddComponent<Lifespan>();
         lifespan.lifespan = 0.0f;
 

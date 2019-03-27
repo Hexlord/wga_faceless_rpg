@@ -16,6 +16,7 @@ using System.Text;
 public enum Skill
 {
     BlackBall,
+    Hook,
     CircleStrike,
     LineStrike,
 }
@@ -32,6 +33,10 @@ public static class SkillsExtensions
                 return "Circle Strike";
             case Skill.LineStrike:
                 return "Line Strike";
+            case Skill.Hook:
+                return "Hook";
+            default:
+                throw new ArgumentOutOfRangeException("skill", skill, null);
         }
 
         Debug.Assert(false);
@@ -48,6 +53,8 @@ public static class SkillsExtensions
                 return new SkillCircleStrike();
             case Skill.LineStrike:
                 return new SkillLineStrike();
+            case Skill.Hook:
+                return new SkillHook();
         }
 
         Debug.Assert(false);

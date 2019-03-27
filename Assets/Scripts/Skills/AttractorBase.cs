@@ -37,6 +37,9 @@ public class AttractorBase : MonoBehaviour
     [Tooltip("Damage of attraction per second")]
     public float damagePerSecond = 0.0f;
 
+    [Tooltip("Damage source")]
+    public GameObject source;
+
     protected virtual void Attract(Rigidbody body, HealthSystem health)
     {
         // To be overridden

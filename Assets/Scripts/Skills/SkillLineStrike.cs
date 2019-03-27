@@ -26,7 +26,7 @@ public class SkillLineStrike : SkillBase
     public SkillLineStrike() :
         base(Skill.LineStrike.ToString(), false, 10.0f)
     {
-        effectPrefab = (GameObject)Resources.Load("Prefabs/CircleStrike", typeof(GameObject));
+        effectPrefab = (GameObject)Resources.Load("Prefabs/Skills/CircleStrike", typeof(GameObject));
     }
     
     public override void PrepareEvent(GameObject caster)
@@ -53,15 +53,27 @@ public class SkillLineStrike : SkillBase
         attractor.useForce = true;
         attractor.lineFrom = caster.transform.position;
         attractor.lineTo = attractor.lineFrom + caster.transform.forward * segmentLength;
+        attractor.ignoreY = true;
+        attractor.source = caster;
         var lifespan = dummy.AddComponent<Lifespan>();
         lifespan.lifespan = 0.0f;
 
-        for(float d = 0.0f; d < segmentLength; d += effectDistancePeriod)
+        for(var d = 0.0f; d < segmentLength; d += effectDistancePeriod)
         {
+            var position = caster.transform.position + Vector3.up * 2.0f +
+                           caster.transform.forward * d;
+            RaycastHit hitInfo;
+
+            int mask = (1 << LayerMask.NameToLayer("Environment"));
+
+            if (!Physics.Raycast(new Ray(position, -Vector3.up), out hitInfo, 100.0f, mask)) continue;
+            
             UnityEngine.Object.Instantiate(
-                effectPrefab, 
-                Vector3.Lerp(attractor.lineFrom, attractor.lineTo, d / segmentLength), 
+                effectPrefab,
+                hitInfo.point, 
                 Quaternion.identity);
+
+
         }
 
     }

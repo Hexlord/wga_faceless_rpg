@@ -16,9 +16,9 @@ GameObject:
   - component: {fileID: 3425575617377847452}
   - component: {fileID: 3250164648332380470}
   - component: {fileID: 5951137535630846541}
-  - component: {fileID: 3771731140503833694}
+  - component: {fileID: 8856103739379662310}
   m_Layer: 11
-  m_Name: Fireball
+  m_Name: BlackBall
   m_TagString: Weapon
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4774,11 +4774,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f9e96824edf74244fbb26e0ccf322eba, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  targetTag: Faceless
   strength: 20
   distancePower: 0.15
   distanceHighpass: 5
   useForce: 1
   damagePerSecond: 10
+  source: {fileID: 0}
+  ignoreY: 0
 --- !u!114 &5951137535630846541
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4792,7 +4795,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 5
---- !u!114 &3771731140503833694
+--- !u!114 &8856103739379662310
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -4801,7 +4804,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 3473170856130720857}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 184a46744b3d5f04aa4ecb98ceb72b37, type: 3}
+  m_Script: {fileID: 11500000, guid: bb8614652add07247b08a5729e7551c5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  lifespan: 5
+  lifespan: 4
