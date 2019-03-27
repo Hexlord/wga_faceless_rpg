@@ -89,6 +89,11 @@ public class SkillBase
 
     }
 
+    public virtual void FinishEvent(GameObject caster)
+    {
+
+    }
+
     public virtual void InterruptEvent(GameObject caster)
     {
 

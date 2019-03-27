@@ -22,7 +22,7 @@ public class SkillBlackBall : SkillBase
     public SkillBlackBall() :
         base(Skill.BlackBall.ToString(), false, 10.0f)
     {
-        projectilePrefab = (GameObject)Resources.Load("Prefabs/Fireball", typeof(GameObject));
+        projectilePrefab = (GameObject)Resources.Load("Prefabs/Skills/BlackBall", typeof(GameObject));
     }
 
     public override void PrepareEvent(GameObject caster)
@@ -42,12 +42,22 @@ public class SkillBlackBall : SkillBase
     {
         base.CastEvent(caster);
         Debug.Log("Creating blackball GameObject and launching it from caster");
-        GameObject projectile =
-            UnityEngine.Object.Instantiate(projectilePrefab,
-                Quaternion.Euler(caster.transform.eulerAngles) * hand +
-                caster.transform.position + new Vector3(0, height, 0), caster.transform.rotation);
 
-        projectile.transform.rotation = Quaternion.Euler(0, caster.transform.eulerAngles.y, 0);        
+        var rotation = caster.transform.rotation;
+        var position = rotation * hand + caster.transform.position + Vector3.up * height;
+
+        var aim = caster.GetComponent<AimSystem>();
+        if (aim)
+        {
+            rotation = aim.Aim;
+        }
+
+        var projectile =
+            UnityEngine.Object.Instantiate(projectilePrefab,
+                position, rotation);
+
+        projectile.GetComponent<AttractorPoint>().source = caster;
+
     }
 
     public override void EndUpdate(GameObject caster, float delta, float time, float length)

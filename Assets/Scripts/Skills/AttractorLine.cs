@@ -15,7 +15,7 @@ using UnityEngine;
 [AddComponentMenu("ProjectFaceless/Skills/Line Attractor")]
 public class AttractorLine : AttractorBase
 {
-    
+
 
     [Header("Line Settings")]
 
@@ -23,36 +23,48 @@ public class AttractorLine : AttractorBase
     public Vector3 lineFrom;
     public Vector3 lineTo;
 
+    [Tooltip("Ignore Y in distance calculations")]
+    public bool ignoreY = false;
+    
 
     protected override void Attract(Rigidbody body, HealthSystem health)
     {
         base.Attract(body, health);
 
-        bool insideSegment = true;
-        Vector3 contactPoint = Vector3.zero;
-
-        Vector3 v = lineTo - lineFrom;
-        Vector3 w = body.position - lineFrom;
-
-        float c1 = Vector3.Dot(w, v);
-        float c2 = Vector3.Dot(v, v);
-        if (c1 <= 0 || c2 <= c1)
+        var distance = 0.0f;
+        var direction = Vector3.zero;
+        if (ignoreY)
         {
-            insideSegment = false;
+            var contactPoint = Vector2.zero;
+            var inSegment = Vector2Extensions.Project(
+                new Vector2(lineFrom.x, lineFrom.z),
+                new Vector2(lineTo.x, lineTo.z),
+                new Vector2(body.position.x, body.position.z),
+                out contactPoint);
+
+            if (!inSegment) return;
+            distance = Vector2.Distance(new Vector2(body.position.x, body.position.z), contactPoint);
+            direction = (new Vector3(contactPoint.x, body.position.y, contactPoint.y) - body.position);
         }
         else
         {
-            contactPoint = lineFrom + (c1 / c2) * v;
+            var contactPoint = Vector3.zero;
+            var inSegment = Vector3Extensions.Project(
+                lineFrom,
+                lineTo,
+                body.position,
+                out contactPoint);
+
+            if (!inSegment) return;
+            distance = Vector3.Distance(body.position, contactPoint);
+            direction = contactPoint - body.position;
         }
 
-        if (!insideSegment) return;
-
-        float distance = Vector3.Distance(body.position, contactPoint);
+        if(direction.sqrMagnitude > Mathf.Epsilon) direction.Normalize();
+        
         if (distance > Mathf.Epsilon && distance < distanceHighpass)
         {
-            Vector3 force = contactPoint - body.position;
-            force.Normalize();
-            force = force / Mathf.Pow(distance, distancePower) * strength * Time.fixedDeltaTime;
+            var force = direction * strength / Mathf.Pow(distance, distancePower) * Time.fixedDeltaTime;
 
             if (useForce)
                 body.AddForce(force, ForceMode.Impulse);
@@ -61,7 +73,7 @@ public class AttractorLine : AttractorBase
 
             if (health)
             {
-                health.Damage(gameObject, damagePerSecond * Time.fixedDeltaTime);
+                health.Damage(source ? source : gameObject, damagePerSecond * Time.fixedDeltaTime);
             }
         }
     }

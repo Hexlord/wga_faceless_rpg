@@ -14257,7 +14257,7 @@ CapsuleCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4622916580663847339}
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 13400000, guid: 358b57fb10d82784cb3293e3a20d55dd, type: 2}
   m_IsTrigger: 0
   m_Enabled: 1
   m_Radius: 0.6055813
@@ -14395,10 +14395,10 @@ MonoBehaviour:
   interruptTrigger: interruptTrigger
   interruptInstantTrigger: interruptInstantTrigger
   animationLayer: 0
-  preciseEnding: 0
-  preciseChanneling: 0
+  preciseEnding: 1
+  preciseChanneling: 1
   useAnimationTime: 0
-  startSkills: 000000000100000002000000
+  startSkills: 01000000000000000200000003000000
   state: 0
   skillAnimationStartLength: 0
   skillAnimationEndLength: 0
@@ -14569,6 +14569,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cameraThirdPerson: {fileID: 0}
   cameraThirdPersonAim: {fileID: 0}
+--- !u!114 &945636901
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4622916580663847339}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3364395bd9cfd2a4abbb049efd6439f1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &4940617539503123436
 GameObject:
   m_ObjectHideFlags: 0

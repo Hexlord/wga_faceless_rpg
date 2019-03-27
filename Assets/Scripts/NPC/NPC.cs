@@ -140,7 +140,7 @@ public class NPC : MonoBehaviour
             if (talkNode) talkNode.SetActive(true);
         }
 
-        if (inRange && InputManager.GetInput(InputAction.Use))
+        if (inRange && InputManager.Pressed(InputAction.Use))
         {
             if (!inDialog) OnDialogStart();
 
