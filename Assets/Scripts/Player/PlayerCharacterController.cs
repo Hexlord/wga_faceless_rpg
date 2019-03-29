@@ -253,7 +253,7 @@ public class PlayerCharacterController : MonoBehaviour
 
             if (bodyStateSystem.State == BodyStateSystem.BodyState.Physical)
             {
-                attackSystem.Attack();
+                attackSystem.Attack(0, 0);
             }
             
             if (bodyStateSystem.State == BodyStateSystem.BodyState.Magical)

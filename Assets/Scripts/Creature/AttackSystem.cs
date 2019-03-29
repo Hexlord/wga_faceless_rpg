@@ -43,13 +43,13 @@ public class AttackSystem : MonoBehaviour
     public int animationLayer = 0;
 
     public string attackAnimation = "attack";
-    public string attackAnimationTrigger = "attackTrigger";
+    public string[] attackAnimationTriggers = { "attackTrigger" };
     public string interruptAnimation = "interruptedAttack";
     public string interruptAnimationTrigger = "interruptedAttackTrigger";
 
     public string idleAnimation = "idle";
 
-    public CollisionDamageBasic sword;
+    public CollisionDamageBasic[] weapons;
 
     public bool Attacking
     {
@@ -57,7 +57,8 @@ public class AttackSystem : MonoBehaviour
     }
 
     // Private
-
+    private int activeWeaponIndex = -1;
+    //Testing
     [Header("Debug")]
     public AttackSystemState state = AttackSystemState.None;
 
@@ -72,7 +73,10 @@ public class AttackSystem : MonoBehaviour
 
         animator = GetComponent<Animator>();
         movementSystem = GetComponent<MovementSystem>();
-        sword.Active = false;
+        for (int i = 0; i < weapons.Length; i++)
+        {
+            weapons[i].Active = false;
+        }
     }
 
     void FixedUpdate()
@@ -95,16 +99,18 @@ public class AttackSystem : MonoBehaviour
                 if (isDefaultClip)
                 {
                     state = AttackSystemState.None;
-                    sword.Active = false;
-                    sword.ResetHitTargets();
+                    weapons[activeWeaponIndex].Active = false;
+                    weapons[activeWeaponIndex].ResetHitTargets();
+                    activeWeaponIndex = -1;
                 }
                 break;
         }
     }
 
-    public void Attack()
+    public void Attack(int attackIndex, int weaponIndex)
     {
-        sword.Active = true;
+        activeWeaponIndex = weaponIndex;
+        weapons[activeWeaponIndex].Active = true;
         Debug.Assert(!Attacking);
 
         if (!canAttack) return;
@@ -113,7 +119,7 @@ public class AttackSystem : MonoBehaviour
             movementSystem.Moving) return;
 
         state = AttackSystemState.Attacking;
-        animator.SetTrigger(attackAnimationTrigger);
+        animator.SetTrigger(attackAnimationTriggers[attackIndex]);
     }
 
     public void AttackInterrupted()

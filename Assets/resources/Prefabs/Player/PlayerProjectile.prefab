@@ -13,7 +13,6 @@ GameObject:
   - component: {fileID: 8734652611176022684}
   - component: {fileID: 3833538368864752383}
   - component: {fileID: 2392233330068179986}
-  - component: {fileID: 5743128681832032217}
   - component: {fileID: 119221554606052498}
   m_Layer: 12
   m_Name: PlayerProjectile
@@ -110,25 +109,11 @@ MonoBehaviour:
   source: {fileID: 0}
   negativeFilterTarget: {fileID: 0}
   negativeFilterTargetTag: Player
-  filterTarget: {fileID: 0}
-  filterTargetTag: faceless
   damage: 32
+  shieldDamage: 10
   uniqueDamage: 0
   pierceCount: 1
   projectile: {fileID: 0}
---- !u!114 &5743128681832032217
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6839469440723653746}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 184a46744b3d5f04aa4ecb98ceb72b37, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  lifespan: 10
 --- !u!54 &119221554606052498
 Rigidbody:
   m_ObjectHideFlags: 0

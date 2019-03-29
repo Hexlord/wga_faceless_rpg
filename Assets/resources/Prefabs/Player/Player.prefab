@@ -14334,8 +14334,8 @@ MonoBehaviour:
   physicalAppearanceSheathed: {fileID: 142420489}
   magicalAppearance: {fileID: 2036456628}
   magicalAppearanceSheathed: {fileID: 2036456628}
-  physicalHitbox: {fileID: 0}
-  magicalHitbox: {fileID: 0}
+  physicalHitbox: {fileID: 7567503100230029813}
+  magicalHitbox: {fileID: 5597358839379272231}
 --- !u!114 &61326197
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -14454,8 +14454,21 @@ MonoBehaviour:
   interruptAnimation: interruptedAttack
   interruptAnimationTrigger: interruptedAttackTrigger
   idleAnimation: idle
-  sword: {fileID: 5421604642684772440}
+  weapons:
+  - {fileID: 5421604642684772440}
   state: 0
+--- !u!114 &945636901
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4622916580663847339}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3364395bd9cfd2a4abbb049efd6439f1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &1711883582
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -14569,18 +14582,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cameraThirdPerson: {fileID: 0}
   cameraThirdPersonAim: {fileID: 0}
---- !u!114 &945636901
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4622916580663847339}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3364395bd9cfd2a4abbb049efd6439f1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &4940617539503123436
 GameObject:
   m_ObjectHideFlags: 0
