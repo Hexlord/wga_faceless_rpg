@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 /*
@@ -80,16 +81,16 @@ public class PlayerCharacterController : MonoBehaviour
 
     private void UpdateMovement()
     {
-        Vector2 input = InputManager.GetMovement();
-        Vector3 movement = new Vector3(
+        var input = InputManager.GetMovement();
+        var movement = new Vector3(
             input.x,
             0.0f,
             input.y);
 
-        Vector3 desire = Quaternion.Euler(0.0f, camera.transform.rotation.eulerAngles.y, 0.0f)
+        var desire = Quaternion.Euler(0.0f, camera.transform.rotation.eulerAngles.y, 0.0f)
             * movement;
         if ((bodyStateSystem.State == BodyStateSystem.BodyState.Magical) && 
-            InputManager.Released(InputAction.Defend))
+            InputManager.Down(InputAction.Defend))
         {
             if (sheathSystem.state == SheathSystem.SheathSystemState.Unsheathed)
             {
@@ -108,7 +109,7 @@ public class PlayerCharacterController : MonoBehaviour
         }
     }
 
-    private void UpdateDefence()
+    private void UpdateDefense()
     {
         if (bodyStateSystem.State == BodyStateSystem.BodyState.Physical && sheathSystem.state == SheathSystem.SheathSystemState.Unsheathed)
         {
@@ -175,7 +176,7 @@ public class PlayerCharacterController : MonoBehaviour
         int usedSkill = GetUsedSkill();
 
         if (usedSkill >= 0) wantToCast = usedSkill;
-        if (skillSystem.Busy || attackSystem.Attacking || movementSystem.Moving)
+        if (skillSystem.Busy || attackSystem.Attacking)
         {
             wantToCast = -1;
 
@@ -234,7 +235,7 @@ public class PlayerCharacterController : MonoBehaviour
     private void UpdateAttack()
     {
 
-        if (InputManager.Released(InputAction.Attack) || wantToAttack)
+        if (InputManager.Down(InputAction.Attack) || wantToAttack)
         {
             if (sheathSystem.Sheathed)
             {
@@ -245,7 +246,7 @@ public class PlayerCharacterController : MonoBehaviour
             }
 
 
-            if (skillSystem.Busy || attackSystem.Attacking || (movementSystem.Moving && bodyStateSystem.State != BodyStateSystem.BodyState.Magical) || shieldSystem.IsRaised)
+            if (skillSystem.Busy || attackSystem.Attacking || shieldSystem.IsRaised)
             {
                 wantToAttack = false;
                 return;
@@ -254,15 +255,13 @@ public class PlayerCharacterController : MonoBehaviour
             if (bodyStateSystem.State == BodyStateSystem.BodyState.Physical)
             {
                 attackSystem.Attack();
-            }
-            
-            if (bodyStateSystem.State == BodyStateSystem.BodyState.Magical)
+            } else if (bodyStateSystem.State == BodyStateSystem.BodyState.Magical)
             {
-                Ray rayFromCenterOfTheScreen = camera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
+                var rayFromCenterOfTheScreen = camera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
                 RaycastHit hit;
                 Vector3 shootingDirection;
-                int mask = LayerMask.GetMask("Enemy", "Environment", "Character");
-                float dist = 1000.0f;
+                var mask = LayerMask.GetMask("Enemy", "Environment", "Character");
+                const float dist = 1000.0f;
 
                 if (Physics.Raycast(rayFromCenterOfTheScreen, out hit, dist, mask, QueryTriggerInteraction.Ignore))
                 {
@@ -302,7 +301,12 @@ public class PlayerCharacterController : MonoBehaviour
             UpdateSheathe();
             UpdateBodyState();
             UpdateAttack();
-            UpdateDefence();
+            UpdateDefense();
+
+            if (InputManager.Down(InputAction.Menu))
+            {
+                SceneManager.LoadScene("MainMenu", LoadSceneMode.Single);
+            }
         }
 
 

@@ -59,6 +59,8 @@ public class ConstrainedCamera : MonoBehaviour
     [Range(1.0f, 115.0f)]
     public float constraintFieldOfView = 80.0f;
 
+    
+
     public Vector3 Position
     {
         get { return transform.position; }
@@ -83,10 +85,6 @@ public class ConstrainedCamera : MonoBehaviour
         }
     }
 
-    public Vector3 Target
-    {
-        get {  return target; }
-    }
     public float Yaw
     {
         get { return transform.rotation.eulerAngles.y; }
@@ -137,10 +135,14 @@ public class ConstrainedCamera : MonoBehaviour
     // Cache
 
     protected new Camera camera;
+    public Vector3 Target
+    {
+        get { return target; }
+    }
 
     protected Vector3 target;
 
-    protected virtual void Start()
+    protected virtual void Awake()
     {
         // Cache
 

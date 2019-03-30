@@ -105,7 +105,8 @@ public class HealthSystem : MonoBehaviour
     protected virtual void OnDeath(GameObject source)
     {
         //Added for testing purposes
-        if (source.tag == "Player")
+        if (source && source.tag == "Player" &&
+            gameObject != source)
         {
             Destroy(gameObject);
         }

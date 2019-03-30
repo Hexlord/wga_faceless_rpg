@@ -133,7 +133,7 @@ public class SkillSystem : MonoBehaviour
 
 
 
-    void Start()
+    void Awake()
     {
         // Cache
 

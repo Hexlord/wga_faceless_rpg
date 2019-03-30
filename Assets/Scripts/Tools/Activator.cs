@@ -13,10 +13,11 @@ using UnityEngine;
 
 public class Activator : MonoBehaviour
 {
+    public GameObject target;
 
-    protected void Start()
+    protected void Awake()
     {
-        gameObject.SetActive(true);
+        if(target) target.SetActive(true);
     }
 
 }
