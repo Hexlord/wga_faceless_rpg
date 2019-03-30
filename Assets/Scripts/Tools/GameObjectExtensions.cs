@@ -25,4 +25,20 @@ public static class GameObjectExtensions
             gameObject.transform.parent.tag == tag) return gameObject.transform.parent.gameObject.TraverseParent(tag);
         return gameObject;
     }
+
+    /*
+     * Can even find inactive
+     */
+    public static GameObject FindPrecise(this GameObject parent, string name)
+    {
+        var trs = parent.GetComponentsInChildren<Transform>(true);
+        foreach (Transform t in trs)
+        {
+            if (t.name == name)
+            {
+                return t.gameObject;
+            }
+        }
+        return null;
+    }
 }

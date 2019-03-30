@@ -149,7 +149,7 @@ public class PlayerCameraController : MonoBehaviour
     private new Camera camera;
     private Rigidbody body;
 
-    void Start()
+    void Awake()
     {
         // Cache
 

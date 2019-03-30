@@ -1,5 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
+using UnityEditor.Experimental.U2D;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -36,6 +38,18 @@ public class MovementSystem : MonoBehaviour
 
     [Tooltip("Body rotation stabilization")]
     public bool rotationStabilization = true;
+
+    [Tooltip("Leg touch gravity max")]
+    [Range(0.001f, 100.0f)]
+    public float gravityMax = 20.0f;
+
+    [Tooltip("Leg touch gravity time to fade")]
+    [Range(0.001f, 10.0f)]
+    public float gravityFadeTime = 1.0f;
+
+    [Tooltip("Air walk fade time")]
+    [Range(0.001f, 10.0f)]
+    public float airwalkFadeTime = 1.0f;
 
 
     [Header("Animation Settings")]
@@ -81,6 +95,7 @@ public class MovementSystem : MonoBehaviour
     private Animator animator;
     private Rigidbody body;
     private SheathSystem sheathSystem;
+    private TouchCondition legsTouchCondition;
 
     protected void Start()
     {
@@ -94,7 +109,13 @@ public class MovementSystem : MonoBehaviour
         body = GetComponent<Rigidbody>();
         sheathSystem = GetComponent<SheathSystem>();
 
-        
+        var legs = transform.Find("LegsCollider");
+        if (legs)
+        {
+            legsTouchCondition = legs.GetComponent<TouchCondition>();
+        }
+
+
     }
 
     private void OnDesiredMovementUpdate()
@@ -109,7 +130,20 @@ public class MovementSystem : MonoBehaviour
 
     private void MoveBody(float delta)
     {
-        var deltaVelocity = desiredMovement * currentMovementSpeed -
+        var speed = 1.0f;
+        var gravity = 0.0f;
+
+        if (legsTouchCondition)
+        {
+            if (!legsTouchCondition.Touch)
+            {
+                speed = Mathf.Max(0, airwalkFadeTime - legsTouchCondition.DetouchedTime) / airwalkFadeTime * speed;
+                
+                gravity = gravityMax * Mathf.Max(0, gravityFadeTime - legsTouchCondition.DetouchedTime) * delta;
+            }
+        }
+
+        var deltaVelocity = desiredMovement * currentMovementSpeed * speed -
             (new Vector2(body.velocity.x, body.velocity.z));
 
         var appliedVelocity = Vector2.MoveTowards(
@@ -117,7 +151,7 @@ public class MovementSystem : MonoBehaviour
             deltaVelocity,
             currentMovementSpeed * delta * 10.0f);
 
-        body.AddForce(appliedVelocity.x, 0.0f, appliedVelocity.y, ForceMode.VelocityChange);
+        body.AddForce(appliedVelocity.x, -gravity, appliedVelocity.y, ForceMode.VelocityChange);
     }
 
     private void RotateBody(float delta)
@@ -134,7 +168,7 @@ public class MovementSystem : MonoBehaviour
         
         animator.SetFloat(animatorHorizontal, desiredMovementBodySpace.x, animationDamping, delta);
         animator.SetFloat(animatorVertical, desiredMovementBodySpace.y, animationDamping, delta);
-        animator.SetFloat(animatorWeapon, sheathSystem.Sheathed ? 0.0f : 1.0f, animationDamping, delta);
+        if(sheathSystem) animator.SetFloat(animatorWeapon, sheathSystem.Sheathed ? 0.0f : 1.0f, animationDamping, delta);
 
         MoveBody(delta);
         RotateBody(delta);

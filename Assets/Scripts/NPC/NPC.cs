@@ -69,7 +69,7 @@ public class NPC : MonoBehaviour
     private bool inRange = false;
     private bool inDialog = false;
 
-    void Start()
+    void Awake()
     {
         player = GameObject.Find("Player");
         playerCharacterController = player.GetComponent<PlayerCharacterController>();

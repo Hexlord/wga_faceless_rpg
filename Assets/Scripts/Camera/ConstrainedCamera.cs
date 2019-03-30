@@ -142,7 +142,7 @@ public class ConstrainedCamera : MonoBehaviour
 
     protected Vector3 target;
 
-    protected virtual void Start()
+    protected virtual void Awake()
     {
         // Cache
 

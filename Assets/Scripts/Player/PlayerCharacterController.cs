@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 /*
@@ -80,16 +81,16 @@ public class PlayerCharacterController : MonoBehaviour
 
     private void UpdateMovement()
     {
-        Vector2 input = InputManager.GetMovement();
-        Vector3 movement = new Vector3(
+        var input = InputManager.GetMovement();
+        var movement = new Vector3(
             input.x,
             0.0f,
             input.y);
 
-        Vector3 desire = Quaternion.Euler(0.0f, camera.transform.rotation.eulerAngles.y, 0.0f)
+        var desire = Quaternion.Euler(0.0f, camera.transform.rotation.eulerAngles.y, 0.0f)
             * movement;
         if ((bodyStateSystem.State == BodyStateSystem.BodyState.Magical) && 
-            InputManager.Released(InputAction.Defend))
+            InputManager.Down(InputAction.Defend))
         {
             if (sheathSystem.state == SheathSystem.SheathSystemState.Unsheathed)
             {
@@ -301,6 +302,11 @@ public class PlayerCharacterController : MonoBehaviour
             UpdateBodyState();
             UpdateAttack();
             UpdateDefense();
+
+            if (InputManager.Down(InputAction.Menu))
+            {
+                SceneManager.LoadScene("MainMenu", LoadSceneMode.Single);
+            }
         }
 
 
