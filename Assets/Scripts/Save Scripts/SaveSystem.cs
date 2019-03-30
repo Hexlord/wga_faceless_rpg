@@ -56,7 +56,21 @@ public class SaveSystem : MonoBehaviour
                 return false;
             }
         }
-        return saver.TryCommit();
+        if (saver.TryCommit() == true)
+        {
+            foreach (GameObject gameObject in gameObjects)
+            {
+                foreach (ISaveable saveable in gameObject.GetComponents<ISaveable>())
+                {
+                    saveable.OnSave();
+                }
+            }
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 
     bool TrySerializeGameObject(GameObject gameObject, QuickSaveWriter saver)
@@ -84,17 +98,6 @@ public class SaveSystem : MonoBehaviour
             saver.Write(fullFieldName, TypeHelper.ReplaceIfUnityType(fieldInfo.FieldType, fieldInfo.GetValue(component)));
             
         }
-
-        try
-        {
-            ISaveable saveableComponent = component as ISaveable;
-            saveableComponent.OnSave();
-        }
-        catch (Exception e)
-        {
-            Debug.Log("failed call onSave, probably " + GetFieldPrefix(component) + " does not implement ISaveable. Exact Reason: " + e.Message);
-            return false;
-        }
         return true;
     }
 
@@ -110,6 +113,14 @@ public class SaveSystem : MonoBehaviour
             if (TryDeserializeGameObject(gameObject, loader) == false)
             {
                 return false;
+            }
+        }
+
+        foreach (GameObject gameObject in gameObjects)
+        {
+            foreach (ISaveable saveable in gameObject.GetComponents<ISaveable>())
+            {
+                saveable.OnLoad();
             }
         }
         return true;
