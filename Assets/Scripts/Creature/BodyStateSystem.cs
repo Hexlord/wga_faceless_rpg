@@ -32,6 +32,7 @@ public class BodyStateSystem : MonoBehaviour
     public GameObject physicalHitbox;
     public GameObject magicalHitbox;
 
+    private SkillSystem skillSystem;
 
     public BodyState State
     {
@@ -56,6 +57,7 @@ public class BodyStateSystem : MonoBehaviour
     protected void Start()
     {
         sheathSystem = GetComponent<SheathSystem>();
+        skillSystem = GetComponent<SkillSystem>();
 
         bool sheathed = sheathSystem.Sheathed;
 
@@ -101,7 +103,10 @@ public class BodyStateSystem : MonoBehaviour
         if (state == newState) return;
 
         state = newState;
-        
+        if (skillSystem && skillSystem.IsSkillSelected && !skillSystem.Busy)
+        {
+            skillSystem.UnselectSkill();
+        }
     }
 
     public static int StateToLayer(BodyState state)

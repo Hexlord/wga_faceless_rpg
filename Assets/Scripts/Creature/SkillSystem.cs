@@ -105,7 +105,11 @@ public class SkillSystem : MonoBehaviour
     {
         get { return activeSkillNumber; }
     }
- 
+
+    public bool IsSkillSelected
+    {
+        get { return activeSkill != null; }
+    }
 
     // Private
 
@@ -158,7 +162,11 @@ public class SkillSystem : MonoBehaviour
         stateTimer = 0.0f;
         this.state = state;
 
-        if (state == SkillSystemState.None) activeSkillNumber = -1;
+        if (state == SkillSystemState.None)
+        {
+            activeSkillNumber = -1;
+            activeSkill = null;
+        }
     }
 
     /*
@@ -313,17 +321,15 @@ public class SkillSystem : MonoBehaviour
         }
     }
     
-    public void Cast(string skillName)
+    public void SelectSkill(string skillName)
     {
         Debug.Assert(!Busy);
-
-        if (!canCast) return;
 
         for(int i = 0; i < skills.Count; ++i)
         {
             if(skills[i].Name == skillName)
             {
-                Cast(i);
+                SelectSkill(i);
                 return;
             }
         }
@@ -332,7 +338,7 @@ public class SkillSystem : MonoBehaviour
         Debug.Assert(false);
     }
 
-    public void Cast(int skillNumber)
+    public void SelectSkill(int skillNumber)
     {
         Debug.Assert(!Busy);
         Debug.Assert(skillNumber >= 0);
@@ -349,6 +355,23 @@ public class SkillSystem : MonoBehaviour
 
         activeSkill = skill;
         activeSkillNumber = skillNumber;
+        
+    }
+
+    public void UnselectSkill()
+    {
+        Debug.Assert(!Busy);
+
+        activeSkill = null;
+        activeSkillNumber = -1;
+
+    }
+
+    public void Cast()
+    {
+        Debug.Assert(!Busy);
+        Debug.Assert(IsSkillSelected);
+
         activeSkill.PrepareEvent(gameObject);
         if (activeSkill.Channeling)
         {
@@ -363,6 +386,7 @@ public class SkillSystem : MonoBehaviour
             activeSkill.StartUpdate(gameObject, Time.fixedDeltaTime, 0.0f, skillAnimationStartLength);
         }
     }
+
     
     /*
      * Resets state and animation

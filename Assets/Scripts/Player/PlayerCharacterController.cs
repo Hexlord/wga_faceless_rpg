@@ -59,7 +59,6 @@ public class PlayerCharacterController : MonoBehaviour
     private bool freeze = false;
     private bool aiming = false;
     private bool wantToAttack = false;
-    private int wantToCast = -1;
 
     protected void Start()
     {
@@ -134,76 +133,38 @@ public class PlayerCharacterController : MonoBehaviour
         }
     }
 
-    private int GetUsedSkill()
+    private int GetSkillSelection()
     {
-        if (InputManager.Down(InputAction.Skill_1) && skillSystem.Skills.Count >= 1)
+        var magicalOffset = bodyStateSystem.State == BodyStateSystem.BodyState.Magical ? 2 : 0;
+
+        var key = -1;
+        if (InputManager.Down(InputAction.Skill_1))
         {
-            return 0;
+            key = 0;
         }
-        else if (InputManager.Down(InputAction.Skill_2) && skillSystem.Skills.Count >= 2)
+        else if (InputManager.Down(InputAction.Skill_2))
         {
-            return 1;
+            key = 1;
         }
-        else if (InputManager.Down(InputAction.Skill_3) && skillSystem.Skills.Count >= 3)
+
+        if (key >= 0)
         {
-            return 2;
+            key += magicalOffset;
+            if (skillSystem.Skills.Count <= key) key = -1;
         }
-        else if (InputManager.Down(InputAction.Skill_4) && skillSystem.Skills.Count >= 4)
-        {
-            return 3;
-        }
-        else if (InputManager.Down(InputAction.Skill_5) && skillSystem.Skills.Count >= 5)
-        {
-            return 4;
-        }
-        else if (InputManager.Down(InputAction.Skill_6) && skillSystem.Skills.Count >= 6)
-        {
-            return 5;
-        }
-        else if (InputManager.Down(InputAction.Skill_7) && skillSystem.Skills.Count >= 7)
-        {
-            return 6;
-        }
-        else if (InputManager.Down(InputAction.Skill_8) && skillSystem.Skills.Count >= 8)
-        {
-            return 7;
-        }
-        return -1;
+       
+        return key;
     }
 
     private void UpdateSkills()
     {
-        int usedSkill = GetUsedSkill();
+        int selectedSkill = GetSkillSelection();
 
-        if (usedSkill >= 0) wantToCast = usedSkill;
-        if (skillSystem.Busy || attackSystem.Attacking)
+        if (selectedSkill >= 0 &&
+            !skillSystem.Busy)
         {
-            wantToCast = -1;
-
-            if (skillSystem.Channeling && usedSkill != skillSystem.ActiveSkillNumber)
-            {
-                skillSystem.Interrupt(false);
-            }
-
-            return;
+            skillSystem.SelectSkill(selectedSkill);
         }
-
-        if (wantToCast >= 0)
-        {
-            if (sheathSystem.Sheathed)
-            {
-                if (!sheathSystem.Busy) sheathSystem.Unsheath();
-
-                return;
-            }
-
-            if (wantToCast >= 0)
-            {
-                skillSystem.Cast(wantToCast);
-            }
-            wantToCast = -1;
-        }
-
     }
 
     private void UpdateAim()
@@ -232,6 +193,40 @@ public class PlayerCharacterController : MonoBehaviour
         }
     }
 
+    private void Attack()
+    {
+        if (skillSystem.IsSkillSelected)
+        {
+            skillSystem.Cast();
+            return;
+        }
+
+        if (bodyStateSystem.State == BodyStateSystem.BodyState.Physical)
+        {
+            attackSystem.Attack();
+        }
+        else if (bodyStateSystem.State == BodyStateSystem.BodyState.Magical)
+        {
+            var rayFromCenterOfTheScreen = camera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
+            RaycastHit hit;
+            Vector3 shootingDirection;
+            var mask = LayerMask.GetMask("Enemy", "Environment", "Character");
+            const float dist = 1000.0f;
+
+            if (Physics.Raycast(rayFromCenterOfTheScreen, out hit, dist, mask, QueryTriggerInteraction.Ignore))
+            {
+                shootingDirection = (hit.point - (shootSystem.ShootingPoint.position));
+                if (shootingDirection.sqrMagnitude > Mathf.Epsilon) shootingDirection.Normalize();
+            }
+            else
+            {
+                shootingDirection = camera.transform.forward;
+            }
+            cameraController.TriggerPlayerAutoRotation();
+            shootSystem.Shoot(shootingDirection);
+        }
+    }
+
     private void UpdateAttack()
     {
 
@@ -252,31 +247,13 @@ public class PlayerCharacterController : MonoBehaviour
                 return;
             }
 
-            if (bodyStateSystem.State == BodyStateSystem.BodyState.Physical)
-            {
-                attackSystem.Attack();
-            } else if (bodyStateSystem.State == BodyStateSystem.BodyState.Magical)
-            {
-                var rayFromCenterOfTheScreen = camera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
-                RaycastHit hit;
-                Vector3 shootingDirection;
-                var mask = LayerMask.GetMask("Enemy", "Environment", "Character");
-                const float dist = 1000.0f;
-
-                if (Physics.Raycast(rayFromCenterOfTheScreen, out hit, dist, mask, QueryTriggerInteraction.Ignore))
-                {
-                    shootingDirection = (hit.point - (shootSystem.ShootingPoint.position));
-                    if(shootingDirection.sqrMagnitude > Mathf.Epsilon) shootingDirection.Normalize();
-                }
-                else
-                {
-                    shootingDirection = camera.transform.forward;
-                }
-                cameraController.TriggerPlayerAutoRotation();
-                shootSystem.Shoot(shootingDirection);
-            }
-
+            Attack();
+            
             wantToAttack = false;
+        }
+        else
+        {
+            if (skillSystem.Channeling) skillSystem.Interrupt(false);
         }
 
     }
