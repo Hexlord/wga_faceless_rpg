@@ -92,7 +92,7 @@ public class Familiar : MonoBehaviour
     // Single alloc
 
 
-    void Start()
+    void Awake()
     {
         // Cache
 

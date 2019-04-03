@@ -71,7 +71,7 @@ public class StartMenuScript : MonoBehaviour
     [Tooltip("Check to hide main menu when in settings menu")]
     public bool settingsMenuHideMainMenu = false;
 
-    void Start()
+    void Awake()
     {
         mainMenuStart.GetComponent<Button>().onClick.AddListener(PressedStart);
         mainMenuSettings.GetComponent<Button>().onClick.AddListener(PressedSettings);

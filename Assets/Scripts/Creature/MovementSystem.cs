@@ -1,5 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
+using UnityEditor.Experimental.U2D;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -37,59 +39,32 @@ public class MovementSystem : MonoBehaviour
     [Tooltip("Body rotation stabilization")]
     public bool rotationStabilization = true;
 
-    public enum MovementSystemState
-    {
-        None,
-        
-        MovingForward,
-        MovingBackward,
-        MovingLeft,
-        MovingRight,
-    }
+    [Tooltip("Leg touch gravity max")]
+    [Range(0.001f, 100.0f)]
+    public float gravityMax = 20.0f;
 
-    /*
-     * Expected animation configuration:
-     * 
-     * [moveForwardTrigger] -> (moveForward)
-     * [moveBackwardTrigger] -> (moveBackward)
-     * [moveLeftTrigger] -> (moveLeft)
-     * [moveRightTrigger] -> (moveRight)
-     * 
-     * [idleTrigger] -> (idle)
-     */
+    [Tooltip("Leg touch gravity time to fade")]
+    [Range(0.001f, 10.0f)]
+    public float gravityFadeTime = 1.0f;
 
-    public MovementSystemState state = MovementSystemState.None;
+    [Tooltip("Air walk fade time")]
+    [Range(0.001f, 10.0f)]
+    public float airwalkFadeTime = 1.0f;
+
 
     [Header("Animation Settings")]
+    [Tooltip("Smoothing factor for transitions")]
+    public float animationDamping = 0.15f;
 
-    public string idleAnimation = "idle";
-    public string idleAnimationTrigger = "idleTrigger";
-
-    public string moveForwardAnimation = "moveForward";
-    public string moveForwardAnimationTrigger = "moveForwardTrigger";
-    public string moveBackwardAnimation = "moveBackward";
-    public string moveBackwardAnimationTrigger = "moveBackwardTrigger";
-    public string moveLeftAnimation = "moveLeft";
-    public string moveLeftAnimationTrigger = "moveLeftTrigger";
-    public string moveRightAnimation = "moveRight";
-    public string moveRightAnimationTrigger = "moveRightTrigger";
-
-    public string unarmedIdleAnimation = "unarmedIdle";
-    public string unarmedIdleAnimationTrigger = "unarmedIdleTrigger";
-    public string unarmedMoveForwardAnimation = "unarmedMoveForward";
-    public string unarmedMoveBackwardAnimation = "unarmedMoveBackward";
-    public string unarmedMoveLeftAnimation = "moveLeft";
-    public string unarmedMoveRightAnimation = "moveRight";
-
-
-
-    public int animationLayer = 0;
-
+    private readonly int animatorHorizontal = Animator.StringToHash("Horizontal");
+    private readonly int animatorVertical = Animator.StringToHash("Vertical");
+    private readonly int animatorWeapon = Animator.StringToHash("Weapon");
+    
     private float currentMovementSpeed;
 
     public bool Moving
     {
-        get { return state != MovementSystemState.None; }
+        get { return desiredMovementBodySpace.sqrMagnitude > Mathf.Epsilon; }
     }
 
     /*
@@ -105,7 +80,7 @@ public class MovementSystem : MonoBehaviour
             else if (value.sqrMagnitude > 1.0f) value = value.normalized;
 
             desiredMovement = value;
-            state = CalculateState();
+            OnDesiredMovementUpdate();
         }
     }
 
@@ -113,68 +88,70 @@ public class MovementSystem : MonoBehaviour
 
     [Header("Debug")]
     public Vector2 desiredMovement = Vector2.zero;
+    public Vector2 desiredMovementBodySpace = Vector2.zero;
 
     // Cache
 
     private Animator animator;
     private Rigidbody body;
     private SheathSystem sheathSystem;
-    private AttackSystem attackSystem;
-    private SkillSystem skillSystem;
+    private TouchCondition legsTouchCondition;
 
     protected void Start()
     {
+        // Private
+
         currentMovementSpeed = baseMovementSpeed;
+
         // Cache
+
         animator = GetComponent<Animator>();
         body = GetComponent<Rigidbody>();
         sheathSystem = GetComponent<SheathSystem>();
-        attackSystem = GetComponent<AttackSystem>();
-        skillSystem = GetComponent<SkillSystem>();
+
+        var legs = transform.Find("LegsCollider");
+        if (legs)
+        {
+            legsTouchCondition = legs.GetComponent<TouchCondition>();
+        }
+
+
     }
 
-    private MovementSystemState CalculateState()
+    private void OnDesiredMovementUpdate()
     {
-        Vector3 desiredMovementBodySpace =
+        var desiredMovementBodySpaceTemp =
             Quaternion.Euler(0.0f, -transform.rotation.eulerAngles.y, 0.0f) * 
             (new Vector3(desiredMovement.x, 0.0f, desiredMovement.y));
 
-        float forward = desiredMovementBodySpace.z;
-        float right = desiredMovementBodySpace.x;
+        desiredMovementBodySpace = new Vector2(desiredMovementBodySpaceTemp.x, desiredMovementBodySpaceTemp.z);
 
-        float forwardAbs = Mathf.Abs(forward);
-        float rightAbs = Mathf.Abs(right);
-
-        if (forwardAbs < movementDesireThreshold &&
-            rightAbs < movementDesireThreshold) return MovementSystemState.None;
-
-        if (forwardAbs > rightAbs)
-        {
-            return forward > 0
-                ? MovementSystemState.MovingForward
-                : MovementSystemState.MovingBackward;
-        }
-        else
-        {
-            return right > 0
-                ? MovementSystemState.MovingRight
-                : MovementSystemState.MovingLeft;
-        }
     }
 
     private void MoveBody(float delta)
     {
-        if (state == MovementSystemState.None) return;
+        var speed = 1.0f;
+        var gravity = 0.0f;
 
-        Vector2 deltaVelocity = desiredMovement * currentMovementSpeed -
+        if (legsTouchCondition)
+        {
+            if (!legsTouchCondition.Touch)
+            {
+                speed = Mathf.Max(0, airwalkFadeTime - legsTouchCondition.DetouchedTime) / airwalkFadeTime * speed;
+                
+                gravity = gravityMax * Mathf.Max(0, gravityFadeTime - legsTouchCondition.DetouchedTime) * delta;
+            }
+        }
+
+        var deltaVelocity = desiredMovement * currentMovementSpeed * speed -
             (new Vector2(body.velocity.x, body.velocity.z));
 
-        Vector2 appliedVelocity = Vector2.MoveTowards(
+        var appliedVelocity = Vector2.MoveTowards(
             Vector2.zero,
             deltaVelocity,
-            currentMovementSpeed);
+            currentMovementSpeed * delta * 10.0f);
 
-        body.AddForce(appliedVelocity.x, 0.0f, appliedVelocity.y, ForceMode.VelocityChange);
+        body.AddForce(appliedVelocity.x, -gravity, appliedVelocity.y, ForceMode.VelocityChange);
     }
 
     private void RotateBody(float delta)
@@ -187,94 +164,14 @@ public class MovementSystem : MonoBehaviour
 
     protected void FixedUpdate()
     {
-        if (attackSystem &&
-            attackSystem.Attacking ||
-            skillSystem &&
-            skillSystem.Busy) Movement = Vector2.zero;
+        var delta = Time.fixedDeltaTime;
+        
+        animator.SetFloat(animatorHorizontal, desiredMovementBodySpace.x, animationDamping, delta);
+        animator.SetFloat(animatorVertical, desiredMovementBodySpace.y, animationDamping, delta);
+        if(sheathSystem) animator.SetFloat(animatorWeapon, sheathSystem.Sheathed ? 0.0f : 1.0f, animationDamping, delta);
 
-        bool transition = animator.IsInTransition(animationLayer);
-
-        bool sheathed = sheathSystem.Sheathed;
-
-        AnimatorClipInfo info = animator.GetCurrentAnimatorClipInfo(animationLayer)[0];
-        AnimatorStateInfo animState = animator.GetCurrentAnimatorStateInfo(animationLayer);
-        AnimationClip clip = info.clip;
-        string clipName = clip.name;
-
-        string trigger = idleAnimationTrigger;
-
-        bool idle = clipName == (sheathed
-            ? unarmedIdleAnimation
-            : idleAnimation);
-
-        bool matches = false;
-        switch (state)
-        {
-            case MovementSystemState.None:
-                matches = clipName == (sheathed
-                    ? unarmedIdleAnimation
-                    : idleAnimation);
-                break;
-            case MovementSystemState.MovingForward:
-                matches = clipName == (sheathed
-                    ? unarmedMoveForwardAnimation
-                    : moveForwardAnimation);
-                break;
-            case MovementSystemState.MovingBackward:
-                matches = clipName == (sheathed
-                    ? unarmedMoveBackwardAnimation
-                    : moveBackwardAnimation);
-                break;
-            case MovementSystemState.MovingLeft:
-                matches = clipName == (sheathed
-                    ? unarmedMoveLeftAnimation
-                    : moveLeftAnimation);
-                break;
-            case MovementSystemState.MovingRight:
-                matches = clipName == (sheathed
-                    ? unarmedMoveRightAnimation
-                    : moveRightAnimation);
-                break;
-        }
-
-
-        switch (state)
-        {
-            case MovementSystemState.None:
-                trigger = idleAnimationTrigger;
-                break;
-            case MovementSystemState.MovingForward:
-                trigger = idle || matches
-                    ? moveForwardAnimationTrigger
-                    : idleAnimationTrigger;
-                break;
-            case MovementSystemState.MovingBackward:
-                trigger = idle || matches
-                    ? moveBackwardAnimationTrigger
-                    : idleAnimationTrigger;
-                break;
-            case MovementSystemState.MovingLeft:
-                trigger = idle || matches
-                    ? moveLeftAnimationTrigger
-                    : idleAnimationTrigger;
-                break;
-            case MovementSystemState.MovingRight:
-                trigger = idle || matches
-                    ? moveRightAnimationTrigger
-                    : idleAnimationTrigger;
-                break;
-        }
-
-        animator.ResetTrigger(moveForwardAnimationTrigger);
-        animator.ResetTrigger(moveBackwardAnimationTrigger);
-        animator.ResetTrigger(moveLeftAnimationTrigger);
-        animator.ResetTrigger(moveRightAnimationTrigger);
-        animator.ResetTrigger(idleAnimationTrigger);
-
-        animator.SetTrigger(trigger);
-
-        MoveBody(Time.fixedDeltaTime);
-        RotateBody(Time.fixedDeltaTime);
+        MoveBody(delta);
+        RotateBody(delta);
     }
 
     public void SetSpeed(float newSpeed)
@@ -282,7 +179,7 @@ public class MovementSystem : MonoBehaviour
         currentMovementSpeed = newSpeed;
     }
 
-    public void RevertSpeed()
+    public void ResetSpeed()
     {
         currentMovementSpeed = baseMovementSpeed;
     }

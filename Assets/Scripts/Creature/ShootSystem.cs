@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.Experimental.UIElements;
 using UnityEngine;
 
 /*
@@ -43,6 +44,8 @@ public class ShootSystem : MonoBehaviour
     public Transform ShootingPoint;
     [Tooltip("Speed with which a projectile flies. Warning: scales down with rigidbody mass")]
     public float projectileSpeed = 12.0f;
+    [Tooltip("Fire rate in projectiles per second")]
+    public float fireRate = 2.0f;
 
     [Header("Animation Settings")]
 
@@ -58,6 +61,8 @@ public class ShootSystem : MonoBehaviour
 
     private GameObject projectile;
     private Vector3 shootingDirection;
+    private float fireTime = 0.0f;
+    private float fireTimer = 0.0f;
 
     public bool Shooting
     {
@@ -73,12 +78,13 @@ public class ShootSystem : MonoBehaviour
 
     private Animator animator;
 
-    void Start()
+    void Awake()
     {
         // Cache
 
         animator = GetComponent<Animator>();
 
+        fireTime = 1.0f / fireRate;
     }
 
     private void SpawnProjectile()
@@ -91,6 +97,9 @@ public class ShootSystem : MonoBehaviour
 
     void FixedUpdate()
     {
+        var delta = Time.fixedDeltaTime;
+        fireTimer = Mathf.MoveTowards(fireTimer, fireTime, delta);
+
         bool transition = animator.IsInTransition(animationLayer);
 
         AnimatorClipInfo info = animator.GetCurrentAnimatorClipInfo(animationLayer)[0];
@@ -127,7 +136,10 @@ public class ShootSystem : MonoBehaviour
         Debug.Assert(!Shooting);
         shootingDirection = direction.normalized;
 
-        if (!canShoot) return;
+        if (!canShoot ||
+            fireTimer < fireTime) return;
+
+        fireTimer -= fireTime;
 
         state = ShootSystemState.Shooting;
         animator.SetTrigger(shootAnimationTrigger);

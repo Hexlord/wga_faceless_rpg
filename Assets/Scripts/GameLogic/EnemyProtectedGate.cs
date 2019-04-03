@@ -21,17 +21,6 @@ public class EnemyProtectedGate : MonoBehaviour
     [Tooltip("Open gates when there are no alive enemies in that range")]
     public float protectionRange = 10.0f;
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
 
     void FixedUpdate()
     {

@@ -115,8 +115,10 @@ public class AttackSystem : MonoBehaviour
 
         if (!canAttack) return;
 
-        if (movementSystem &&
+        /*
+         if (movementSystem &&
             movementSystem.Moving) return;
+            */
 
         state = AttackSystemState.Attacking;
         animator.SetTrigger(attackAnimationTriggers[attackIndex]);

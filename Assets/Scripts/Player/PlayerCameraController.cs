@@ -142,17 +142,21 @@ public class PlayerCameraController : MonoBehaviour
 
     private float transitionSpeed = 0.0f;
 
+    private Quaternion desiredRotation = Quaternion.identity;
+
     // Cache
 
     private new Camera camera;
     private Rigidbody body;
 
-    void Start()
+    void Awake()
     {
         // Cache
 
         camera = GameObject.Find("MainCamera").GetComponent<Camera>();
         body = GetComponent<Rigidbody>();
+
+        desiredRotation = body.rotation;
 
         transitionSpeed = 1.0f / transitionTime;
     }
@@ -187,9 +191,9 @@ public class PlayerCameraController : MonoBehaviour
 
         if (playerAutoRotateActive)
         {
-            body.rotation = Quaternion.Euler(
+            desiredRotation = Quaternion.Euler(
                 body.rotation.eulerAngles.x,
-                Mathf.MoveTowards(body.rotation.eulerAngles.y, body.rotation.eulerAngles.y + Mathf.DeltaAngle(0.0f, camera.transform.rotation.eulerAngles.y - body.rotation.eulerAngles.y), playerRotationSpeed * delta),
+                Mathf.MoveTowards(desiredRotation.eulerAngles.y, desiredRotation.eulerAngles.y + Mathf.DeltaAngle(0.0f, camera.transform.rotation.eulerAngles.y - desiredRotation.eulerAngles.y), playerRotationSpeed * delta),
                 body.rotation.eulerAngles.z);
             yawDelta = Mathf.DeltaAngle(body.rotation.eulerAngles.y, camera.transform.rotation.eulerAngles.y);
             if (Mathf.Abs(yawDelta) <= Mathf.Epsilon)
@@ -198,6 +202,8 @@ public class PlayerCameraController : MonoBehaviour
                 playerAutoRotateTimer = 0.0f;
             }
         }
+
+        body.rotation = desiredRotation;
     }
 
     struct RayEntry
@@ -589,7 +595,6 @@ public class PlayerCameraController : MonoBehaviour
             otherCamera.Yaw = constrainedCamera.Yaw;
         }
 
-        //fix: NullReferenceException
         transitionStartFOV = camera.fieldOfView;
         transitionStartYaw = camera.transform.eulerAngles.y;
         transitionStartPitch = camera.transform.eulerAngles.x;
@@ -597,7 +602,7 @@ public class PlayerCameraController : MonoBehaviour
 
         transitionDeltaYaw = Mathf.DeltaAngle(0, otherCamera.Yaw - transitionStartYaw);
         transitionDeltaPitch = Mathf.DeltaAngle(0, otherCamera.Pitch - transitionStartPitch);
-
+            
         cameraTransition = instant
             ? 1.0f
             : 0.0f;

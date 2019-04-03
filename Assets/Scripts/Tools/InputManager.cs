@@ -33,6 +33,7 @@ public enum InputAction
     Skill_8,
     Escape,
     Enter,
+    Menu,
 }
 
 public static class InputManager
@@ -78,10 +79,11 @@ public static class InputManager
                 return "H";
             case InputAction.Use:
                 return "E";
+            case InputAction.Menu:
+                return "F1";
             default:
                 throw new ArgumentOutOfRangeException("action", action, null);
         }
-        return "none";
     }
     public static bool Down(InputAction action)
     {

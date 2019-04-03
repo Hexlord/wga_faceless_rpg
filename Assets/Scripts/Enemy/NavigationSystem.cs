@@ -18,7 +18,6 @@ public class NavigationSystem : MonoBehaviour
     Vector3[] agentsDestinations;
     NavMeshPath[] agentsPaths;
     delegate void pathFindingDelegate(Vector3[] starts, Vector3[] finishes, NavMeshPath[] paths);
-    bool pathCalculated;
     bool isCalculating;
 
     void Start()
@@ -28,8 +27,6 @@ public class NavigationSystem : MonoBehaviour
         {
             AgentsToPaths.Add(agent, new NavMeshPath());
         }
-
-        pathCalculated = false;
         isCalculating = false;
     }
 
@@ -58,16 +55,25 @@ public class NavigationSystem : MonoBehaviour
     void StartPathFinding()
     {
         isCalculating = true;
+        StartCoroutine(Synchronise());
+
         FixData();
         pathFindingThread = new Thread(new ThreadStart(FindAllPaths));
-        pathFindingThread.Start();        
+        pathFindingThread.Start();
+    }
+
+    void FinalizePathFinding()
+    {
+
     }
 
     IEnumerator Synchronise()
     {
-
-        yield return null;
-        pathCalculated = false;
+        while (isCalculating)
+        {
+            yield return null;
+        }
+        FinalizePathFinding();
     }
 
     public void FindAllPaths()
@@ -77,6 +83,6 @@ public class NavigationSystem : MonoBehaviour
         {
             NavMesh.CalculatePath(agentsPositions[i], agentsDestinations[i], NavMesh.AllAreas, agentsPaths[i]);
         }
-        pathCalculated = true;
+        isCalculating = false;
     }
 }

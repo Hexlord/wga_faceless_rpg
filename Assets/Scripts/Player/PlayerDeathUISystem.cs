@@ -36,7 +36,7 @@ public class PlayerDeathUISystem : MonoBehaviour
     {
         if (!deathUI)
         {
-            deathUI = GameObject.Find("Canvas").transform.Find("DeathUI").gameObject;
+            deathUI = GameObject.Find("UI").FindPrecise("Canvas").transform.Find("DeathUI").gameObject;
         }
 
         player = GameObject.Find("Player");
