@@ -320,9 +320,10 @@ GameObject:
   - component: {fileID: 1881661848663572574}
   - component: {fileID: 1881661848663572575}
   - component: {fileID: 1881661848663572547}
-  - component: {fileID: 1881661848663572546}
   - component: {fileID: 607190613}
+  - component: {fileID: 1881661848663572546}
   - component: {fileID: 607190612}
+  - component: {fileID: 2707066969070718416}
   m_Layer: 14
   m_Name: Dummy
   m_TagString: Faceless
@@ -422,7 +423,26 @@ Rigidbody:
   m_IsKinematic: 0
   m_Interpolate: 0
   m_Constraints: 80
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
+--- !u!95 &607190613
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1881661848663572572}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 9cc16ef2fff732c4ba8b580a92531493, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!114 &1881661848663572546
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -439,25 +459,6 @@ MonoBehaviour:
   uiAnchorOffset: {x: 0, y: 3, z: 0}
   uiHealthBarEnabled: 0
   worldSpaceHealthBar: {fileID: 1881661848093385205}
---- !u!95 &607190613
-Animator:
-  serializedVersion: 3
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1881661848663572572}
-  m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 0}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!114 &607190612
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -482,6 +483,28 @@ MonoBehaviour:
   - {fileID: 7142476392662447839}
   - {fileID: 7336112398113412247}
   state: 0
+--- !u!114 &2707066969070718416
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1881661848663572572}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e6f8b787996174e448d79390c17ff979, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  canMove: 1
+  movementDesireThreshold: 0.2
+  baseMovementSpeed: 7
+  rotationStabilization: 1
+  gravityMax: 20
+  gravityFadeTime: 1
+  airwalkFadeTime: 1
+  animationDamping: 0.15
+  desiredMovement: {x: 0, y: 0}
+  desiredMovementBodySpace: {x: 0, y: 0}
 --- !u!1 &1965707016945085230
 GameObject:
   m_ObjectHideFlags: 0
@@ -492,6 +515,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5835109983543354491}
   - component: {fileID: 7336112398113412247}
+  - component: {fileID: 1097110598}
   m_Layer: 10
   m_Name: ClawHitboxPhysical
   m_TagString: Weapon
@@ -507,7 +531,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1965707016945085230}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: -0.58, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1881661848663572544}
@@ -528,10 +552,23 @@ MonoBehaviour:
   canDamage: 1
   source: {fileID: 1881661848663572572}
   negativeFilterTarget: {fileID: 0}
-  negativeFilterTargetTag: Enemy
+  negativeFilterTargetTag: Weapon
   damage: 10
   shieldDamage: 10
   uniqueDamage: 1
+--- !u!65 &1097110598
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1965707016945085230}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 0.3, y: 0.3, z: 0.3}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &8486477561398452642
 GameObject:
   m_ObjectHideFlags: 0
@@ -542,6 +579,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7466548354062736332}
   - component: {fileID: 7142476392662447839}
+  - component: {fileID: 2025698162}
   m_Layer: 11
   m_Name: ClawHitboxMagical
   m_TagString: Weapon
@@ -557,7 +595,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8486477561398452642}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0.69, y: 0.194, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1881661848663572544}
@@ -578,7 +616,20 @@ MonoBehaviour:
   canDamage: 1
   source: {fileID: 1881661848663572572}
   negativeFilterTarget: {fileID: 0}
-  negativeFilterTargetTag: Enemy
+  negativeFilterTargetTag: Weapon
   damage: 10
   shieldDamage: 10
   uniqueDamage: 1
+--- !u!65 &2025698162
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8486477561398452642}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 0.3, y: 0.3, z: 0.3}
+  m_Center: {x: 0, y: 0, z: 0}

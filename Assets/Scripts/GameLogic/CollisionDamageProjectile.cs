@@ -31,10 +31,15 @@ public class CollisionDamageProjectile : CollisionDamageBasic
     private int pierceCounter = 0;
 
     // Cache
-
+    protected override void Awake()
+    {
+        if (negativeFilterTarget) GetComponent<Collider>().IgnoreCollisionsWith(negativeFilterTarget);
+        if (negativeFilterTargetTag.Length > 0) GetComponent<Collider>().IgnoreCollisionsWith(negativeFilterTargetTag);
+    }
 
     protected override void OnContact()
     {
+
         ++pierceCounter;
 
         if(pierceCounter >= pierceCount)

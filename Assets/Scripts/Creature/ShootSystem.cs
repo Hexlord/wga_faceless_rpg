@@ -90,6 +90,7 @@ public class ShootSystem : MonoBehaviour
     private void SpawnProjectile()
     {
         projectile = Instantiate(projectilePrefabs[0], ShootingPoint.position, ShootingPoint.rotation);
+        //TO DO: Find the way to omitt next line
         projectile.GetComponent<CollisionDamageProjectile>().source = gameObject;
         projectile.GetComponent<Rigidbody>().AddForce(shootingDirection * projectileSpeed);
     }

@@ -10,79 +10,121 @@ public class NavigationSystem : MonoBehaviour
 
     Thread pathFindingThread;
 
-    public BaseAgent[] agents;
-    public Dictionary<BaseAgent, NavMeshPath> AgentsToPaths;
-    public Dictionary<BaseAgent, Vector3> AgentsToDestinations;
+    public float agentWaypointStoppingDistance = 0.005f;
+    public float agentDestinationStoppingDistance = 0.5f;
+
+    enum RequestStatus
+    {
+        None,
+        Placed,
+        Completed,
+        Failed,
+    }
+
+    private float agentStoppingDistance;
+    private Dictionary<uint, BaseAgent> agents = new Dictionary<uint, BaseAgent>();
+    private Dictionary<uint, Queue<Vector3>> AgentsToPaths = new Dictionary<uint, Queue<Vector3>>();
+    private Dictionary<uint, RequestStatus> AgentsRequestStatuses = new Dictionary<uint, RequestStatus>();
     //Private
-    Vector3[] agentsPositions;
-    Vector3[] agentsDestinations;
-    NavMeshPath[] agentsPaths;
-    delegate void pathFindingDelegate(Vector3[] starts, Vector3[] finishes, NavMeshPath[] paths);
+    Queue<PathFindingRequestInfo> pathFindingQueue = new Queue<PathFindingRequestInfo>();
+
     bool isCalculating;
 
-    void Start()
+    public struct PathFindingRequestInfo
     {
-        agentsPositions = new Vector3[agents.Length];
-        foreach(BaseAgent agent in agents)
-        {
-            AgentsToPaths.Add(agent, new NavMeshPath());
-        }
-        isCalculating = false;
-    }
+        public BaseAgent agent;
+        public Vector3 agentDestination;
 
-    public void SetNewDestination(BaseAgent agent, Vector3 Destination)
-    {
-        if (AgentsToDestinations.ContainsKey(agent)) AgentsToDestinations.Remove(agent);
-        AgentsToDestinations.Add(agent, Destination);
-    }
-
-    private void CollectPositions()
-    {
-        for (int i = 0; i < agentsPositions.Length; i++)
+        public PathFindingRequestInfo(BaseAgent a, Vector3 f)
         {
-            agentsPositions[i] = agents[i].transform.position;
+            agent = a;
+            agentDestination = f;
         }
     }
 
-    private void FixData()
+    private void RegisterAgent(BaseAgent agent)
     {
-        agentsPaths = new List<NavMeshPath>(AgentsToPaths.Values).ToArray();
-        agentsDestinations = new List<Vector3>(AgentsToDestinations.Values).ToArray();
+        agents.Add(agent.ID, agent);
+        AgentsToPaths.Add(agent.ID, new Queue<Vector3>());
+        AgentsRequestStatuses.Add(agent.ID, RequestStatus.None);
+    }
+
+    public void PlacePathRequest(uint ID, Vector3 finish)
+    {
+        if (AgentsRequestStatuses[ID] != RequestStatus.Failed)
+        {
+            if (!agents.ContainsKey(ID)) RegisterAgent(agents[ID]);
+
+            PathFindingRequestInfo newRequest = new PathFindingRequestInfo(agents[ID], finish);
+            pathFindingQueue.Enqueue(newRequest);
+            AgentsRequestStatuses[ID] = RequestStatus.Placed;
+        }
+    }
+
+    public Vector2 AskDirection(uint ID)
+    {
+        Vector3 direction = new Vector3(0, 0, 0);
+        if (AgentsRequestStatuses[ID] == RequestStatus.Completed)
+        {
+            direction = AgentsToPaths[ID].Peek() - transform.position;
+            agentStoppingDistance = (AgentsToPaths[ID].Count == 1) ? agentDestinationStoppingDistance : agentWaypointStoppingDistance;
+
+            if (direction.magnitude <= agentStoppingDistance)
+            {
+                AgentsToPaths[ID].Dequeue();
+                if (AgentsToPaths[ID].Count > 0)
+                {
+                    direction = AgentsToPaths[ID].Peek() - transform.position;
+                }
+                else
+                {
+                    direction = Vector3.zero;
+                    AgentsRequestStatuses[ID] = RequestStatus.None;
+                }
+            }
+        }
+        return new Vector2(direction.x, direction.z);
     }
 
     // Update is called once per frame
+    private void Update()
+    {
+        if (pathFindingQueue.Count > 0 && !isCalculating)
+        {
+            StartPathFinding();
+        }
+    }
 
-    void StartPathFinding()
+    private void StartPathFinding()
     {
         isCalculating = true;
-        StartCoroutine(Synchronise());
-
-        FixData();
-        pathFindingThread = new Thread(new ThreadStart(FindAllPaths));
+        pathFindingThread = new Thread(new ThreadStart(ProcessRequests));
         pathFindingThread.Start();
     }
 
-    void FinalizePathFinding()
+    private void ProcessRequests()
     {
+        PathFindingRequestInfo infoChunk;
+        NavMeshPath path = new NavMeshPath();
 
-    }
-
-    IEnumerator Synchronise()
-    {
-        while (isCalculating)
+        while (pathFindingQueue.Count > 0)
         {
-            yield return null;
-        }
-        FinalizePathFinding();
-    }
-
-    public void FindAllPaths()
-    {
-        if (agentsPositions.Length != agentsDestinations.Length || agentsDestinations.Length != agentsPaths.Length || agentsPaths.Length != agentsPositions.Length) return; //Error
-        for (int i = 0; i < agentsPositions.Length; i++)
-        {
-            NavMesh.CalculatePath(agentsPositions[i], agentsDestinations[i], NavMesh.AllAreas, agentsPaths[i]);
+            infoChunk = pathFindingQueue.Dequeue();
+            NavMesh.CalculatePath(infoChunk.agent.transform.position, infoChunk.agentDestination, NavMesh.AllAreas, path);
+            if (path.status != NavMeshPathStatus.PathInvalid)
+            {
+                AgentsToPaths[infoChunk.agent.ID] = new Queue<Vector3>(path.corners);
+                AgentsRequestStatuses[infoChunk.agent.ID] = RequestStatus.Completed;
+                Debug.Log("Finished calculating path for " + infoChunk.agent);
+            }
+            else
+            {
+                AgentsRequestStatuses[infoChunk.agent.ID] = RequestStatus.Failed;
+                Debug.Log("Failed To process path for " + infoChunk.agent);
+            }
         }
         isCalculating = false;
+        Debug.Log("AI. All agents recieved their paths.");
     }
+
 }

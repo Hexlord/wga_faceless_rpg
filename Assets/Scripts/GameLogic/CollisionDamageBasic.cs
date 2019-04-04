@@ -63,7 +63,7 @@ public class CollisionDamageBasic : MonoBehaviour
 
     private bool active = true;
 
-    protected void Awake()
+    protected virtual void Awake()
     {
         // Cache
         sourceAttackSystem = source.GetComponent<AttackSystem>();
@@ -87,7 +87,7 @@ public class CollisionDamageBasic : MonoBehaviour
     protected void OnTriggerEnter(Collider other)
     {
         if (!canDamage || !active) return;
-
+        Debug.Log(other);
         GameObject target = other.gameObject.TraverseParent("Faceless");
         string hitTag = other.tag;
 
@@ -95,7 +95,7 @@ public class CollisionDamageBasic : MonoBehaviour
         //    target.tag != filterTargetTag) return;
 
         HealthSystem healthSystem = target.GetComponent<HealthSystem>();
-        if (!healthSystem) return;
+        //if (!healthSystem) return;
         BodyStateSystem bodyState = target.GetComponent<BodyStateSystem>();
         if ((!bodyState) || (BodyStateSystem.StateToLayer(bodyState.State) == this.gameObject.layer))
         {
@@ -109,9 +109,6 @@ public class CollisionDamageBasic : MonoBehaviour
                     hitTargets.Add(target);
                     healthSystem.Damage(source, damage);
                     break;
-                case "Environment":
-                    hitTargets.Add(target);
-                    break;
                 case "Critical":
                     hitTargets.Add(target);
                     healthSystem.Damage(source, damage);
@@ -122,6 +119,10 @@ public class CollisionDamageBasic : MonoBehaviour
                     Interrupted(other);
                     target.GetComponent<ShieldSystem>().RecieveDamage(shieldDamage);
                     break;
+                default:
+                    hitTargets.Add(target);
+                    Interrupted(other);
+                    return;
             }
 
             OnContact();

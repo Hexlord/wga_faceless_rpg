@@ -70,10 +70,10 @@ public class BodyStateSystem : MonoBehaviour
             if (magicalHitbox.layer != LayerMask.NameToLayer("Magical")) Debug.LogError("Magical hitbox isn't placed on proper layer");
         }
 
-        if (!magicalHitbox) Debug.LogError("No physical hitbox attached!");
+        if (!physicalHitbox) Debug.LogError("No physical hitbox attached!");
         else
         {
-            if (magicalHitbox.layer != LayerMask.NameToLayer("Physical")) Debug.LogError("Physical hitbox isn't placed on proper layer");
+            if (physicalHitbox.layer != LayerMask.NameToLayer("Physical")) Debug.LogError("Physical hitbox isn't placed on proper layer");
         }
     }
 
