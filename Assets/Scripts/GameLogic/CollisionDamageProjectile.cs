@@ -33,7 +33,7 @@ public class CollisionDamageProjectile : CollisionDamageBasic
     // Cache
 
 
-    protected override void OnContact()
+    public override void OnContact()
     {
         ++pierceCounter;
 

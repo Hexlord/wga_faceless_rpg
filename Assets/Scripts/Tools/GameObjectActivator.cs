@@ -11,7 +11,7 @@ using UnityEngine;
  * 
  */
 
-public class Activator : MonoBehaviour
+public class GameObjectActivator : MonoBehaviour
 {
     public GameObject target;
 

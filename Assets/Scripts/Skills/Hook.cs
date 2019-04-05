@@ -92,7 +92,7 @@ public class Hook : MonoBehaviour
     {
         if (state == HookState.Fly)
         {
-            if (other.tag == "Faceless")
+            if (other.tag.Contains("Faceless"))
             {
                 hit = other.gameObject;
                 hitHookRotation = transform.rotation;

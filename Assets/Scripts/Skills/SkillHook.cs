@@ -21,6 +21,8 @@ public class SkillHook : SkillBase
     private GameObject hook;
     private Hook hookComponent;
 
+    public static float power = 20000.0f;
+
     public SkillHook() :
         base(Skill.Hook.ToString(), true, 1.0f)
     {
@@ -68,13 +70,29 @@ public class SkillHook : SkillBase
 
         var state = hookComponent.State;
 
+        var step = power * Time.fixedDeltaTime;
+
         switch (state)
         {
             case Hook.HookState.Fly:
                 break;
             case Hook.HookState.Hit:
-                hookComponent.Hit.GetComponent<Rigidbody>().AddForce(
-                    Vector3.MoveTowards(Vector3.zero, caster.transform.position - hookComponent.Hit.transform.position, 20.0f * Time.fixedDeltaTime), ForceMode.Impulse);
+
+                if (hookComponent.Hit.tag.Contains("Boss"))
+                {
+                    caster.GetComponent<Rigidbody>().AddForce(
+                        Vector3.MoveTowards(Vector3.zero,
+                            (hookComponent.Hit.transform.position - caster.transform.position) * 2,
+                            step), ForceMode.Impulse);
+                }
+                else
+                {
+                    hookComponent.Hit.GetComponent<Rigidbody>().AddForce(
+                        Vector3.MoveTowards(Vector3.zero, 
+                            (caster.transform.position - hookComponent.Hit.transform.position) * 2,
+                            step), ForceMode.Impulse);
+                }
+
                 break;
             case Hook.HookState.Returning:
                 break;
@@ -102,13 +120,6 @@ public class SkillHook : SkillBase
                 hookComponent.Return();
                 break;
             case Hook.HookState.Hit:
-                if (Vector3.Distance(caster.transform.position,
-                    hookComponent.Hit.transform.position) > 2.5f)
-                {
-                    caster.GetComponent<Rigidbody>().MovePosition(Vector3.Lerp(caster.transform.position,
-                        hookComponent.Hit.transform.position, 0.1f * (time / length + 0.5f)));
-                }
-
                 break;
             case Hook.HookState.Returning:
                 break;

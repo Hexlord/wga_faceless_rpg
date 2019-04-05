@@ -38,7 +38,7 @@ public class PlayerSkillsUISystem : MonoBehaviour
     {
         if (!skillsUI)
         {
-            skillsUI = GameObject.Find("UI").FindPrecise("Canvas").transform.Find("SkillsUI").gameObject;
+            skillsUI = GameObject.Find("UI").FindChildPrecise("Canvas").transform.Find("SkillsUI").gameObject;
         }
 
         player = GameObject.Find("Player");
