@@ -15,7 +15,7 @@ using UnityEngine;
 [AddComponentMenu("ProjectFaceless/Creature/Skill System")]
 public class SkillSystem : MonoBehaviour
 {
-    
+
     // Public
 
     public enum SkillSystemState
@@ -76,7 +76,7 @@ public class SkillSystem : MonoBehaviour
     [Tooltip("Enabling makes skills use current animation time instead of internal state timer")]
     public bool useAnimationTime = false;
 
-    
+
     [Tooltip("Skills known by this character")]
     public Skill[] startSkills;
 
@@ -86,14 +86,20 @@ public class SkillSystem : MonoBehaviour
     }
     public bool Casting
     {
-        get { return state == SkillSystemState.SkillStart ||
-                     state == SkillSystemState.SkillEnd; }
+        get
+        {
+            return state == SkillSystemState.SkillStart ||
+                   state == SkillSystemState.SkillEnd;
+        }
     }
     public bool Channeling
     {
-        get { return state == SkillSystemState.ChannelStart ||
-                     state == SkillSystemState.ChannelUpdate ||
-                     state == SkillSystemState.ChannelEnd; }
+        get
+        {
+            return state == SkillSystemState.ChannelStart ||
+                   state == SkillSystemState.ChannelUpdate ||
+                   state == SkillSystemState.ChannelEnd;
+        }
     }
 
     public IList<string> Skills
@@ -105,7 +111,11 @@ public class SkillSystem : MonoBehaviour
     {
         get { return activeSkillNumber; }
     }
- 
+
+    public bool IsSkillSelected
+    {
+        get { return activeSkill != null; }
+    }
 
     // Private
 
@@ -131,13 +141,14 @@ public class SkillSystem : MonoBehaviour
 
     private Animator animator;
 
-
+    private MovementSystem movementSystem;
 
     void Awake()
     {
         // Cache
 
         animator = GetComponent<Animator>();
+        movementSystem = GetComponent<MovementSystem>();
 
         skillAnimationStartLength = animator.GetAnimationLength(skillAnimationStart);
         skillAnimationEndLength = animator.GetAnimationLength(skillAnimationEnd);
@@ -146,7 +157,7 @@ public class SkillSystem : MonoBehaviour
         channelAnimationUpdateLength = animator.GetAnimationLength(channelAnimationUpdate);
         channelAnimationEndLength = animator.GetAnimationLength(channelAnimationEnd);
 
-        foreach(Skill skill in startSkills)
+        foreach (Skill skill in startSkills)
         {
             skills.Add(skill.Instantiate());
             skillNames.Add(skill.ToString());
@@ -158,7 +169,11 @@ public class SkillSystem : MonoBehaviour
         stateTimer = 0.0f;
         this.state = state;
 
-        if (state == SkillSystemState.None) activeSkillNumber = -1;
+        if (state == SkillSystemState.None)
+        {
+            activeSkillNumber = -1;
+            activeSkill = null;
+        }
     }
 
     /*
@@ -167,8 +182,11 @@ public class SkillSystem : MonoBehaviour
      */
     void FixedUpdate()
     {
-       
-        
+        if (movementSystem)
+        {
+            movementSystem.ResistForces = !(state == SkillSystemState.ChannelUpdate);
+        }
+
         AnimatorClipInfo info = animator.GetCurrentAnimatorClipInfo(animationLayer)[0];
         AnimatorStateInfo animState = animator.GetCurrentAnimatorStateInfo(animationLayer);
         AnimationClip clip = info.clip;
@@ -186,7 +204,7 @@ public class SkillSystem : MonoBehaviour
         bool isDefaultClip = clipName == idleAnimation;
 
         stateTimer += delta;
-        
+
         switch (state)
         {
             case SkillSystemState.None:
@@ -312,18 +330,16 @@ public class SkillSystem : MonoBehaviour
                 break;
         }
     }
-    
-    public void Cast(string skillName)
+
+    public void SelectSkill(string skillName)
     {
         Debug.Assert(!Busy);
 
-        if (!canCast) return;
-
-        for(int i = 0; i < skills.Count; ++i)
+        for (int i = 0; i < skills.Count; ++i)
         {
-            if(skills[i].Name == skillName)
+            if (skills[i].Name == skillName)
             {
-                Cast(i);
+                SelectSkill(i);
                 return;
             }
         }
@@ -332,7 +348,7 @@ public class SkillSystem : MonoBehaviour
         Debug.Assert(false);
     }
 
-    public void Cast(int skillNumber)
+    public void SelectSkill(int skillNumber)
     {
         Debug.Assert(!Busy);
         Debug.Assert(skillNumber >= 0);
@@ -349,6 +365,23 @@ public class SkillSystem : MonoBehaviour
 
         activeSkill = skill;
         activeSkillNumber = skillNumber;
+
+    }
+
+    public void UnselectSkill()
+    {
+        Debug.Assert(!Busy);
+
+        activeSkill = null;
+        activeSkillNumber = -1;
+
+    }
+
+    public void Cast()
+    {
+        Debug.Assert(!Busy);
+        Debug.Assert(IsSkillSelected);
+
         activeSkill.PrepareEvent(gameObject);
         if (activeSkill.Channeling)
         {
@@ -363,7 +396,8 @@ public class SkillSystem : MonoBehaviour
             activeSkill.StartUpdate(gameObject, Time.fixedDeltaTime, 0.0f, skillAnimationStartLength);
         }
     }
-    
+
+
     /*
      * Resets state and animation
      * 
