@@ -22,9 +22,6 @@ public class ThirdPersonCamera : ConstrainedCamera
     
     // Public
 
-    [Header("Player Settings")]
-
-
     [Header("Third Person Camera Settings")]
     [Tooltip("Distance from player anchor")]
     [Range(0.0f, 10.0f)]
