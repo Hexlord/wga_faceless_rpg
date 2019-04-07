@@ -42,7 +42,7 @@ CapsuleCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   m_Radius: 0.5
-  m_Height: 1
+  m_Height: 2
   m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &1881661848093385203
@@ -324,6 +324,7 @@ GameObject:
   - component: {fileID: 1881661848663572546}
   - component: {fileID: 607190612}
   - component: {fileID: 2707066969070718416}
+  - component: {fileID: 6084417359648253994}
   m_Layer: 14
   m_Name: Dummy
   m_TagString: Faceless
@@ -505,6 +506,19 @@ MonoBehaviour:
   animationDamping: 0.15
   desiredMovement: {x: 0, y: 0}
   desiredMovementBodySpace: {x: 0, y: 0}
+--- !u!114 &6084417359648253994
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1881661848663572572}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e8d669428266954298f93461252c049, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  attackRange: 0.7
 --- !u!1 &1965707016945085230
 GameObject:
   m_ObjectHideFlags: 0

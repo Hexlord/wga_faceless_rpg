@@ -91,11 +91,7 @@ public class CollisionDamageBasic : MonoBehaviour
         GameObject target = other.gameObject.TraverseParent("Faceless");
         string hitTag = other.tag;
 
-        //if (filterTargetTag.Length > 0 &&
-        //    target.tag != filterTargetTag) return;
-
         HealthSystem healthSystem = target.GetComponent<HealthSystem>();
-        //if (!healthSystem) return;
         BodyStateSystem bodyState = target.GetComponent<BodyStateSystem>();
         if ((!bodyState) || (BodyStateSystem.StateToLayer(bodyState.State) == this.gameObject.layer))
         {
