@@ -36,6 +36,10 @@ public class MovementSystem : MonoBehaviour
     [Range(0.0f, 30.0f)]
     public float baseMovementSpeed = 7.0f;
 
+    [Tooltip("Time to reach maximum speed")]
+    [Range(0.0f, 5.0f)]
+    public float accelerationTime = 0.3f;
+
     [Tooltip("Body rotation stabilization")]
     public bool rotationStabilization = true;
 
@@ -55,6 +59,11 @@ public class MovementSystem : MonoBehaviour
     [Header("Animation Settings")]
     [Tooltip("Smoothing factor for transitions")]
     public float animationDamping = 0.15f;
+
+    /*
+     * Toggles whether we try to stop forces affecting us
+     */
+    public bool ResistForces { get; set; }
 
     private readonly int animatorHorizontal = Animator.StringToHash("Horizontal");
     private readonly int animatorVertical = Animator.StringToHash("Vertical");
@@ -97,11 +106,12 @@ public class MovementSystem : MonoBehaviour
     private SheathSystem sheathSystem;
     private TouchCondition legsTouchCondition;
 
-    protected void Start()
+    protected void Awake()
     {
         // Private
 
         currentMovementSpeed = baseMovementSpeed;
+        ResistForces = true;
 
         // Cache
 
@@ -130,26 +140,32 @@ public class MovementSystem : MonoBehaviour
 
     private void MoveBody(float delta)
     {
-        var speed = 1.0f;
+        var landFactor = 1.0f;
         var gravity = 0.0f;
 
         if (legsTouchCondition)
         {
             if (!legsTouchCondition.Touch)
             {
-                speed = Mathf.Max(0, airwalkFadeTime - legsTouchCondition.DetouchedTime) / airwalkFadeTime * speed;
+                landFactor = Mathf.Max(0, airwalkFadeTime - legsTouchCondition.DetouchedTime) / airwalkFadeTime * landFactor;
                 
                 gravity = gravityMax * Mathf.Max(0, gravityFadeTime - legsTouchCondition.DetouchedTime) * delta;
             }
         }
 
-        var deltaVelocity = desiredMovement * currentMovementSpeed * speed -
-            (new Vector2(body.velocity.x, body.velocity.z));
+        var currentVelocity = (new Vector2(body.velocity.x, body.velocity.z));
+        var targetVelocity = desiredMovement * currentMovementSpeed;
+        if (!ResistForces)
+        {
+            targetVelocity += currentVelocity;
+        }
+
+        var deltaVelocity = targetVelocity - currentVelocity;
 
         var appliedVelocity = Vector2.MoveTowards(
             Vector2.zero,
             deltaVelocity,
-            currentMovementSpeed * delta * 10.0f);
+            currentMovementSpeed * delta * landFactor / accelerationTime);
 
         body.AddForce(appliedVelocity.x, -gravity, appliedVelocity.y, ForceMode.VelocityChange);
     }

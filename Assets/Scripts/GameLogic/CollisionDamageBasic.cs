@@ -43,6 +43,9 @@ public class CollisionDamageBasic : MonoBehaviour
     [Tooltip("Unique damage (only damage each GameObject once per lifetime)")]
     public bool uniqueDamage = true;
 
+    [Tooltip("Effects to apply on damage")]
+    public Effect[] effectsOnDamage;
+
     public bool Active
     {
         get { return active; }
@@ -52,22 +55,35 @@ public class CollisionDamageBasic : MonoBehaviour
 
     // Cache
     private AttackSystem sourceAttackSystem;
-    private Animator animator;
+    private bool sourceAttackSystemCached = false;
     private new Collider collider;
 
     // Private
 
     [Header("Debug")]
-    
+
     private ArrayList hitTargets = new ArrayList();
 
     private bool active = true;
 
-    protected virtual void Awake()
+    private AttackSystem SourceAttackSystem
     {
-        // Cache
-        sourceAttackSystem = source.GetComponent<AttackSystem>();
-        animator = source.GetComponent<Animator>();
+        get
+        {
+            if (!sourceAttackSystemCached && source)
+            {
+                sourceAttackSystem = source.GetComponent<AttackSystem>();
+            }
+
+            sourceAttackSystemCached = true;
+
+            return sourceAttackSystem;
+        }
+    }
+
+
+    protected void Awake()
+    {
         collider = GetComponent<Collider>();
 
         if (negativeFilterTarget) collider.IgnoreCollisionsWith(negativeFilterTarget);
@@ -76,22 +92,29 @@ public class CollisionDamageBasic : MonoBehaviour
 
     protected virtual void Interrupted(Collider other)
     {
-        sourceAttackSystem.AttackInterrupted();
+        if (SourceAttackSystem)
+        {
+            SourceAttackSystem.AttackInterrupted();
+        }
     }
 
-    protected virtual void OnContact()
+    public virtual void OnContact()
     {
         // Intentionally left empty
     }
 
-    protected void OnTriggerEnter(Collider other)
+    public void OnTriggerEnter(Collider other)
     {
         if (!canDamage || !active) return;
-        Debug.Log(other);
+
         GameObject target = other.gameObject.TraverseParent("Faceless");
         string hitTag = other.tag;
 
+        //if (filterTargetTag.Length > 0 &&
+        //    target.tag != filterTargetTag) return;
+
         HealthSystem healthSystem = target.GetComponent<HealthSystem>();
+        if (!healthSystem) return;
         BodyStateSystem bodyState = target.GetComponent<BodyStateSystem>();
         if ((!bodyState) || (BodyStateSystem.StateToLayer(bodyState.State) == this.gameObject.layer))
         {
@@ -99,11 +122,27 @@ public class CollisionDamageBasic : MonoBehaviour
             if (uniqueDamage &&
                 hitTargets.Contains(target)) return;
 
+            var hit = hitTag == "Critical" || hitTag == "Body";
+
+            /*
+             * Apply effects before the damage
+             */
+            if (hit)
+            {
+                var effectSystem = target.GetComponent<EffectSystem>();
+                if (effectSystem)
+                {
+                    foreach(var effect in effectsOnDamage)
+                    {
+                        effectSystem.Apply(effect, source);
+                    }
+                }
+            }
+
             switch (hitTag)
             {
-                case "Body":
+                case "Environment":
                     hitTargets.Add(target);
-                    healthSystem.Damage(source, damage);
                     break;
                 case "Critical":
                     hitTargets.Add(target);
@@ -115,10 +154,10 @@ public class CollisionDamageBasic : MonoBehaviour
                     Interrupted(other);
                     target.GetComponent<ShieldSystem>().RecieveDamage(shieldDamage);
                     break;
-                default:
+                case "Body":
                     hitTargets.Add(target);
-                    Interrupted(other);
-                    return;
+                    healthSystem.Damage(source, damage);
+                    break;
             }
 
             OnContact();
@@ -129,7 +168,7 @@ public class CollisionDamageBasic : MonoBehaviour
         }
 
     }
-        
+
     /*
      * Should be used at the end of attack animation
      * To allow hitting same target on the next attack

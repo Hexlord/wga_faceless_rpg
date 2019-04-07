@@ -37,7 +37,7 @@ public class CollisionDamageProjectile : CollisionDamageBasic
         if (negativeFilterTargetTag.Length > 0) GetComponent<Collider>().IgnoreCollisionsWith(negativeFilterTargetTag);
     }
 
-    protected override void OnContact()
+    public override void OnContact()
     {
 
         ++pierceCounter;
