@@ -111,6 +111,7 @@ public class MovementSystem : MonoBehaviour
         // Private
 
         currentMovementSpeed = baseMovementSpeed;
+        ResistForces = true;
 
         // Cache
 
