@@ -19,9 +19,10 @@ public enum Skill
     Hook,
     CircleStrike,
     LineStrike,
+    FireBreath,
 }
 
-public static class SkillsExtensions
+public static class SkillExtensions
 {
     public static string ToString(this Skill skill)
     {
@@ -35,12 +36,11 @@ public static class SkillsExtensions
                 return "Line Strike";
             case Skill.Hook:
                 return "Hook";
+            case Skill.FireBreath:
+                return "Fire Breath";
             default:
                 throw new ArgumentOutOfRangeException("skill", skill, null);
         }
-
-        Debug.Assert(false);
-        return "";
     }
 
     public static SkillBase Instantiate(this Skill skill)
@@ -55,9 +55,10 @@ public static class SkillsExtensions
                 return new SkillLineStrike();
             case Skill.Hook:
                 return new SkillHook();
+            case Skill.FireBreath:
+                return new SkillFireBreath();
+            default:
+                throw new ArgumentOutOfRangeException("skill", skill, null);
         }
-
-        Debug.Assert(false);
-        return null;
     }
 }

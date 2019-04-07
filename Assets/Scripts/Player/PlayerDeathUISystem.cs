@@ -32,11 +32,11 @@ public class PlayerDeathUISystem : MonoBehaviour
     private PlayerCharacterController playerCharacterController;
     private PlayerCameraController playerCameraController;
 
-    protected void Start()
+    protected void Awake()
     {
         if (!deathUI)
         {
-            deathUI = GameObject.Find("UI").FindPrecise("Canvas").transform.Find("DeathUI").gameObject;
+            deathUI = GameObject.Find("UI").FindChildPrecise("Canvas").transform.Find("DeathUI").gameObject;
         }
 
         player = GameObject.Find("Player");

@@ -17,12 +17,13 @@ public static class TransformExtensions
     /*
      * Can even find inactive
      */
-    public static Transform FindPrecise(this Transform parent, string name)
+    public static Transform FindChildPrecise(this Transform parent, string name, bool partial = true)
     {
         var trs = parent.GetComponentsInChildren<Transform>(true);
         foreach (Transform t in trs)
         {
-            if (t.name == name)
+            if (t.name == name ||
+                partial && t.name.Contains(name))
             {
                 return t;
             }

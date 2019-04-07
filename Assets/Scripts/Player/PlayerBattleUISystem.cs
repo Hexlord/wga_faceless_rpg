@@ -54,7 +54,7 @@ public class PlayerBattleUISystem : MonoBehaviour
     {
         if (!battleUI)
         {
-            battleUI = GameObject.Find("UI").FindPrecise("Canvas").transform.Find("BattleUI").gameObject;
+            battleUI = GameObject.Find("UI").FindChildPrecise("Canvas").transform.Find("BattleUI").gameObject;
         }
 
         healthSystem = GetComponent<HealthSystem>();
