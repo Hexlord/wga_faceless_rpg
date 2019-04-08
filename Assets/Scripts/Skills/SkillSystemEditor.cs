@@ -29,7 +29,7 @@ public class SkillSystemEditor : Editor
     private static void Show(SerializedProperty list)
     {
         //EditorGUILayout.PropertyField(list);
-        for (int i = 0; i < list.arraySize; i++)
+        for (var i = 0; i < list.arraySize; i++)
         {
             EditorGUILayout.BeginHorizontal();
             EditorGUILayout.PropertyField(list.GetArrayElementAtIndex(i));
@@ -39,7 +39,7 @@ public class SkillSystemEditor : Editor
             }
             if(GUILayout.Button(deleteButtonContent, EditorStyles.miniButtonRight, miniButtonWidth))
             {
-                int oldSize = list.arraySize;
+                var oldSize = list.arraySize;
                 list.DeleteArrayElementAtIndex(i);
                 if (list.arraySize == oldSize)
                 {

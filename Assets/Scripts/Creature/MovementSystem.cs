@@ -40,6 +40,10 @@ public class MovementSystem : MonoBehaviour
     [Range(0.0f, 5.0f)]
     public float accelerationTime = 0.3f;
 
+    [Tooltip("Speed multiplier when attacking or casting")]
+    [Range(0.0f, 1.0f)]
+    public float busyMultiplier = 0.6f;
+
     [Tooltip("Body rotation stabilization")]
     public bool rotationStabilization = true;
 
@@ -105,6 +109,8 @@ public class MovementSystem : MonoBehaviour
     private Rigidbody body;
     private SheathSystem sheathSystem;
     private TouchCondition legsTouchCondition;
+    private SkillSystem skillSystem;
+    private AttackSystem attackSystem;
 
     protected void Awake()
     {
@@ -118,6 +124,8 @@ public class MovementSystem : MonoBehaviour
         animator = GetComponent<Animator>();
         body = GetComponent<Rigidbody>();
         sheathSystem = GetComponent<SheathSystem>();
+        skillSystem = GetComponent<SkillSystem>();
+        attackSystem = GetComponent<AttackSystem>();
 
         var legs = transform.Find("LegsCollider");
         if (legs)
@@ -140,6 +148,10 @@ public class MovementSystem : MonoBehaviour
 
     private void MoveBody(float delta)
     {
+        var busyFactor = 1.0f;
+        if (skillSystem && skillSystem.Busy) busyFactor = busyMultiplier;
+        if (attackSystem && attackSystem.Attacking) busyFactor = busyMultiplier;
+
         var landFactor = 1.0f;
         var gravity = 0.0f;
 
@@ -154,7 +166,7 @@ public class MovementSystem : MonoBehaviour
         }
 
         var currentVelocity = (new Vector2(body.velocity.x, body.velocity.z));
-        var targetVelocity = desiredMovement * currentMovementSpeed;
+        var targetVelocity = desiredMovement * currentMovementSpeed * busyFactor;
         if (!ResistForces)
         {
             targetVelocity += currentVelocity;
