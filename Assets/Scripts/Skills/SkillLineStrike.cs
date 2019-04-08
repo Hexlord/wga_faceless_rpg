@@ -17,9 +17,13 @@ public class SkillLineStrike : SkillBase
     [Header("Line Segment Settings")]
 
     [Tooltip("Length of created strike line segment")]
-    public float segmentLength = 12.0f;
+    private const float SegmentLength = 12.0f;
     [Tooltip("Distance period of effect creation")]
-    public float effectDistancePeriod = 1.6f;
+    private const float EffectDistancePeriod = 1.6f;
+
+    private const float Strength = 40000.0f;
+    private const float Damage = 30.0f;
+    private const float AOE = 3.0f;
 
     private readonly GameObject effectPrefab;
 
@@ -46,19 +50,19 @@ public class SkillLineStrike : SkillBase
         var dummy = new GameObject("Dummy");
         dummy.transform.position = caster.transform.position;
         var attractor = dummy.AddComponent<AttractorLine>();
-        attractor.damagePerSecond = 2000.0f;
-        attractor.distanceHighpass = 3.0f;
+        attractor.damagePerSecond = Damage / Time.fixedDeltaTime;
+        attractor.distanceHighpass = AOE;
         attractor.distancePower = 0.0f;
-        attractor.strength = -500.0f;
+        attractor.strength = -Strength;
         attractor.useForce = true;
         attractor.lineFrom = caster.transform.position;
-        attractor.lineTo = attractor.lineFrom + caster.transform.forward * segmentLength;
+        attractor.lineTo = attractor.lineFrom + caster.transform.forward * SegmentLength;
         attractor.ignoreY = true;
         attractor.source = caster;
         var lifespan = dummy.AddComponent<Lifespan>();
         lifespan.lifespan = 0.0f;
 
-        for(var d = 0.0f; d < segmentLength; d += effectDistancePeriod)
+        for(var d = 0.0f; d < SegmentLength; d += EffectDistancePeriod)
         {
             var position = caster.transform.position + Vector3.up * 2.0f +
                            caster.transform.forward * d;
