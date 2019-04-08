@@ -30,13 +30,6 @@ public class CollisionDamageProjectile : CollisionDamageBasic
 
     private int pierceCounter = 0;
 
-    // Cache
-    protected override void Awake()
-    {
-        if (negativeFilterTarget) GetComponent<Collider>().IgnoreCollisionsWith(negativeFilterTarget);
-        if (negativeFilterTargetTag.Length > 0) GetComponent<Collider>().IgnoreCollisionsWith(negativeFilterTargetTag);
-    }
-
     public override void OnContact()
     {
 

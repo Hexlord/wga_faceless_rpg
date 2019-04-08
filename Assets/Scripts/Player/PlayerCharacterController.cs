@@ -112,7 +112,7 @@ public class PlayerCharacterController : MonoBehaviour
     {
         if (bodyStateSystem.State == BodyStateSystem.BodyState.Physical && sheathSystem.state == SheathSystem.SheathSystemState.Unsheathed)
         {
-            if (!shieldSystem.CanShield)
+            if (shieldSystem.CanShield)
             {
                 if (InputManager.Pressed(InputAction.Defend))
                 {
