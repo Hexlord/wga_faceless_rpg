@@ -182,11 +182,6 @@ public class SkillSystem : MonoBehaviour
      */
     void FixedUpdate()
     {
-        if (movementSystem)
-        {
-            movementSystem.ResistForces = !(state == SkillSystemState.ChannelUpdate);
-        }
-
         AnimatorClipInfo info = animator.GetCurrentAnimatorClipInfo(animationLayer)[0];
         AnimatorStateInfo animState = animator.GetCurrentAnimatorStateInfo(animationLayer);
         AnimationClip clip = info.clip;
@@ -335,9 +330,9 @@ public class SkillSystem : MonoBehaviour
     {
         Debug.Assert(!Busy);
 
-        for (int i = 0; i < skills.Count; ++i)
+        for (var i = 0; i < skills.Count; ++i)
         {
-            if (skills[i].Name == skillName)
+            if (skills[i].Type.ToString() == skillName)
             {
                 SelectSkill(i);
                 return;
