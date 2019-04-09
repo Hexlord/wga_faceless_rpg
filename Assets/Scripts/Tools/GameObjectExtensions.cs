@@ -13,18 +13,47 @@ using UnityEngine;
 
 public static class GameObjectExtensions
 {
+    private static bool Matches(string tag, string target, bool partial)
+    {
+        if (tag == null || target == null) return false;
+        if (tag == target) return true;
+        if (partial && tag.Contains(target)) return true;
+        return false;
+    }
+
     public static GameObject TraverseParent(this GameObject gameObject)
     {
-        if (gameObject.transform.parent) return gameObject.transform.parent.gameObject.TraverseParent();
-        return gameObject;
+        while (true)
+        {
+            if (!gameObject.transform.parent) return gameObject;
+            gameObject = gameObject.transform.parent.gameObject;
+        }
     }
 
     public static GameObject TraverseParent(this GameObject gameObject, string tag, bool partial = true)
     {
-        if (gameObject.transform.parent &&
-            (gameObject.transform.parent.tag == tag
-             || partial && gameObject.transform.parent.tag.Contains(tag))) return gameObject.transform.parent.gameObject.TraverseParent(tag, partial);
-        return gameObject;
+        while (true)
+        {
+            if (!gameObject.transform.parent || !Matches(gameObject.transform.parent.tag, tag, partial))
+            {
+                return Matches(gameObject.transform.tag, tag, partial)
+                    ? gameObject
+                    : null;
+            }
+            gameObject = gameObject.transform.parent.gameObject;
+        }
+    }
+
+    public static GameObject[] Children(this GameObject gameObject)
+    {
+        var result = new GameObject[gameObject.transform.childCount];
+
+        for (var i = 0; i < result.Length; ++i)
+        {
+            result[i] = gameObject.transform.GetChild(i).gameObject;
+        }
+
+        return result;
     }
 
     /*

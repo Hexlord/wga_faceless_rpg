@@ -20,7 +20,7 @@ public class SkillFireBreath : SkillBase
     private readonly GameObject firePrefab;
 
     public SkillFireBreath() :
-        base(Skill.FireBreath.ToString(), false, 1.0f)
+        base(Skill.FireBreath, false, 1.0f)
     {
         firePrefab = (GameObject)Resources.Load("Prefabs/Skills/FireBreath", typeof(GameObject));
     }

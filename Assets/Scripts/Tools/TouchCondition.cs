@@ -52,11 +52,8 @@ public class TouchCondition : MonoBehaviour
     private void OnTriggerStay(Collider other)
     {
         var go = other.gameObject;
-        var good = filterTag.Length == 0;
-        if (!good &&
-            filterTag == other.tag) good = true;
-        else if (!good &&
-                 searchParent)
+        var good = filterTag.Length == 0 || filterTag == other.tag;
+        if (!good && searchParent)
         {
             go = other.gameObject.TraverseParent(filterTag);
             if (go) good = true;

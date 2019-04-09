@@ -22,6 +22,12 @@ public static class Vector3Extensions
             );
     }
 
+    public static void SafeNormalize(this Vector3 vector)
+    {
+        if (vector.sqrMagnitude < Mathf.Epsilon) return;
+        vector.Normalize();
+    }
+
     public static bool Project(Vector3 a, Vector3 b, Vector3 p, out Vector3 contactPoint)
     {
         contactPoint = Vector3.zero;

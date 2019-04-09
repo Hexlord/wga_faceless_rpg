@@ -28,7 +28,7 @@ public class SkillLineStrike : SkillBase
     private readonly GameObject effectPrefab;
 
     public SkillLineStrike() :
-        base(Skill.LineStrike.ToString(), false, 10.0f)
+        base(Skill.LineStrike, false, 10.0f)
     {
         effectPrefab = (GameObject)Resources.Load("Prefabs/Skills/CircleStrike", typeof(GameObject));
     }
@@ -68,7 +68,7 @@ public class SkillLineStrike : SkillBase
                            caster.transform.forward * d;
             RaycastHit hitInfo;
 
-            int mask = (1 << LayerMask.NameToLayer("Environment"));
+            var mask = (1 << LayerMask.NameToLayer("Environment"));
 
             if (!Physics.Raycast(new Ray(position, -Vector3.up), out hitInfo, 100.0f, mask)) continue;
             
