@@ -18,9 +18,6 @@ public class AttractorBase : MonoBehaviour
 
     [Header("Target settings")]
 
-    [Tooltip("Tag to filter game objects")]
-    public string targetTag = "Faceless";
-
     [Header("Attract Force Settings")]
 
     [Tooltip("Strength of attraction")]
@@ -40,6 +37,14 @@ public class AttractorBase : MonoBehaviour
     [Tooltip("Damage source")]
     public GameObject source;
 
+    // Cache
+    private ChildCollection enemyCollection;
+
+    protected virtual void Awake()
+    {
+        enemyCollection = GameObject.Find("Enemies").GetComponent<ChildCollection>();
+    }
+
     protected virtual void Attract(Rigidbody body, HealthSystem health)
     {
         // To be overridden
@@ -48,11 +53,10 @@ public class AttractorBase : MonoBehaviour
 
     protected void FixedUpdate()
     {
-        GameObject[] enemies = GameObject.FindGameObjectsWithTag(targetTag);
-        foreach(GameObject enemy in enemies)
+        foreach(var enemy in enemyCollection.Childs)
         {
-            Rigidbody body = enemy.GetComponent<Rigidbody>();
-            HealthSystem health = enemy.GetComponent<HealthSystem>();
+            var body = enemy.GetComponent<Rigidbody>();
+            var health = enemy.GetComponent<HealthSystem>();
 
             if (body)
             {

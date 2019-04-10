@@ -1,15 +1,13 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
-using UnityEditor.Experimental.U2D;
 using UnityEngine;
-using UnityEngine.UI;
 
 /*
  * History:
- * 
+ *
  * Date         Author      Description
- * 
+ *
  * 15.03.2019   aknorre     Created
  * 16.03.2019   bkrylov     Allocated to Component Menu
  * 25.03.2019   bkrylov     Added dashing
@@ -23,7 +21,7 @@ public class MovementSystem : MonoBehaviour
 {
 
     // Public
-    
+
     [Header("Movement Settings")]
     [Tooltip("Toggles ability to move")]
     public bool canMove = true;
@@ -39,6 +37,10 @@ public class MovementSystem : MonoBehaviour
     [Tooltip("Time to reach maximum speed")]
     [Range(0.0f, 5.0f)]
     public float accelerationTime = 0.3f;
+
+    [Tooltip("Speed multiplier when attacking or casting")]
+    [Range(0.0f, 1.0f)]
+    public float busyMultiplier = 0.6f;
 
     [Tooltip("Body rotation stabilization")]
     public bool rotationStabilization = true;
@@ -68,7 +70,7 @@ public class MovementSystem : MonoBehaviour
     private readonly int animatorHorizontal = Animator.StringToHash("Horizontal");
     private readonly int animatorVertical = Animator.StringToHash("Vertical");
     private readonly int animatorWeapon = Animator.StringToHash("Weapon");
-    
+
     private float currentMovementSpeed;
 
     public bool Moving
@@ -84,7 +86,7 @@ public class MovementSystem : MonoBehaviour
     {
         get { return desiredMovement; }
         set
-        {        
+        {
             if (value.sqrMagnitude < Mathf.Epsilon) value = Vector2.zero;
             else if (value.sqrMagnitude > 1.0f) value = value.normalized;
 
@@ -105,18 +107,23 @@ public class MovementSystem : MonoBehaviour
     private Rigidbody body;
     private SheathSystem sheathSystem;
     private TouchCondition legsTouchCondition;
+    private SkillSystem skillSystem;
+    private AttackSystem attackSystem;
 
     protected void Awake()
     {
         // Private
 
         currentMovementSpeed = baseMovementSpeed;
+        ResistForces = true;
 
         // Cache
 
         animator = GetComponent<Animator>();
         body = GetComponent<Rigidbody>();
         sheathSystem = GetComponent<SheathSystem>();
+        skillSystem = GetComponent<SkillSystem>();
+        attackSystem = GetComponent<AttackSystem>();
 
         var legs = transform.Find("LegsCollider");
         if (legs)
@@ -130,7 +137,7 @@ public class MovementSystem : MonoBehaviour
     private void OnDesiredMovementUpdate()
     {
         var desiredMovementBodySpaceTemp =
-            Quaternion.Euler(0.0f, -transform.rotation.eulerAngles.y, 0.0f) * 
+            Quaternion.Euler(0.0f, -transform.rotation.eulerAngles.y, 0.0f) *
             (new Vector3(desiredMovement.x, 0.0f, desiredMovement.y));
 
         desiredMovementBodySpace = new Vector2(desiredMovementBodySpaceTemp.x, desiredMovementBodySpaceTemp.z);
@@ -139,6 +146,10 @@ public class MovementSystem : MonoBehaviour
 
     private void MoveBody(float delta)
     {
+        var busyFactor = 1.0f;
+        if (skillSystem && skillSystem.Busy) busyFactor = busyMultiplier;
+        if (attackSystem && attackSystem.Attacking) busyFactor = busyMultiplier;
+
         var landFactor = 1.0f;
         var gravity = 0.0f;
 
@@ -147,13 +158,13 @@ public class MovementSystem : MonoBehaviour
             if (!legsTouchCondition.Touch)
             {
                 landFactor = Mathf.Max(0, airwalkFadeTime - legsTouchCondition.DetouchedTime) / airwalkFadeTime * landFactor;
-                
+
                 gravity = gravityMax * Mathf.Max(0, gravityFadeTime - legsTouchCondition.DetouchedTime) * delta;
             }
         }
 
         var currentVelocity = (new Vector2(body.velocity.x, body.velocity.z));
-        var targetVelocity = desiredMovement * currentMovementSpeed;
+        var targetVelocity = desiredMovement * currentMovementSpeed * busyFactor;
         if (!ResistForces)
         {
             targetVelocity += currentVelocity;
@@ -180,7 +191,7 @@ public class MovementSystem : MonoBehaviour
     protected void FixedUpdate()
     {
         var delta = Time.fixedDeltaTime;
-        
+
         animator.SetFloat(animatorHorizontal, desiredMovementBodySpace.x, animationDamping, delta);
         animator.SetFloat(animatorVertical, desiredMovementBodySpace.y, animationDamping, delta);
         if(sheathSystem) animator.SetFloat(animatorWeapon, sheathSystem.Sheathed ? 0.0f : 1.0f, animationDamping, delta);

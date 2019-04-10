@@ -5,12 +5,12 @@ using UnityEngine;
 
 /*
  * History:
- * 
+ *
  * Date         Author      Description
- * 
+ *
  * 03.03.2019   aknorre     Created
  * 16.03.2019   bkrylov     Allocated to Component Menu
- * 
+ *
  */
 [AddComponentMenu("ProjectFaceless/Creature/Skill System")]
 public class SkillSystem : MonoBehaviour
@@ -33,10 +33,10 @@ public class SkillSystem : MonoBehaviour
 
     /*
      * Expected animation configuration:
-     * 
+     *
      * [skillStartTrigger] -> (skillStart) ->
      * [interruptTrigger] -> (skillEnd) -> (default)
-     * 
+     *
      * [channelStartTrigger] -> (channelStart) ->
      * (channelUpdate) <loop>
      * [interruptTrigger] -> (channelEnd) -> (default)
@@ -182,11 +182,6 @@ public class SkillSystem : MonoBehaviour
      */
     void FixedUpdate()
     {
-        if (movementSystem)
-        {
-            movementSystem.ResistForces = !(state == SkillSystemState.ChannelUpdate);
-        }
-
         AnimatorClipInfo info = animator.GetCurrentAnimatorClipInfo(animationLayer)[0];
         AnimatorStateInfo animState = animator.GetCurrentAnimatorStateInfo(animationLayer);
         AnimationClip clip = info.clip;
@@ -335,9 +330,9 @@ public class SkillSystem : MonoBehaviour
     {
         Debug.Assert(!Busy);
 
-        for (int i = 0; i < skills.Count; ++i)
+        for (var i = 0; i < skills.Count; ++i)
         {
-            if (skills[i].Name == skillName)
+            if (skills[i].Type.ToString() == skillName)
             {
                 SelectSkill(i);
                 return;
@@ -400,7 +395,7 @@ public class SkillSystem : MonoBehaviour
 
     /*
      * Resets state and animation
-     * 
+     *
      * instant means skip end animation
      */
     public void Interrupt(bool instant)

@@ -5,13 +5,13 @@ using UnityEngine;
 
 /*
  * History:
- * 
+ *
  * Date         Author      Description
- * 
+ *
  * 15.03.2019   aknorre     Created
  * 16.03.2019   bkrylov     Allocated to Component Menu
  * 25.03.2019   bkrylov     Remade Component to better collider filtration
- * 
+ *
  */
 [AddComponentMenu("ProjectFaceless/GameLogic/Collision Damage Basic")]
 public class CollisionDamageBasic : MonoBehaviour
@@ -107,14 +107,14 @@ public class CollisionDamageBasic : MonoBehaviour
     {
         if (!canDamage || !active) return;
 
-        GameObject target = other.gameObject.TraverseParent("Faceless");
-        string hitTag = other.tag;
+        var target = other.gameObject.TraverseParent("Faceless");
+        if (!target) return;
+
+        var hitTag = other.tag;
 
         //if (filterTargetTag.Length > 0 &&
         //    target.tag != filterTargetTag) return;
 
-        HealthSystem healthSystem = target.GetComponent<HealthSystem>();
-        if (!healthSystem) return;
         BodyStateSystem bodyState = target.GetComponent<BodyStateSystem>();
         if ((!bodyState) || (BodyStateSystem.StateToLayer(bodyState.State) == this.gameObject.layer))
         {
@@ -146,7 +146,7 @@ public class CollisionDamageBasic : MonoBehaviour
                     break;
                 case "Critical":
                     hitTargets.Add(target);
-                    healthSystem.Damage(source, damage);
+                    target.GetComponent<HealthSystem>().Damage(source, damage);
                     break;
                 case "Weapon":
                     break;
@@ -156,7 +156,7 @@ public class CollisionDamageBasic : MonoBehaviour
                     break;
                 case "Body":
                     hitTargets.Add(target);
-                    healthSystem.Damage(source, damage);
+                    target.GetComponent<HealthSystem>().Damage(source, damage);
                     break;
             }
 

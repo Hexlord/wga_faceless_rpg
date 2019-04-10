@@ -7,11 +7,11 @@ using Object = UnityEngine.Object;
 
 /*
  * History:
- * 
+ *
  * Date         Author      Description
- * 
+ *
  * 03.03.2019   aknorre     Created
- * 
+ *
  */
 
 public class SkillHook : SkillBase
@@ -20,11 +20,16 @@ public class SkillHook : SkillBase
 
     private GameObject hook;
     private Hook hookComponent;
+    private MovementSystem casterMovementSystem;
+
+    public static float power = 17.0f;
+    public static float powerToBoss = 300.0f;
+    public static float targetDistance = 1.5f;
 
     public static float power = 20000.0f;
 
     public SkillHook() :
-        base(Skill.Hook.ToString(), true, 1.0f)
+        base(Skill.Hook, true, 1.0f)
     {
         hookPrefab = (GameObject)Resources.Load("Prefabs/Skills/Hook", typeof(GameObject));
     }
@@ -33,6 +38,7 @@ public class SkillHook : SkillBase
     {
         base.PrepareEvent(caster);
         PutOnCooldawn();
+        casterMovementSystem = caster.GetComponent<MovementSystem>();
     }
 
     public override void StartUpdate(GameObject caster, float delta, float time, float length)
@@ -70,6 +76,7 @@ public class SkillHook : SkillBase
 
         var state = hookComponent.State;
 
+
         var step = power * Time.fixedDeltaTime;
 
         switch (state)
@@ -77,20 +84,24 @@ public class SkillHook : SkillBase
             case Hook.HookState.Fly:
                 break;
             case Hook.HookState.Hit:
+                var distanceFactor = Mathf.Clamp(
+                    Vector3.Distance(hookComponent.Hit.transform.position, caster.transform.position) / targetDistance - 1.0f,
+                    0.0f, 1.0f);
 
                 if (hookComponent.Hit.tag.Contains("Boss"))
                 {
+                    casterMovementSystem.ResistForces = false; // let us be hooked
+                    var direction = (hookComponent.Hit.transform.position - caster.transform.position);
+                    direction.SafeNormalize();
+
                     caster.GetComponent<Rigidbody>().AddForce(
-                        Vector3.MoveTowards(Vector3.zero,
-                            (hookComponent.Hit.transform.position - caster.transform.position) * 2,
-                            step), ForceMode.Impulse);
+                        direction * powerToBoss * distanceFactor * delta, ForceMode.Impulse);
                 }
                 else
                 {
+                    var direction = (caster.transform.position - hookComponent.Hit.transform.position);
                     hookComponent.Hit.GetComponent<Rigidbody>().AddForce(
-                        Vector3.MoveTowards(Vector3.zero, 
-                            (caster.transform.position - hookComponent.Hit.transform.position) * 2,
-                            step), ForceMode.Impulse);
+                        direction * powerToBoss * distanceFactor * delta, ForceMode.Impulse);
                 }
 
                 break;
@@ -104,6 +115,8 @@ public class SkillHook : SkillBase
     public override void EndUpdate(GameObject caster, float delta, float time, float length)
     {
         base.EndUpdate(caster, delta, time, length);
+
+        casterMovementSystem.ResistForces = true;
 
         if (!hook)
         {
@@ -134,4 +147,3 @@ public class SkillHook : SkillBase
     }
 
 }
-

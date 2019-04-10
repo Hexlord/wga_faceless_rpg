@@ -20,7 +20,7 @@ public static class TransformExtensions
     public static Transform FindChildPrecise(this Transform parent, string name, bool partial = true)
     {
         var trs = parent.GetComponentsInChildren<Transform>(true);
-        foreach (Transform t in trs)
+        foreach (var t in trs)
         {
             if (t.name == name ||
                 partial && t.name.Contains(name))
