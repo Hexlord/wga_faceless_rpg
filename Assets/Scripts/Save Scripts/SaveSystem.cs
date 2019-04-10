@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using CI.QuickSave;
 using CI.QuickSave.Core.Helpers;
 using UnityEngine;
+using System.IO;
 using UnityEngine.SceneManagement;
 using System;
 using System.Linq;
@@ -36,7 +37,7 @@ public class SaveSystem : MonoBehaviour
     {
         DontDestroyOnLoad(gameObject);
         folderPath = System.IO.Path.Combine(Application.persistentDataPath, folderName);
-        UnityEngine.Windows.Directory.CreateDirectory(folderPath);
+        Directory.CreateDirectory(folderPath);
     }
     
 
