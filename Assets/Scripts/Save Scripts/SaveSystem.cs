@@ -23,7 +23,7 @@ public class SaveSystem : MonoBehaviour
     void Awake()
     {
         folderPath = System.IO.Path.Combine(Application.persistentDataPath, folderName);
-        UnityEngine.Windows.Directory.CreateDirectory(folderPath);
+        System.IO.Directory.CreateDirectory(folderPath);
     }
     
 
