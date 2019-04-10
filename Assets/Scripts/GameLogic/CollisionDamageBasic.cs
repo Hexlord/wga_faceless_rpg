@@ -107,8 +107,10 @@ public class CollisionDamageBasic : MonoBehaviour
     {
         if (!canDamage || !active) return;
 
-        GameObject target = other.gameObject.TraverseParent("Faceless");
-        string hitTag = other.tag;
+        var target = other.gameObject.TraverseParent("Faceless");
+        if (!target) return;
+
+        var hitTag = other.tag;
 
         //if (filterTargetTag.Length > 0 &&
         //    target.tag != filterTargetTag) return;
