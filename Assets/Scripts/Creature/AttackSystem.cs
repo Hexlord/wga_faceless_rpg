@@ -42,9 +42,9 @@ public class AttackSystem : MonoBehaviour
 
     public int animationLayer = 0;
 
-    public string attackAnimation = "attack";
+    //public string attackAnimation = "attack";
     public string[] attackAnimationTriggers = { "attackTrigger" };
-    public string interruptAnimation = "interruptedAttack";
+    //public string interruptAnimation = "interruptedAttack";
     public string interruptAnimationTrigger = "interruptedAttackTrigger";
 
     public string idleAnimation = "idle";
@@ -126,6 +126,6 @@ public class AttackSystem : MonoBehaviour
 
     public void AttackInterrupted()
     {
-        //TO DO: Interrupt attack;
+        animator.SetTrigger(interruptAnimationTrigger);
     }
 }

@@ -39,6 +39,10 @@ public class HealthSystem : MonoBehaviour
     public bool uiHealthBarEnabled = true;
 
     public Image worldSpaceHealthBar;
+    [Tooltip("Triggers for death animation")]
+    public int DeathVariants;
+    public string DeathTrigger;
+    public string DeathVariantsInt;
 
     public bool Alive
     {
@@ -72,6 +76,7 @@ public class HealthSystem : MonoBehaviour
     // Cache
 
     private GameObject healthPrefab;
+    private Animator animator;
     private Image healthBar;
 
     public void Kill(GameObject source)
@@ -119,11 +124,12 @@ public class HealthSystem : MonoBehaviour
             }
         }
 
-        //Added for testing purposes
         if (source && source.tag == "Player" &&
             gameObject != source)
         {
-            Destroy(gameObject);
+            int index = Random.Range(1, DeathVariants + 1);
+            animator.SetInteger(DeathVariantsInt, index);
+            animator.SetTrigger(DeathTrigger);
         }
     }
 
@@ -152,7 +158,7 @@ public class HealthSystem : MonoBehaviour
 
         Health = healthMaximum;
 
-
+        animator = GetComponent<Animator>();
     }
 
     protected void FixedUpdate()
