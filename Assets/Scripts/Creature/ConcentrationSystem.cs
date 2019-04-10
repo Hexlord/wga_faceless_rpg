@@ -58,9 +58,9 @@ public class ConcentrationSystem : MonoBehaviour
         Concentration += amount;
     }
     
-    protected virtual void Start()
+    protected virtual void Awake()
     {
-        Concentration = concentrationMaximum;
+        Concentration = 0;
     }
 
 }

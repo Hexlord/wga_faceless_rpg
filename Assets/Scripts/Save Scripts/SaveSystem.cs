@@ -1,4 +1,6 @@
-﻿using System.Collections;
+﻿#if false
+
+using System.Collections;
 using System.Collections.Generic;
 using CI.QuickSave;
 using CI.QuickSave.Core.Helpers;
@@ -31,15 +33,15 @@ public class SaveSystem : MonoBehaviour
     public KeyCode saveKeyCode = KeyCode.C;
 
     public KeyCode loadKeyCode = KeyCode.V;
-    
-    
+
+
     void Awake()
     {
         DontDestroyOnLoad(gameObject);
         folderPath = System.IO.Path.Combine(Application.persistentDataPath, folderName);
-        Directory.CreateDirectory(folderPath);
+        System.IO.Directory.CreateDirectory(folderPath);
     }
-    
+
 
     void Update()
     {
@@ -55,7 +57,7 @@ public class SaveSystem : MonoBehaviour
             Debug.Log(Load(loader));
         }*/
     }
-    
+
     public void Save()
     {
 
@@ -111,7 +113,7 @@ public class SaveSystem : MonoBehaviour
         Debug.Log("Save");
 
         GameObject[] gameObjects = GetSaveableGameObjects(FindObjectsOfType<GameObject>());
-        
+
         foreach (GameObject gameObject in gameObjects)
         {
             if (TrySerializeGameObject(gameObject, saver) == false)
@@ -159,12 +161,12 @@ public class SaveSystem : MonoBehaviour
             Saveable[] attribute = fieldInfo.GetCustomAttributes(typeof(Saveable), true) as Saveable[];
             string fullFieldName = GetFullFieldName(component, fieldInfo.Name);
             saver.Write(fullFieldName, TypeHelper.ReplaceIfUnityType(fieldInfo.FieldType, fieldInfo.GetValue(component)));
-            
+
         }
         return true;
     }
 
-    
+
     bool _Load(GameObject [] rootGameObjects, QuickSaveReader loader)
     {
         Debug.Log("Load");
@@ -236,7 +238,7 @@ public class SaveSystem : MonoBehaviour
             Debug.Log("failed call onLoad, probably " + GetFieldPrefix(component) + " does not implement ISaveable. Exact Reason: " + e.Message);
             return false;
         }
-       
+
 
         return true;
     }
@@ -290,3 +292,5 @@ public class SaveSystem : MonoBehaviour
         return false;
     }
 }
+
+#endif
