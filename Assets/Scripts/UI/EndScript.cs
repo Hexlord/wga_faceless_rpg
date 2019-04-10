@@ -27,9 +27,9 @@ public class EndScript : MonoBehaviour
         
     }
 
-    void OnCollisionEnter(Collision collision)
+    void OnTriggerEnter(Collider other)
     {
-        if(collision.transform.IsChildOf(GameObject.Find("Player").transform))
+        if(other.transform.IsChildOf(GameObject.Find("Player").transform))
         {
             SceneManager.LoadScene("End", LoadSceneMode.Single);
         }
