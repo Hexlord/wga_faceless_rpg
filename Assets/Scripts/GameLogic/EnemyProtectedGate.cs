@@ -14,42 +14,41 @@ using UnityEngine;
 [AddComponentMenu("ProjectFaceless/GameLogic/Enemy Protected Gate")]
 public class EnemyProtectedGate : MonoBehaviour
 {
-    
+
 
     [Header("Trigger Open Settings")]
 
     [Tooltip("Open gates when there are no alive enemies in that range")]
     public float protectionRange = 10.0f;
 
+    // Cache
+    private ChildCollection enemyCollection;
+
+    private void Awake()
+    {
+        enemyCollection = GameObject.Find("Enemies").GetComponent<ChildCollection>();
+    }
 
     void FixedUpdate()
     {
-        bool good = true;
+        var good = true;
 
-        GameObject[] enemies = GameObject.FindGameObjectsWithTag("Faceless");
-        foreach (GameObject enemy in enemies)
+        foreach (var enemy in enemyCollection.Childs)
         {
-            Rigidbody body = enemy.GetComponent<Rigidbody>();
-            HealthSystem health = enemy.GetComponent<HealthSystem>();
+            var body = enemy.GetComponent<Rigidbody>();
+            var health = enemy.GetComponent<HealthSystem>();
 
-            if (body)
-            {
-                float distance = Vector3.Distance(body.position, transform.position);
-                if (distance > Mathf.Epsilon && distance < protectionRange)
-                {
-                    if (health)
-                    {
-                        if(health.Alive)
-                        {
-                            good = false;
-                            break;
-                        }
-                    }
-                }
-            }
+            if (!body) continue;
+
+            var distance = Vector3.Distance(body.position, transform.position);
+
+            if (!(distance > Mathf.Epsilon) || !(distance < protectionRange) || !health || !health.Alive) continue;
+
+            good = false;
+            break;
         }
 
-        if(good)
+        if (good)
         {
             Destroy(gameObject);
         }

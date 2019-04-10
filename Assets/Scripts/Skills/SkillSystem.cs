@@ -5,12 +5,12 @@ using UnityEngine;
 
 /*
  * History:
- *
+ * 
  * Date         Author      Description
- *
+ * 
  * 03.03.2019   aknorre     Created
  * 16.03.2019   bkrylov     Allocated to Component Menu
- *
+ * 
  */
 [AddComponentMenu("ProjectFaceless/Creature/Skill System")]
 public class SkillSystem : MonoBehaviour
@@ -33,10 +33,10 @@ public class SkillSystem : MonoBehaviour
 
     /*
      * Expected animation configuration:
-     *
+     * 
      * [skillStartTrigger] -> (skillStart) ->
      * [interruptTrigger] -> (skillEnd) -> (default)
-     *
+     * 
      * [channelStartTrigger] -> (channelStart) ->
      * (channelUpdate) <loop>
      * [interruptTrigger] -> (channelEnd) -> (default)
@@ -395,7 +395,7 @@ public class SkillSystem : MonoBehaviour
 
     /*
      * Resets state and animation
-     *
+     * 
      * instant means skip end animation
      */
     public void Interrupt(bool instant)

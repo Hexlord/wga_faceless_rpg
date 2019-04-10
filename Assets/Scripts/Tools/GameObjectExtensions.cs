@@ -13,28 +13,64 @@ using UnityEngine;
 
 public static class GameObjectExtensions
 {
-    public static GameObject TraverseParent(this GameObject gameObject)
+    private static bool Matches(string tag, string target, bool partial)
     {
-        if (gameObject.transform.parent) return gameObject.transform.parent.gameObject.TraverseParent();
-        return gameObject;
+        if (tag == null || target == null) return false;
+        if (tag == target) return true;
+        if (partial && tag.Contains(target)) return true;
+        return false;
     }
 
-    public static GameObject TraverseParent(this GameObject gameObject, string tag)
+    public static GameObject TraverseParent(this GameObject gameObject)
     {
-        if (gameObject.transform.parent &&
-            gameObject.transform.parent.tag == tag) return gameObject.transform.parent.gameObject.TraverseParent(tag);
-        return gameObject;
+        while (true)
+        {
+            if (!gameObject.transform.parent) return gameObject;
+            gameObject = gameObject.transform.parent.gameObject;
+        }
+    }
+
+    public static GameObject TraverseParent(this GameObject gameObject, string tag, bool partial = true)
+    {
+        while (true)
+        {
+            if (!gameObject.transform.parent || !Matches(gameObject.transform.parent.tag, tag, partial))
+            {
+                return Matches(gameObject.transform.tag, tag, partial)
+                    ? gameObject
+                    : null;
+            }
+            gameObject = gameObject.transform.parent.gameObject;
+        }
+    }
+
+    public static GameObject[] Children(this GameObject gameObject)
+    {
+        var result = new GameObject[gameObject.transform.childCount];
+
+        for (var i = 0; i < result.Length; ++i)
+        {
+            result[i] = gameObject.transform.GetChild(i).gameObject;
+        }
+
+        return result;
     }
 
     /*
      * Can even find inactive
      */
-    public static GameObject FindPrecise(this GameObject parent, string name)
+    public static GameObject FindChildPrecise(this GameObject parent, string name, bool partial = true)
     {
+        if (parent == null)
+        {
+            return null;
+        }
+
         var trs = parent.GetComponentsInChildren<Transform>(true);
         foreach (Transform t in trs)
         {
-            if (t.name == name)
+            if (t.name == name ||
+                partial && t.name.Contains(name))
             {
                 return t.gameObject;
             }

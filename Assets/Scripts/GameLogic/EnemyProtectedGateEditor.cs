@@ -18,20 +18,19 @@ using UnityEngine;
 public class EnemyProtectedGateEditor : Editor
 {
     
-
-    void OnSceneGUI()
+    private void OnSceneGUI()
     {
         // get the chosen game object
-        EnemyProtectedGate t = target as EnemyProtectedGate;
+        var t = target as EnemyProtectedGate;
 
         if (t == null)
             return;
 
         // grab the center of the parent
-        Vector3 center = t.transform.position;
+        var center = t.transform.position;
 
         EditorGUI.BeginChangeCheck();
-        float newRange = Handles.RadiusHandle(Quaternion.identity, t.transform.position, t.protectionRange);
+        var newRange = Handles.RadiusHandle(Quaternion.identity, t.transform.position, t.protectionRange);
         if (EditorGUI.EndChangeCheck())
         {
             Undo.RecordObject(target, "Changed Protection Range");

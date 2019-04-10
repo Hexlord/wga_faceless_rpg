@@ -28,9 +28,9 @@ public class SkillBase
 
     private readonly GameObject textPrefab;
 
-    public SkillBase(string name, bool channeling, float cooldawn)
+    public SkillBase(Skill type, bool channeling, float cooldawn)
     {
-        this.name = name;
+        this.type = type;
         this.channeling = channeling;
         this.cooldawn = cooldawn;
         this.cooldawnTimer = 0.0f;
@@ -68,7 +68,7 @@ public class SkillBase
         GameObject text = UnityEngine.Object.Instantiate(textPrefab,
             caster.transform.position + new Vector3(0, 3, 0),
             Quaternion.identity);
-        text.GetComponent<TextMeshPro>().text = name;
+        text.GetComponent<TextMeshPro>().text = type.ToString();
     }
 
     /*
@@ -99,7 +99,7 @@ public class SkillBase
 
     }
 
-    public string Name { get { return name; } }
+    public Skill Type { get { return type; } }
 
     public bool Channeling { get { return channeling; } }
 
@@ -110,7 +110,7 @@ public class SkillBase
         cooldawnTimer = cooldawn;
     }
 
-    private readonly string name;
+    private readonly Skill type;
     private readonly bool channeling;
     private readonly float cooldawn;
     private float cooldawnTimer;
