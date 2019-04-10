@@ -45,6 +45,7 @@ CapsuleCollider:
   m_Height: 2
   m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}
+<<<<<<< HEAD
 --- !u!1 &1881661848093385203
 GameObject:
   m_ObjectHideFlags: 0
@@ -307,6 +308,8 @@ MonoBehaviour:
   m_FillClockwise: 1
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
+=======
+>>>>>>> origin/release/4.0
 --- !u!1 &1881661848663572572
 GameObject:
   m_ObjectHideFlags: 0
@@ -322,13 +325,9 @@ GameObject:
   - component: {fileID: 1881661848663572547}
   - component: {fileID: 607190613}
   - component: {fileID: 1881661848663572546}
-<<<<<<< HEAD
   - component: {fileID: 607190612}
   - component: {fileID: 2707066969070718416}
   - component: {fileID: 6084417359648253994}
-=======
-  - component: {fileID: 2311023119318340914}
->>>>>>> origin/release/4.0
   m_Layer: 14
   m_Name: Dummy
   m_TagString: Faceless
@@ -348,9 +347,12 @@ Transform:
   m_LocalScale: {x: 1.5, y: 1.5, z: 1.5}
   m_Children:
   - {fileID: 1881661847987170516}
+<<<<<<< HEAD
   - {fileID: 1881661848197368751}
   - {fileID: 7466548354062736332}
   - {fileID: 5835109983543354491}
+=======
+>>>>>>> origin/release/4.0
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -461,12 +463,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   healthMaximum: 100
+  xpReward: 10
   uiAnchorOffset: {x: 0, y: 3, z: 0}
+<<<<<<< HEAD
   uiHealthBarEnabled: 0
   worldSpaceHealthBar: {fileID: 1881661848093385205}
-<<<<<<< HEAD
 --- !u!114 &607190612
 =======
+  uiHealthBarEnabled: 1
+  worldSpaceHealthBar: {fileID: 0}
 --- !u!114 &2311023119318340914
 >>>>>>> origin/release/4.0
 MonoBehaviour:
@@ -477,7 +482,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 1881661848663572572}
   m_Enabled: 1
   m_EditorHideFlags: 0
-<<<<<<< HEAD
   m_Script: {fileID: 11500000, guid: 7bb9de1ff0b9f9c4e929c69c9da067b6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
@@ -656,9 +660,3 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 0.3, y: 0.3, z: 0.3}
   m_Center: {x: 0, y: 0, z: 0}
-=======
-  m_Script: {fileID: 11500000, guid: 4103791cc9d0b9d48b6ca7f631665666, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  startEffects: 
->>>>>>> origin/release/4.0
