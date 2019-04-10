@@ -173,7 +173,7 @@ namespace CI.QuickSave
         {
             if (type.IsValueType)
             {
-                return Activator.CreateInstance(type);
+                return System.Activator.CreateInstance(type);
             }
             return null;
         }

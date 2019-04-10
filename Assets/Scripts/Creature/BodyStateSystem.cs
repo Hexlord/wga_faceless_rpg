@@ -5,13 +5,13 @@ using UnityEngine;
 
 /*
  * History:
- * 
+ *
  * Date         Author      Description
- * 
+ *
  * 15.03.2019   aknorre     Created
  * 16.03.2019   bkrylov     Allocated to Component Menu
- * 25.03.2019   bkrylov     Remade Component for better collider filtration. 
- * 
+ * 25.03.2019   bkrylov     Remade Component for better collider filtration.
+ *
  */
 [AddComponentMenu("ProjectFaceless/Creature/Body State System")]
 public class BodyStateSystem : MonoBehaviour
