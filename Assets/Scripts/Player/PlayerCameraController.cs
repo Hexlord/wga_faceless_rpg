@@ -112,35 +112,41 @@ public class PlayerCameraController : MonoBehaviour
         get { return camera; }
     }
 
+    public ConstrainedCamera ConstrainedCamera
+    {
+        get { return constrainedCamera; }
+    }
+
     // Private
 
-    private bool freeze = false;
-
-    private float playerAutoRotateTimer = 0.0f;
-    private bool playerAutoRotateActive = false;
-
-    private float clippingAvoidanceOffset = 0.0f;
-
     [Header("Debug")]
+
+    public bool freeze = false;
+
+    public float playerAutoRotateTimer = 0.0f;
+    public bool playerAutoRotateActive = false;
+
+    public float clippingAvoidanceOffset = 0.0f;
+
     public ConstrainedCamera constrainedCamera;
     public float cameraTransition = 1.0f;
 
     /*
      * Camera rotation delta accumulated during state transition
      */
-    private float transitionDeltaYaw = 0.0f;
-    private float transitionDeltaPitch = 0.0f;
+    public float transitionDeltaYaw = 0.0f;
+    public float transitionDeltaPitch = 0.0f;
 
 
     /*
      * Camera transform on start of transition
      */
-    private float transitionStartYaw = 0.0f;
-    private float transitionStartPitch = 0.0f;
-    private Vector3 transitionStartPosition = Vector3.zero;
-    private float transitionStartFOV = 80.0f;
+    public float transitionStartYaw = 0.0f;
+    public float transitionStartPitch = 0.0f;
+    public Vector3 transitionStartPosition = Vector3.zero;
+    public float transitionStartFOV = 80.0f;
 
-    private float transitionSpeed = 0.0f;
+    public float transitionSpeed = 0.0f;
 
     private Quaternion desiredRotation = Quaternion.identity;
 
@@ -500,7 +506,11 @@ public class PlayerCameraController : MonoBehaviour
             snap = Mathf.Min(snap, s4);
 
             var compensation = Mathf.Min(distance - minDistance, distance - dist);
-            var snapCompensation = Mathf.Min(distance - minDistance, distance - snap);
+            var snapCompensation = distance - minDistance;
+            if (snap < float.MaxValue)
+            {
+                snapCompensation = Mathf.Min(snapCompensation, distance - snap);
+            }
 
             if (clippingAvoidanceInstantSnap && clippingAvoidanceOffset < snapCompensation)
             {
@@ -542,10 +552,16 @@ public class PlayerCameraController : MonoBehaviour
         transitionDeltaYaw = MathfExtensions.NormalizeAngle(otherCamera.Yaw - transitionStartYaw);
         transitionDeltaPitch = MathfExtensions.NormalizeAngle(otherCamera.Pitch - transitionStartPitch);
 
+
         cameraTransition = instant
             ? 1.0f
             : 0.0f;
         constrainedCamera = otherCamera;
+
+        clippingAvoidanceOffset = 0 * Vector3.Distance(
+            Vector3Extensions.SmoothStep(transitionStartPosition, constrainedCamera.Position, cameraTransition), 
+            otherCamera.Target);
+
     }
 
 }

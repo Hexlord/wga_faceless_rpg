@@ -22,9 +22,9 @@ public class SkillHook : SkillBase
     private Hook hookComponent;
     private MovementSystem casterMovementSystem;
 
-    public static float power = 17.0f;
-    public static float powerToBoss = 300.0f;
-    public static float targetDistance = 1.5f;
+    public static float power = 50.0f;
+    public static float powerToBoss = 500.0f;
+    public static float targetDistance = 0.5f;
 
     public SkillHook() :
         base(Skill.Hook, true, 1.0f)
@@ -96,6 +96,7 @@ public class SkillHook : SkillBase
                 else
                 {
                     var direction = (caster.transform.position - hookComponent.Hit.transform.position);
+                    direction.SafeNormalize();
                     hookComponent.Hit.GetComponent<Rigidbody>().AddForce(
                         direction * powerToBoss * distanceFactor * delta, ForceMode.Impulse);
                 }

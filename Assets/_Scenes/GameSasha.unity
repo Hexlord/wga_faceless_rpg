@@ -3367,8 +3367,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerControlled: 0
-  constraintTarget: {fileID: 1711883581}
-  constraintLookAtTarget: 1
+  constraintTarget: {fileID: 1945873926}
+  constraintLookAtTarget: 0
   constraintMinimumDistanceToTarget: 1
   constraintPitchBaseline: 0
   constraintPitchLimit: 60
@@ -3495,6 +3495,7 @@ MonoBehaviour:
   - trigger: {fileID: 1973032727}
     resultNode: {fileID: 0}
     action: 2
+  autoTalk: 0
 --- !u!4 &198115285
 Transform:
   m_ObjectHideFlags: 0
@@ -5637,8 +5638,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerControlled: 0
-  constraintTarget: {fileID: 1711883581}
-  constraintLookAtTarget: 1
+  constraintTarget: {fileID: 1273385040}
+  constraintLookAtTarget: 0
   constraintMinimumDistanceToTarget: 1
   constraintPitchBaseline: 0
   constraintPitchLimit: 60
@@ -5702,13 +5703,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 261213654}
-  m_LocalRotation: {x: 0.10711828, y: 0.5664475, z: -0.15481944, w: 0.8023054}
-  m_LocalPosition: {x: -8.302346, y: 2.9038186, z: -2.889016}
+  m_LocalRotation: {x: 0.08911617, y: 0.47308567, z: -0.16583636, w: 0.8606664}
+  m_LocalPosition: {x: -4.82, y: 1.5, z: -9.11}
   m_LocalScale: {x: 0.7151029, y: 0.71510303, z: 0.71510303}
   m_Children: []
   m_Father: {fileID: 1333782069}
   m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 20.321001, y: 69.048004, z: -7.7880006}
+  m_LocalEulerAnglesHint: {x: 18.078001, y: 55.642002, z: -12.215}
 --- !u!1 &279494729
 GameObject:
   m_ObjectHideFlags: 0
@@ -10956,6 +10957,7 @@ MonoBehaviour:
   - trigger: {fileID: 105390321}
     resultNode: {fileID: 0}
     action: 2
+  autoTalk: 0
 --- !u!4 &434330348
 Transform:
   m_ObjectHideFlags: 0
@@ -14624,8 +14626,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerControlled: 0
-  constraintTarget: {fileID: 1711883581}
-  constraintLookAtTarget: 1
+  constraintTarget: {fileID: 2056471066}
+  constraintLookAtTarget: 0
   constraintMinimumDistanceToTarget: 1
   constraintPitchBaseline: 0
   constraintPitchLimit: 60
@@ -14689,13 +14691,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 712772843}
-  m_LocalRotation: {x: -0.0831358, y: 0.93140626, z: 0.15831749, w: 0.31702748}
-  m_LocalPosition: {x: -5.4200406, y: -2.3399951, z: 6.000045}
+  m_LocalRotation: {x: 0.17799164, y: 0.76048136, z: -0.052393973, w: 0.6222877}
+  m_LocalPosition: {x: -13.905, y: 4.418, z: 2.751}
   m_LocalScale: {x: 0.39613843, y: 0.71510303, z: 0.71510303}
   m_Children: []
   m_Father: {fileID: 198115285}
   m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: -20.342001, y: 143.003, z: -3.331}
+  m_LocalEulerAnglesHint: {x: 17.53, y: 103.341, z: 12.446001}
 --- !u!1001 &715241501
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -36931,7 +36933,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1273385040}
   m_LocalRotation: {x: -0, y: -0.68532985, z: -0, w: 0.72823274}
-  m_LocalPosition: {x: 0, y: -0.75, z: 0}
+  m_LocalPosition: {x: -0.12, y: -0.75, z: -2.1}
   m_LocalScale: {x: 2.4828, y: 2.4828, z: 2.4828}
   m_Children: []
   m_Father: {fileID: 1333782069}
@@ -37374,7 +37376,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   dialogCamera: {fileID: 261213655}
-  activationRange: 7.5429764
+  activationRange: 11.053083
   activationNode: {fileID: 692088429}
   talkNode: {fileID: 2064586250}
   startNode: {fileID: 681339348}
@@ -37400,6 +37402,7 @@ MonoBehaviour:
   - trigger: {fileID: 681339338}
     resultNode: {fileID: 0}
     action: 2
+  autoTalk: 0
 --- !u!1 &1338997207
 GameObject:
   m_ObjectHideFlags: 0

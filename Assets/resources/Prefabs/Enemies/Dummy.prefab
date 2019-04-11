@@ -60,6 +60,7 @@ GameObject:
   - component: {fileID: 1881661848663572547}
   - component: {fileID: 1881661848663572546}
   - component: {fileID: 2311023119318340914}
+  - component: {fileID: 1300363273}
   m_Layer: 14
   m_Name: Dummy
   m_TagString: Faceless
@@ -187,3 +188,27 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   startEffects: 
+--- !u!114 &1300363273
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1881661848663572572}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e6f8b787996174e448d79390c17ff979, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  canMove: 1
+  movementDesireThreshold: 0.2
+  baseMovementSpeed: 7
+  accelerationTime: 0.3
+  busyMultiplier: 0.6
+  rotationStabilization: 1
+  gravityMax: 20
+  gravityFadeTime: 1
+  airwalkFadeTime: 1
+  animationDamping: 0.15
+  desiredMovement: {x: 0, y: 0}
+  desiredMovementBodySpace: {x: 0, y: 0}
