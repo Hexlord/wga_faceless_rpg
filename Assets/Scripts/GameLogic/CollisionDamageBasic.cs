@@ -115,8 +115,6 @@ public class CollisionDamageBasic : MonoBehaviour
         //if (filterTargetTag.Length > 0 &&
         //    target.tag != filterTargetTag) return;
 
-        HealthSystem healthSystem = target.GetComponent<HealthSystem>();
-        if (!healthSystem) return;
         BodyStateSystem bodyState = target.GetComponent<BodyStateSystem>();
         if ((!bodyState) || (BodyStateSystem.StateToLayer(bodyState.State) == this.gameObject.layer))
         {
@@ -148,7 +146,7 @@ public class CollisionDamageBasic : MonoBehaviour
                     break;
                 case "Critical":
                     hitTargets.Add(target);
-                    healthSystem.Damage(source, damage);
+                    target.GetComponent<HealthSystem>().Damage(source, damage);
                     break;
                 case "Weapon":
                     break;
@@ -158,7 +156,7 @@ public class CollisionDamageBasic : MonoBehaviour
                     break;
                 case "Body":
                     hitTargets.Add(target);
-                    healthSystem.Damage(source, damage);
+                    target.GetComponent<HealthSystem>().Damage(source, damage);
                     break;
             }
 
