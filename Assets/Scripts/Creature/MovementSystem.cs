@@ -192,8 +192,8 @@ public class MovementSystem : MonoBehaviour
     {
         var delta = Time.fixedDeltaTime;
         
-        animator.SetFloat(animatorHorizontal, desiredMovementBodySpace.x, animationDamping, delta);
-        animator.SetFloat(animatorVertical, desiredMovementBodySpace.y, animationDamping, delta);
+        if(animator) animator.SetFloat(animatorHorizontal, desiredMovementBodySpace.x, animationDamping, delta);
+        if (animator) animator.SetFloat(animatorVertical, desiredMovementBodySpace.y, animationDamping, delta);
         if(sheathSystem) animator.SetFloat(animatorWeapon, sheathSystem.Sheathed ? 0.0f : 1.0f, animationDamping, delta);
 
         MoveBody(delta);
