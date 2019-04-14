@@ -70,7 +70,7 @@ public class HealthSystem : MonoBehaviour
     }
 
     // Private
-
+    private bool isDead = false;
     private float health = 0.0f;
 
     // Cache
@@ -114,6 +114,9 @@ public class HealthSystem : MonoBehaviour
 
     protected virtual void OnDeath(GameObject source)
     {
+        if (isDead) return;
+        isDead = true;
+        
         if (source && source != gameObject)
         {
             XpSystem xpSystem =
@@ -124,6 +127,7 @@ public class HealthSystem : MonoBehaviour
             }
         }
 
+        GetComponent<BaseAgent>().enabled = false;
         if (source && source.tag == "Player" &&
             gameObject != source)
         {

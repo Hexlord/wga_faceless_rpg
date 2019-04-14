@@ -21,7 +21,6 @@ public class BaseAgent : MonoBehaviour
 
     [Header("Animation Settings")]
     Animator animator;
-    
     public float epsilonWalking = 0.005f;
     public string walkDirectionInt = "Walking Direction";
     public string enemySpottedBool = "EnemySpotted";
@@ -29,17 +28,18 @@ public class BaseAgent : MonoBehaviour
     public string getUpTrigger = "GetUp";
     public string[] idleActionTrigger = { "LookOverShoulder", "LookAround" };
 
+    public bool allowedToAttack = false;
     protected MovementSystem movement;
     protected int directionAnim = 0;
     protected bool isAlerted;
     protected bool canSeeEnemy;
     protected float stoppingDistance;
     protected GameObject currentTarget;
-    protected CollectiveAISystem.AgentType type = CollectiveAISystem.AgentType.Base;
+    //protected CollectiveAISystem.AgentType type = CollectiveAISystem.AgentType.Base;
 
     public virtual CollectiveAISystem.AgentType AgentType()
     {
-        return type;
+        return CollectiveAISystem.AgentType.Base;
     }
 
     public uint ID
@@ -63,7 +63,7 @@ public class BaseAgent : MonoBehaviour
         entityID = entityIDGenerator++;
     }
 
-    protected void Start()
+    protected virtual void Start()
     {
         movement = GetComponent<MovementSystem>();
         animator = GetComponent<Animator>();
@@ -128,7 +128,7 @@ public class BaseAgent : MonoBehaviour
         {
             directionAnim = 1;
         }
-        if ((Mathf.Abs(angle) >= 30) || (Mathf.Abs(angle) < 150))
+        if ((Mathf.Abs(angle) >= 30) && (Mathf.Abs(angle) < 150))
         {
             movement.SetSpeed(baseSpeed);
             if (Mathf.Sign(angle) == -1)
@@ -157,6 +157,7 @@ public class BaseAgent : MonoBehaviour
     #region State Functions 
     public void SawSomething(GameObject something)
     {
+        Debug.Log("Agent" + ID + " saw " + something);
         isAlerted = true;
         canSeeEnemy = true;
         AISys.Notify(something);
@@ -167,9 +168,11 @@ public class BaseAgent : MonoBehaviour
         canSeeEnemy = false;
     }
 
-    public void Alert()
+    public void Alert(GameObject newTarget)
     {
+        currentTarget = newTarget;
         isAlerted = true;
+        allowedToAttack = true;
     }
 
     public void Dismiss()
@@ -190,6 +193,11 @@ public class BaseAgent : MonoBehaviour
         isStunned = true;
         stunDuration = duration;
         stunStart = Time.time;
+    }
+
+    public void SetTarget(GameObject go)
+    {
+        currentTarget = go;
     }
     #endregion
 }

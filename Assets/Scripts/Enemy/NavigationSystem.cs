@@ -28,6 +28,7 @@ public class NavigationSystem : MonoBehaviour
     private Dictionary<uint, BaseAgent> agents;
     private Dictionary<uint, Queue<Vector3>> AgentsToPaths;
     private Dictionary<uint, RequestStatus> AgentsRequestStatuses;
+    private Dictionary<uint, Vector3> AgentsToDestinations;
     //Private
     Queue<PathFindingRequestInfo> pathFindingQueue;
     NavMeshPath processingPath;
@@ -38,6 +39,7 @@ public class NavigationSystem : MonoBehaviour
         processingPath = new NavMeshPath();
         pathFindingQueue = new Queue<PathFindingRequestInfo>(); ;
         AgentsRequestStatuses = new Dictionary<uint, RequestStatus>();
+        AgentsToDestinations = new Dictionary<uint, Vector3>();
         AgentsToPaths = new Dictionary<uint, Queue<Vector3>>();
         agents = new Dictionary<uint, BaseAgent>();
     }
@@ -75,6 +77,16 @@ public class NavigationSystem : MonoBehaviour
             PathFindingRequestInfo newRequest = new PathFindingRequestInfo(agent, finish, agent.transform.position);
             pathFindingQueue.Enqueue(newRequest);
             AgentsRequestStatuses[agent.ID] = RequestStatus.Placed;
+
+        }
+
+        if (AgentsToDestinations.ContainsKey(agent.ID))
+        {
+            AgentsToDestinations[agent.ID] = finish;
+        }
+        else
+        {
+            AgentsToDestinations.Add(agent.ID, finish);
         }
     }
 
@@ -166,6 +178,17 @@ public class NavigationSystem : MonoBehaviour
         Debug.Log("AI. All agents recieved their paths.");
     }
 
+    public Vector3 AgentDestination(uint ID)
+    {
+        if (AgentsToDestinations.ContainsKey(ID))
+        {
+            return AgentsToDestinations[ID];
+        }
+        return Vector3.zero;
+    }
 
-
+    public bool hasAgentReachedDestination(uint ID)
+    {
+        return (AgentsRequestStatuses.ContainsKey(ID) && (AgentsRequestStatuses[ID] == RequestStatus.None));
+    }
 }

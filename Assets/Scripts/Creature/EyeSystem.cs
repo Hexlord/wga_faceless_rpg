@@ -27,6 +27,7 @@ public class EyeSystem : MonoBehaviour
     void Start()
     {
         eyes = this.transform;
+        GameObject gm = gameObject.TraverseParent(transform.tag);
         agent = gameObject.TraverseParent(transform.tag).GetComponent<BaseAgent>();
         rayStep = fieldOfViewWidth / rayDensity;
     }

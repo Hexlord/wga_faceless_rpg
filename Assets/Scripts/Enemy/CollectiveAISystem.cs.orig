@@ -12,8 +12,7 @@ public class CollectiveAISystem : MonoBehaviour
     private Dictionary<uint, Order> agentsOrders = new Dictionary<uint, Order>();
     private GameObject target;
     private BodyStateSystem statesOfTarget;
-    public GameObject[] recreationalArea;
-    public float RecalculationDistance = 1.0f;
+    private GameObject[] recreationalArea;
 
     public enum AgentType
     {
@@ -65,7 +64,6 @@ public class CollectiveAISystem : MonoBehaviour
             agentsDictionary.Add(agent.ID, agent);
             agentsTypes.Add(agent.ID, agent.AgentType());
             agentsOrders.Add(agent.ID, new Order(OrderType.RoamAround, ClosestRecreationalArea(agent.transform.position)));
-            agent.SetTarget(agentsOrders[agent.ID].target);
         }
     }
 
@@ -106,7 +104,7 @@ public class CollectiveAISystem : MonoBehaviour
             statesOfTarget = target.GetComponent<BodyStateSystem>();
             foreach (BaseAgent agent in agents)
             {
-                if (agent != null) agent.Alert(targetGO);
+                if (agent != null) agent.Alert();
                 agentsOrders[agent.ID] = new Order(OrderType.HuntDown, target);
             }
         }
@@ -117,7 +115,6 @@ public class CollectiveAISystem : MonoBehaviour
         agentsDictionary.Remove(agent);
         agentsTypes.Remove(agent);
         agentsOrders.Remove(agent);
-        Debug.Log("Agent" + agent + " has died and removed.");
     }
 
     GameObject ClosestRecreationalArea(Vector3 agentPosition)
@@ -153,7 +150,11 @@ public class CollectiveAISystem : MonoBehaviour
                             case AgentType.Base:
                                 break;
                             case AgentType.Melee:
+<<<<<<< Updated upstream
+
+=======
                                 MeleeHuntDown(agent.ID);
+>>>>>>> Stashed changes
                                 break;
                             case AgentType.Ranged:
                                 break;
@@ -174,12 +175,6 @@ public class CollectiveAISystem : MonoBehaviour
 
     private void MeleeHuntDown(uint ID)
     {
-        if (!agentsDictionary[ID].CanAttackEnemy())
-        {
-            if (((navSystem.AgentDestination(ID) - agentsOrders[ID].target.transform.position).magnitude > RecalculationDistance) || navSystem.hasAgentReachedDestination(ID))
-            {
-                navSystem.PlacePathRequest(agentsDictionary[ID], agentsOrders[ID].target.transform.position);
-            }
-        }
+
     }
 }

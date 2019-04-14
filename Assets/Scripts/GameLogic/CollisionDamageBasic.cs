@@ -115,12 +115,12 @@ public class CollisionDamageBasic : MonoBehaviour
         //if (filterTargetTag.Length > 0 &&
         //    target.tag != filterTargetTag) return;
 
-        BodyStateSystem bodyState = target.GetComponent<BodyStateSystem>();
+        BodyStateSystem bodyState = other.GetComponent<BodyStateSystem>();
         if ((!bodyState) || (BodyStateSystem.StateToLayer(bodyState.State) == this.gameObject.layer))
         {
 
             if (uniqueDamage &&
-                hitTargets.Contains(target)) return;
+                hitTargets.Contains(other)) return;
 
             var hit = hitTag == "Critical" || hitTag == "Body";
 
