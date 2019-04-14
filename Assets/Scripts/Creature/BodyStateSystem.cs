@@ -66,7 +66,7 @@ public class BodyStateSystem : MonoBehaviour
         if (magicalAppearanceSheathed) magicalAppearance.SetActive(false);
 
         //Consistency checks
-        if (!magicalHitbox) Debug.LogError("No magical hitbox attached!");
+        if (!magicalHitbox) Debug.Log("No magical hitbox attached!");
         else
         {
             if (magicalHitbox.layer != LayerMask.NameToLayer("Magical")) Debug.LogError("Magical hitbox isn't placed on proper layer");

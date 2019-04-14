@@ -59,7 +59,7 @@ public static class GameObjectExtensions
     /*
      * Can even find inactive
      */
-    public static GameObject FindChildPrecise(this GameObject parent, string name, bool partial = true)
+    public static GameObject FindPrecise(this GameObject parent, string name, bool partial = true)
     {
         if (parent == null)
         {
