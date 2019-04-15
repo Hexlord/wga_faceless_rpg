@@ -66,6 +66,7 @@ public class CollectiveAISystem : MonoBehaviour
 
     private void Awake()
     {
+        navSystem = GetComponent<NavigationSystem>();
         foreach(BaseAgent agent in agents)
         {
             agent.SetControllingSystems(this, navSystem);
