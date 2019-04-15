@@ -230,7 +230,7 @@ public class PlayerCameraController : MonoBehaviour
 
         const float range = 100.0f;
 
-        var mask = (1 << LayerMask.NameToLayer("Environment"));
+        var mask = LayerMask.GetMask("Environment");
 
         // Collect collisions 
 
@@ -506,10 +506,10 @@ public class PlayerCameraController : MonoBehaviour
             snap = Mathf.Min(snap, s4);
 
             var compensation = Mathf.Min(distance - minDistance, distance - dist);
-            var snapCompensation = distance - minDistance;
+            var snapCompensation = 0.0f;
             if (snap < float.MaxValue)
             {
-                snapCompensation = Mathf.Min(snapCompensation, distance - snap);
+                snapCompensation = Mathf.Min(distance - minDistance, distance - snap);
             }
 
             if (clippingAvoidanceInstantSnap && clippingAvoidanceOffset < snapCompensation)
@@ -558,10 +558,12 @@ public class PlayerCameraController : MonoBehaviour
             : 0.0f;
         constrainedCamera = otherCamera;
 
+        /*
         clippingAvoidanceOffset = 0 * Vector3.Distance(
             Vector3Extensions.SmoothStep(transitionStartPosition, constrainedCamera.Position, cameraTransition), 
             otherCamera.Target);
-
+            */
+        clippingAvoidanceOffset = 0;
     }
 
 }
