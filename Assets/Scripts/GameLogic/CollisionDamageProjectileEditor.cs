@@ -63,6 +63,7 @@ public class CollisionDamageProjectileEditor : Editor
         EditorGUILayout.PropertyField(serializedObject.FindProperty("source"));
         EditorGUILayout.PropertyField(serializedObject.FindProperty("negativeFilterTarget"));
         EditorGUILayout.PropertyField(serializedObject.FindProperty("negativeFilterTargetTag"));
+        EditorGUILayout.PropertyField(serializedObject.FindProperty("traverseParentTag"));
         EditorGUILayout.PropertyField(serializedObject.FindProperty("damage"));
         EditorGUILayout.PropertyField(serializedObject.FindProperty("shieldDamage"));
         EditorGUILayout.PropertyField(serializedObject.FindProperty("uniqueDamage"));

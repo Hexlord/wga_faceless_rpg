@@ -17,7 +17,7 @@ public static class TransformExtensions
     /*
      * Can even find inactive
      */
-    public static Transform FindChildPrecise(this Transform parent, string name, bool partial = true)
+    public static Transform FindPrecise(this Transform parent, string name, bool partial = true)
     {
         var trs = parent.GetComponentsInChildren<Transform>(true);
         foreach (var t in trs)

@@ -79,9 +79,13 @@ public class PlayerCameraController : MonoBehaviour
     [Range(1.0f, 8.0f)]
     public float clippingAvoidanceSmoothAngle = 3.0f;
 
-    [Tooltip("Camera distance change speed")]
+    [Tooltip("Camera distance change speed raw")]
     [Range(0.1f, 100.0f)]
     public float clippingAvoidanceSpeed = 2.0f;
+
+    [Tooltip("Camera distance change speed linear interpolation per frame")]
+    [Range(0.1f, 1.0f)]
+    public float clippingAvoidanceSpeedLerp = 0.01f;
 
     [Tooltip("Camera distance immediate snap for solid clipping")]
     public bool clippingAvoidanceInstantSnap = true;
@@ -112,37 +116,45 @@ public class PlayerCameraController : MonoBehaviour
         get { return camera; }
     }
 
+    public ConstrainedCamera ConstrainedCamera
+    {
+        get { return constrainedCamera; }
+    }
+
     // Private
 
-    private bool freeze = false;
-
-    private float playerAutoRotateTimer = 0.0f;
-    private bool playerAutoRotateActive = false;
-
-    private float clippingAvoidanceOffset = 0.0f;
-
     [Header("Debug")]
+
+    public bool freeze = false;
+
+    public float playerAutoRotateTimer = 0.0f;
+    public bool playerAutoRotateActive = false;
+
+    public float clippingAvoidanceOffset = 0.0f;
+
     public ConstrainedCamera constrainedCamera;
     public float cameraTransition = 1.0f;
 
     /*
      * Camera rotation delta accumulated during state transition
      */
-    private float transitionDeltaYaw = 0.0f;
-    private float transitionDeltaPitch = 0.0f;
+    public float transitionDeltaYaw = 0.0f;
+    public float transitionDeltaPitch = 0.0f;
 
 
     /*
      * Camera transform on start of transition
      */
-    private float transitionStartYaw = 0.0f;
-    private float transitionStartPitch = 0.0f;
-    private Vector3 transitionStartPosition = Vector3.zero;
-    private float transitionStartFOV = 80.0f;
+    public float transitionStartYaw = 0.0f;
+    public float transitionStartPitch = 0.0f;
+    public Vector3 transitionStartPosition = Vector3.zero;
+    public float transitionStartFOV = 80.0f;
 
-    private float transitionSpeed = 0.0f;
+    public float transitionSpeed = 0.0f;
 
     private Quaternion desiredRotation = Quaternion.identity;
+
+    public float desiredCameraOffset = 0.0f;
 
     // Cache
 
@@ -224,7 +236,7 @@ public class PlayerCameraController : MonoBehaviour
 
         const float range = 100.0f;
 
-        var mask = (1 << LayerMask.NameToLayer("Environment"));
+        var mask = LayerMask.GetMask("Environment");
 
         // Collect collisions 
 
@@ -417,6 +429,8 @@ public class PlayerCameraController : MonoBehaviour
     protected void FixedUpdate()
     {
         UpdatePlayerRotation(Time.fixedDeltaTime);
+        
+        clippingAvoidanceOffset = Mathf.Lerp(clippingAvoidanceOffset, desiredCameraOffset, clippingAvoidanceSpeedLerp);
     }
 
     protected void LateUpdate()
@@ -499,15 +513,19 @@ public class PlayerCameraController : MonoBehaviour
             snap = Mathf.Min(snap, s3);
             snap = Mathf.Min(snap, s4);
 
-            var compensation = Mathf.Min(distance - minDistance, distance - dist);
-            var snapCompensation = Mathf.Min(distance - minDistance, distance - snap);
+            desiredCameraOffset = Mathf.Min(distance - minDistance, distance - dist);
+            var snapCompensation = 0.0f;
+            if (snap < float.MaxValue)
+            {
+                snapCompensation = Mathf.Min(distance - minDistance, distance - snap);
+            }
 
             if (clippingAvoidanceInstantSnap && clippingAvoidanceOffset < snapCompensation)
             {
                 clippingAvoidanceOffset = snapCompensation;
             }
 
-            clippingAvoidanceOffset = Mathf.MoveTowards(clippingAvoidanceOffset, compensation, clippingAvoidanceSpeed * delta);
+            clippingAvoidanceOffset = Mathf.MoveTowards(clippingAvoidanceOffset, desiredCameraOffset, clippingAvoidanceSpeed * delta);
 
             position += forward * clippingAvoidanceOffset;
         }
@@ -542,10 +560,18 @@ public class PlayerCameraController : MonoBehaviour
         transitionDeltaYaw = MathfExtensions.NormalizeAngle(otherCamera.Yaw - transitionStartYaw);
         transitionDeltaPitch = MathfExtensions.NormalizeAngle(otherCamera.Pitch - transitionStartPitch);
 
+
         cameraTransition = instant
             ? 1.0f
             : 0.0f;
         constrainedCamera = otherCamera;
+
+        /*
+        clippingAvoidanceOffset = 0 * Vector3.Distance(
+            Vector3Extensions.SmoothStep(transitionStartPosition, constrainedCamera.Position, cameraTransition), 
+            otherCamera.Target);
+            */
+        clippingAvoidanceOffset = 0;
     }
 
 }

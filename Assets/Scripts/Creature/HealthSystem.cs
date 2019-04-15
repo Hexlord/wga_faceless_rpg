@@ -39,6 +39,10 @@ public class HealthSystem : MonoBehaviour
     public bool uiHealthBarEnabled = true;
 
     public Image worldSpaceHealthBar;
+    [Tooltip("Triggers for death animation")]
+    public int DeathVariants;
+    public string DeathTrigger;
+    public string DeathVariantsInt;
 
     public bool Alive
     {
@@ -66,12 +70,13 @@ public class HealthSystem : MonoBehaviour
     }
 
     // Private
-
+    private bool isDead = false;
     private float health = 0.0f;
 
     // Cache
 
     private GameObject healthPrefab;
+    private Animator animator;
     private Image healthBar;
 
     public void Kill(GameObject source)
@@ -82,7 +87,7 @@ public class HealthSystem : MonoBehaviour
     public void Damage(GameObject source, float amount)
     {
         Health -= amount;
-
+        Debug.Log(this.gameObject.name + ": " + health + " HP");
         OnDamage(source, amount);
         if (Health <= 0.0f) OnDeath(source);
     }
@@ -109,6 +114,9 @@ public class HealthSystem : MonoBehaviour
 
     protected virtual void OnDeath(GameObject source)
     {
+        if (isDead) return;
+        isDead = true;
+        
         if (source && source != gameObject)
         {
             XpSystem xpSystem =
@@ -118,12 +126,17 @@ public class HealthSystem : MonoBehaviour
                 xpSystem.GrantXp(xpReward);
             }
         }
-
-        //Added for testing purposes
+        GetComponent<MovementSystem>().canMove = false;
+        GetComponent<Rigidbody>().velocity = Vector3.zero;
+        gameObject.layer = LayerMask.NameToLayer("Valhalla");
+        transform.Find("Hitbox").gameObject.layer = LayerMask.NameToLayer("Valhalla");
+        if (GetComponent<BaseAgent>()) GetComponent<BaseAgent>().enabled = false;
         if (source && source.tag == "Player" &&
             gameObject != source)
         {
-            Destroy(gameObject);
+            int index = Random.Range(1, DeathVariants + 1);
+            animator.SetInteger(DeathVariantsInt, index);
+            animator.SetTrigger(DeathTrigger);
         }
     }
 
@@ -152,7 +165,7 @@ public class HealthSystem : MonoBehaviour
 
         Health = healthMaximum;
 
-
+        animator = GetComponent<Animator>();
     }
 
     protected void FixedUpdate()

@@ -32,6 +32,9 @@ public class CollisionDamageBasic : MonoBehaviour
     [Tooltip("Object tag that never receives the damage (if any)")]
     public string negativeFilterTargetTag;
 
+    [Tooltip("Tag for the traversing parent")]
+    public string traverseParentTag = "Faceless";
+
     [Tooltip("Amount of damage done on collision")]
     [Range(0.0f, 1000.0f, order = 2)]
     public float damage = 10.0f;
@@ -46,10 +49,10 @@ public class CollisionDamageBasic : MonoBehaviour
     [Tooltip("Effects to apply on damage")]
     public Effect[] effectsOnDamage;
 
-    public bool Active
+    public bool DealsDamage
     {
-        get { return active; }
-        set { active = value; }
+        get { return dealsDamage; }
+        set { dealsDamage = value; }
     }
 
 
@@ -64,7 +67,7 @@ public class CollisionDamageBasic : MonoBehaviour
 
     private ArrayList hitTargets = new ArrayList();
 
-    private bool active = true;
+    private bool dealsDamage = true;
 
     private AttackSystem SourceAttackSystem
     {
@@ -105,66 +108,75 @@ public class CollisionDamageBasic : MonoBehaviour
 
     public void OnTriggerEnter(Collider other)
     {
-        if (!canDamage || !active) return;
+        if (!canDamage || !dealsDamage) return;
 
-        var target = other.gameObject.TraverseParent("Faceless");
-        if (!target) return;
-
+        var target = other.gameObject.TraverseParent(traverseParentTag);
         var hitTag = other.tag;
-
         //if (filterTargetTag.Length > 0 &&
         //    target.tag != filterTargetTag) return;
-
-        BodyStateSystem bodyState = target.GetComponent<BodyStateSystem>();
-        if ((!bodyState) || (BodyStateSystem.StateToLayer(bodyState.State) == this.gameObject.layer))
-        {
-
-            if (uniqueDamage &&
-                hitTargets.Contains(target)) return;
-
-            var hit = hitTag == "Critical" || hitTag == "Body";
-
-            /*
-             * Apply effects before the damage
-             */
-            if (hit)
+        if (target)
+        { 
+            BodyStateSystem bodyState = target.GetComponent<BodyStateSystem>();
+            if ((!bodyState) || (BodyStateSystem.StateToLayer(bodyState.State) == this.gameObject.layer))
             {
-                var effectSystem = target.GetComponent<EffectSystem>();
-                if (effectSystem)
+                if (uniqueDamage &&
+                    hitTargets.Contains(target))
                 {
-                    foreach(var effect in effectsOnDamage)
+                    //Debug.Log("Revisited " + target);
+                    return;
+                }
+
+                var hit = hitTag == "Critical" || hitTag == "Body";
+
+                /*
+                 * Apply effects before the damage
+                 */
+                if (hit)
+                {
+                    var effectSystem = target.GetComponent<EffectSystem>();
+                    if (effectSystem)
                     {
-                        effectSystem.Apply(effect, source);
+                        foreach (var effect in effectsOnDamage)
+                        {
+                            effectSystem.Apply(effect, source);
+                        }
                     }
                 }
-            }
 
-            switch (hitTag)
-            {
-                case "Environment":
-                    hitTargets.Add(target);
-                    break;
-                case "Critical":
-                    hitTargets.Add(target);
-                    target.GetComponent<HealthSystem>().Damage(source, damage);
-                    break;
-                case "Weapon":
-                    break;
-                case "Shield":
-                    Interrupted(other);
-                    target.GetComponent<ShieldSystem>().RecieveDamage(shieldDamage);
-                    break;
-                case "Body":
-                    hitTargets.Add(target);
-                    target.GetComponent<HealthSystem>().Damage(source, damage);
-                    break;
+                switch (hitTag)
+                {
+                    case "Environment":
+                        hitTargets.Add(target);
+                        break;
+                    case "Critical":
+                        hitTargets.Add(target);
+                        target.GetComponent<HealthSystem>().Damage(source, damage);
+                        Debug.Log("Dealt " + LayerMask.LayerToName(this.gameObject.layer) + " damage -" + damage);
+                        break;
+                    case "Weapon":
+                        break;
+                    case "Shield":
+                        dealsDamage = false;
+                        Interrupted(other);
+                        Debug.Log(other.ToString() + this.gameObject.ToString());
+                        if (target != null)
+                        {
+                            var shield = target.GetComponent<ShieldSystem>();
+                            if (shield) shield.RecieveDamage(shieldDamage);
+                        }
+                        break;
+                    case "Body":
+                        hitTargets.Add(target);
+                        target.GetComponent<HealthSystem>().Damage(source, damage);
+                        Debug.Log("Dealt " + LayerMask.LayerToName(this.gameObject.layer) + " damage -" + damage);
+                        break;
+                }
             }
-
             OnContact();
         }
         else
         {
-            //TO DO: Show VFX if damage isn't dealt;
+        //TO DO: Show VFX if damage isn't dealt;
         }
 
     }

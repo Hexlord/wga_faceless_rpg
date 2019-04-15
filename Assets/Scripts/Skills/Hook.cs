@@ -92,6 +92,7 @@ public class Hook : MonoBehaviour
     {
         if (state == HookState.Fly)
         {
+            Debug.Log("Touched " + other.gameObject.name);
             if (other.tag.Contains("Faceless"))
             {
                 hit = other.gameObject;
@@ -99,6 +100,9 @@ public class Hook : MonoBehaviour
                 hitOffset = transform.position - hit.transform.position;
                 hitRotation = Quaternion.Inverse(hit.transform.rotation);
                 state = HookState.Hit;
+            } else if (other.gameObject.layer == LayerMask.NameToLayer("Environment"))
+            {
+                state = HookState.Returning;
             }
         }
 
@@ -106,7 +110,8 @@ public class Hook : MonoBehaviour
 
     private void OnTriggerStay(Collider other)
     {
-        
+
+        OnTriggerEnter(other);
     }
 
     private void OnTriggerExit(Collider other)
