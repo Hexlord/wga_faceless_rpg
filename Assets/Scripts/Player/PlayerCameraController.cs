@@ -79,9 +79,13 @@ public class PlayerCameraController : MonoBehaviour
     [Range(1.0f, 8.0f)]
     public float clippingAvoidanceSmoothAngle = 3.0f;
 
-    [Tooltip("Camera distance change speed")]
+    [Tooltip("Camera distance change speed raw")]
     [Range(0.1f, 100.0f)]
     public float clippingAvoidanceSpeed = 2.0f;
+
+    [Tooltip("Camera distance change speed linear interpolation per frame")]
+    [Range(0.1f, 1.0f)]
+    public float clippingAvoidanceSpeedLerp = 0.01f;
 
     [Tooltip("Camera distance immediate snap for solid clipping")]
     public bool clippingAvoidanceInstantSnap = true;
@@ -149,6 +153,8 @@ public class PlayerCameraController : MonoBehaviour
     public float transitionSpeed = 0.0f;
 
     private Quaternion desiredRotation = Quaternion.identity;
+
+    public float desiredCameraOffset = 0.0f;
 
     // Cache
 
@@ -423,6 +429,8 @@ public class PlayerCameraController : MonoBehaviour
     protected void FixedUpdate()
     {
         UpdatePlayerRotation(Time.fixedDeltaTime);
+        
+        clippingAvoidanceOffset = Mathf.Lerp(clippingAvoidanceOffset, desiredCameraOffset, clippingAvoidanceSpeedLerp);
     }
 
     protected void LateUpdate()
@@ -505,7 +513,7 @@ public class PlayerCameraController : MonoBehaviour
             snap = Mathf.Min(snap, s3);
             snap = Mathf.Min(snap, s4);
 
-            var compensation = Mathf.Min(distance - minDistance, distance - dist);
+            desiredCameraOffset = Mathf.Min(distance - minDistance, distance - dist);
             var snapCompensation = 0.0f;
             if (snap < float.MaxValue)
             {
@@ -517,7 +525,7 @@ public class PlayerCameraController : MonoBehaviour
                 clippingAvoidanceOffset = snapCompensation;
             }
 
-            clippingAvoidanceOffset = Mathf.MoveTowards(clippingAvoidanceOffset, compensation, clippingAvoidanceSpeed * delta);
+            clippingAvoidanceOffset = Mathf.MoveTowards(clippingAvoidanceOffset, desiredCameraOffset, clippingAvoidanceSpeed * delta);
 
             position += forward * clippingAvoidanceOffset;
         }
