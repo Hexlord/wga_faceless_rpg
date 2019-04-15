@@ -109,7 +109,7 @@ public class BaseAgent : MonoBehaviour
         UpdateMovementAnimation();
         Vector3 lookingVector = currentTarget.transform.position - transform.position;
         lookingVector = new Vector3(lookingVector.x, 0, lookingVector.z);
-        transform.forward = (canSeeEnemy) ? lookingVector : new Vector3(movement.desiredMovement.x, 0, movement.desiredMovement.y);
+        if (movement.desiredMovement != Vector2.zero || canSeeEnemy) transform.forward = (canSeeEnemy) ? lookingVector : new Vector3(movement.desiredMovement.x, 0, movement.desiredMovement.y);
     }
 
     protected void UpdateMovementDirection(Vector2 walkingDirection, Vector2 lookingDirection)
@@ -157,7 +157,7 @@ public class BaseAgent : MonoBehaviour
     #region State Functions 
     public void SawSomething(GameObject something)
     {
-        Debug.Log("Agent" + ID + " saw " + something);
+        //Debug.Log("Agent" + ID + " saw " + something);
         isAlerted = true;
         canSeeEnemy = true;
         AISys.Notify(something);

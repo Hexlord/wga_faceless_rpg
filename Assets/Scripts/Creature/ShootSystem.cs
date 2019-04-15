@@ -46,6 +46,8 @@ public class ShootSystem : MonoBehaviour
     [Tooltip("Fire rate in projectiles per second")]
     public float fireRate = 2.0f;
 
+    public string targetTag = "Faceless";
+
     [Header("Animation Settings")]
 
     public int animationLayer = 0;
@@ -75,6 +77,14 @@ public class ShootSystem : MonoBehaviour
 
     // Cache
 
+    public Vector3 ShootingPointPosition
+    {
+        get
+        {
+            return ShootingPoint.position;
+        }
+    }
+
     private Animator animator;
 
     void Awake()
@@ -91,9 +101,9 @@ public class ShootSystem : MonoBehaviour
         projectile = Instantiate(projectilePrefabs[0], ShootingPoint.position, ShootingPoint.rotation);
         //TO DO: Find the way to omitt next line
         projectile.GetComponent<CollisionDamageProjectile>().source = gameObject;
+        projectile.GetComponent<CollisionDamageProjectile>().traverseParentTag = targetTag;
         projectile.GetComponent<Rigidbody>().AddForce(shootingDirection * projectileSpeed);
     }
-
 
     void FixedUpdate()
     {
@@ -144,6 +154,5 @@ public class ShootSystem : MonoBehaviour
         state = ShootSystemState.Shooting;
         animator.SetTrigger(shootAnimationTrigger);
     }
-
 
 }

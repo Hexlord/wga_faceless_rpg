@@ -48,6 +48,7 @@ public class ShieldSystem : MonoBehaviour
     public void RecieveDamage(float amount)
     {
         shieldHP -= amount;
+        Debug.Log(shieldHP + " SHP");
         if (shieldHP <= 0) ShieldBreak();
     }
 
@@ -63,6 +64,7 @@ public class ShieldSystem : MonoBehaviour
 
     public void RaiseShield()
     {
+
         shield.SetActive(true);
         isRaised = true;
         //TO DO: Make animations
@@ -80,6 +82,14 @@ public class ShieldSystem : MonoBehaviour
     {
         LowerShield();
         //TO DO: Make animations
+    }
+
+    protected void Update()
+    {
+        if (!isRaised && shieldHP < maxShieldHP)
+        {
+            RegenerateShieldHP(Time.deltaTime);
+        }
     }
 
     public void RegenerateShieldHP(float deltaTime)

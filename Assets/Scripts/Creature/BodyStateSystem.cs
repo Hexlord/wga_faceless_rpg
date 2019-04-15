@@ -109,6 +109,20 @@ public class BodyStateSystem : MonoBehaviour
         }
     }
 
+    public void SetStateAffectedByDamage(BodyState state, bool isAffected)
+    {
+        switch(state)
+        {
+            case BodyState.Magical:
+                magicalHitbox.SetActive(isAffected);
+                break;
+            case BodyState.Physical:
+                physicalHitbox.SetActive(isAffected);
+                break;
+            
+        }
+    }
+
     public static int StateToLayer(BodyState state)
     {
         if (state == BodyState.Magical) return LayerMask.NameToLayer("Magical");

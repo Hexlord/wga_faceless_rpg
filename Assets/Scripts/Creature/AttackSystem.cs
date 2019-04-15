@@ -75,43 +75,43 @@ public class AttackSystem : MonoBehaviour
         movementSystem = GetComponent<MovementSystem>();
         for (int i = 0; i < weapons.Length; i++)
         {
-            weapons[i].Active = false;
+            weapons[i].DealsDamage = false;
         }
     }
 
-    void FixedUpdate()
-    {
-        bool transition = animator.IsInTransition(animationLayer);
-        AnimatorClipInfo info = animator.GetCurrentAnimatorClipInfo(animationLayer)[0];
-        AnimatorStateInfo animState = animator.GetCurrentAnimatorStateInfo(animationLayer);
-        AnimationClip clip = info.clip;
-        string clipName = clip.name;
+    //void FixedUpdate()
+    //{
+    //    bool transition = animator.IsInTransition(animationLayer);
+    //    AnimatorStateInfo infoState = animator.GetCurrentAnimatorStateInfo(0);
+    //    bool isDefaultState = infoState.IsName("Idle");
+    //    //if (transform.tag != "Player") Debug.Log(isDefaultState);
+    //    AnimatorClipInfo info = animator.GetCurrentAnimatorClipInfo(animationLayer)[0];
+    //    AnimatorStateInfo animState = animator.GetCurrentAnimatorStateInfo(animationLayer);
+    //    AnimationClip clip = info.clip;
+    //    string clipName = clip.name;
 
-        bool isDefaultClip = clipName == idleAnimation;
+    //    bool isDefaultClip = clipName == idleAnimation;
+    //    //Debug.Log(isDefaultClip);
+    //    if (transition) return;
 
-        if (transition) return;
-
-        switch (state)
-        {
-            case AttackSystemState.None:
-                break;
-            case AttackSystemState.Attacking:
-                if (isDefaultClip)
-                {
-                    state = AttackSystemState.None;
-                    weapons[activeWeaponIndex].Active = false;
-                    weapons[activeWeaponIndex].ResetHitTargets();
-                    activeWeaponIndex = -1;
-                }
-                break;
-        }
-    }
+    //    switch (state)
+    //    {
+    //        case AttackSystemState.None:
+    //            break;
+    //        case AttackSystemState.Attacking:
+    //            if (isDefaultState)
+    //            {
+    //                FinalizeAttack();
+    //            }
+    //            break;
+    //    }
+    //}
 
     public void Attack(int attackIndex, int weaponIndex)
     {
         activeWeaponIndex = weaponIndex;
-        weapons[activeWeaponIndex].Active = true;
-        Debug.Assert(!Attacking);
+        weapons[activeWeaponIndex].DealsDamage = true;
+        //Debug.Assert(!Attacking);
 
         if (!canAttack) return;
 
@@ -127,5 +127,13 @@ public class AttackSystem : MonoBehaviour
     public void AttackInterrupted()
     {
         animator.SetTrigger(interruptAnimationTrigger);
+    }
+
+    public void FinalizeAttack()
+    {
+        state = AttackSystemState.None;
+        weapons[activeWeaponIndex].DealsDamage = false;
+        weapons[activeWeaponIndex].ResetHitTargets();
+        activeWeaponIndex = -1;
     }
 }

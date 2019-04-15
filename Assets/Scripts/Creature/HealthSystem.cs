@@ -87,7 +87,7 @@ public class HealthSystem : MonoBehaviour
     public void Damage(GameObject source, float amount)
     {
         Health -= amount;
-
+        Debug.Log(this.gameObject.name + ": " + health + " HP");
         OnDamage(source, amount);
         if (Health <= 0.0f) OnDeath(source);
     }
@@ -127,7 +127,9 @@ public class HealthSystem : MonoBehaviour
             }
         }
 
-        GetComponent<BaseAgent>().enabled = false;
+        gameObject.layer = LayerMask.NameToLayer("Valhalla");
+        transform.Find("Hitbox").gameObject.layer = LayerMask.NameToLayer("Valhalla");
+        if (GetComponent<BaseAgent>()) GetComponent<BaseAgent>().enabled = false;
         if (source && source.tag == "Player" &&
             gameObject != source)
         {

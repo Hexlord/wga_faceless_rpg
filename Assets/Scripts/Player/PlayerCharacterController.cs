@@ -120,11 +120,11 @@ public class PlayerCharacterController : MonoBehaviour
                     Debug.Log("Full shield Charges: " + shieldSystem.GetFullShieldCharges());
                     Debug.Log("Current shield charge HP: " + shieldSystem.GetRemainingHPInCharge());
                 }
-                else shieldSystem.RegenerateShieldHP(Time.deltaTime);
             }
             else
             {
-                if (InputManager.Released(InputAction.Defend)) shieldSystem.LowerShield();
+                if (InputManager.Released(InputAction.Defend))
+                    shieldSystem.LowerShield();
                 else
                 {
                     cameraController.TriggerPlayerAutoRotation();
@@ -207,10 +207,14 @@ public class PlayerCharacterController : MonoBehaviour
         }
         else if (bodyStateSystem.State == BodyStateSystem.BodyState.Magical)
         {
+
             var rayFromCenterOfTheScreen = camera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
+            //Vector3 aimingPointOffset = camera.ViewportToWorldPoint(new Vector3(0.5f, 0.5f, 0));
+            //aimingPointOffset = /*(shootSystem.ShootingPointPosition - aimingPointOffset).magnitude */ camera.transform.forward;
+            //Ray rayForAiming = new Ray(aimingPointOffset, camera.transform.forward);
             RaycastHit hit;
             Vector3 shootingDirection;
-            var mask = LayerMask.GetMask("Enemy", "Environment", "Character");
+            var mask = LayerMask.GetMask("Enemy", "Environment");
             const float dist = 1000.0f;
 
             if (Physics.Raycast(rayFromCenterOfTheScreen, out hit, dist, mask, QueryTriggerInteraction.Ignore))
