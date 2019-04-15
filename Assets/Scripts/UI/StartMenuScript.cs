@@ -12,6 +12,7 @@ using UnityEngine.SceneManagement;
  * 
  * 03.03.2019   aknorre     Created
  * 16.03.2019   bkrylov     Allocated to Component Menu
+ * 11.04.2019   mbukhalov   Added QuickLoad and AutoLoad listeners
  * 
  */
 [AddComponentMenu("ProjectFaceless/UI/Start Menu")]
@@ -63,16 +64,24 @@ public class StartMenuScript : MonoBehaviour
     [Tooltip("Select load menu node")]
     public GameObject loadMenu;
 
+    [Tooltip("Select load menu auto load button")]
+    public GameObject loadMenuAutoLoad;
+
+    [Tooltip("Select load menu quick load button")]
+    public GameObject loadMenuQuickLoad;
+
     [Tooltip("Select load menu back button")]
     public GameObject loadMenuBack;
-
-
 
     [Tooltip("Check to hide main menu when in settings menu")]
     public bool settingsMenuHideMainMenu = false;
 
+    public SaveSystem saveSystem;
+
     void Awake()
     {
+        saveSystem = GameObject.FindGameObjectWithTag("SaveSystem").GetComponent<SaveSystem>();
+
         mainMenuStart.GetComponent<Button>().onClick.AddListener(PressedStart);
         mainMenuSettings.GetComponent<Button>().onClick.AddListener(PressedSettings);
         mainMenuSave.GetComponent<Button>().onClick.AddListener(PressedSave);
@@ -82,6 +91,8 @@ public class StartMenuScript : MonoBehaviour
         settingsMenuBack.GetComponent<Button>().onClick.AddListener(PressedBack);
         saveMenuBack.GetComponent<Button>().onClick.AddListener(PressedBack);
         loadMenuBack.GetComponent<Button>().onClick.AddListener(PressedBack);
+        loadMenuAutoLoad.GetComponent<Button>().onClick.AddListener(PressedAutoLoad);
+        loadMenuQuickLoad.GetComponent<Button>().onClick.AddListener(PressedQuickLoad);
 
         mainMenuBackground.SetActive(true);
         otherMenuBackground.SetActive(false);
@@ -115,6 +126,17 @@ public class StartMenuScript : MonoBehaviour
         loadMenu.SetActive(true);
         otherMenuBackground.SetActive(true);
     }
+
+    void PressedAutoLoad()
+    {
+        Debug.Log("Auto");
+    }
+
+    void PressedQuickLoad()
+    {
+        Debug.Log("Quick");
+    }
+
     void PressedBack()
     {
         settingsMenu.SetActive(false);

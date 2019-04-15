@@ -46,7 +46,6 @@ public class SkillFireBreath : SkillBase
 
         var rotation = Quaternion.Euler(0.0f, sourceRotation.eulerAngles.y, 0.0f);
         var position = caster.transform.position + rotation * Vector3.forward * forwardOffset;
-        
         var projectile =
             UnityEngine.Object.Instantiate(firePrefab,
                 position, rotation);
@@ -61,4 +60,3 @@ public class SkillFireBreath : SkillBase
     }
 
 }
-
