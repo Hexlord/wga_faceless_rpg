@@ -1,6 +1,4 @@
-﻿#if false
-
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using CI.QuickSave;
 using CI.QuickSave.Core.Helpers;
@@ -292,5 +290,3 @@ public class SaveSystem : MonoBehaviour
         return false;
     }
 }
-
-#endif
