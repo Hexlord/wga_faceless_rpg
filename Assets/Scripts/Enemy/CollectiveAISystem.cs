@@ -1,19 +1,31 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+[AddComponentMenu("ProjectFaceless/Enemy/Collective AI")]
 public class CollectiveAISystem : MonoBehaviour
 {
 
-    public NavigationSystem navSystem;
-    public BaseAgent[] agents;
+    private NavigationSystem navSystem;
     private Dictionary<uint, BaseAgent> agentsDictionary = new Dictionary<uint, BaseAgent>();
     private Dictionary<uint, AgentType> agentsTypes = new Dictionary<uint, AgentType>();
     private Dictionary<uint, Order> agentsOrders = new Dictionary<uint, Order>();
     private GameObject target;
+    [Tooltip("Agents attached to the system")]
+    public BaseAgent[] agents;
     private BodyStateSystem statesOfTarget;
+    [Tooltip("Points around which the agents wander")]
     public GameObject[] recreationalArea;
+    [Tooltip("Maximal range the agents can move away from recreational area")]
+    public float RecreationalAreaRadius = 7.5f;
+    [Tooltip("Maximal distance the target can travel before the agents paths will be recalculated")]
     public float RecalculationDistance = 1.0f;
+    [Tooltip("How many attacks the agents can perform simultaniously")]
+    public int basicAttacksTickets;
+    [Tooltip("Home many special attacks the agents can perform simultaniously")]
+    public int combinedAttacksTickets;
+
+
+    private bool playerSpotted;
 
     public enum AgentType
     {
@@ -51,11 +63,6 @@ public class CollectiveAISystem : MonoBehaviour
             target = go;
         }
     }
-
-    public int basicAttacksTickets;
-    public int combinedAttacksTickets;
-
-    private bool playerSpotted;
 
     private void Awake()
     {
@@ -164,6 +171,7 @@ public class CollectiveAISystem : MonoBehaviour
                         }
                         break;
                     case OrderType.RoamAround:
+                        Roam(agent.ID);
                         break;
                     case OrderType.ProtectArea:
                         break;
@@ -179,6 +187,26 @@ public class CollectiveAISystem : MonoBehaviour
             if (((navSystem.AgentDestination(ID) - agentsOrders[ID].target.transform.position).magnitude > RecalculationDistance) || navSystem.hasAgentReachedDestination(ID))
             {
                 navSystem.PlacePathRequest(agentsDictionary[ID], agentsOrders[ID].target.transform.position);
+            }
+        }
+    }
+
+    private void Roam(uint ID)
+    {
+        if (!agentsDictionary[ID].IsDoingIdleAnimation)
+        {
+            int index = Random.Range(0, 2);
+            if (index == 1)
+            {
+                if (navSystem.hasAgentReachedDestination(ID))
+                {
+                    Vector3 vector = Quaternion.AngleAxis(Random.Range(0, 360), Vector3.up) * Vector3.forward * Random.Range(0, RecreationalAreaRadius);
+                    navSystem.PlacePathRequest(agentsDictionary[ID], agentsOrders[ID].target.transform.position + vector);
+                }
+            }
+            if (index == 0)
+            {
+                agentsDictionary[ID].StartDoingIdleThings();
             }
         }
     }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[AddComponentMenu("ProjectFaceless/Enemy/BaseAgent")]
 public class BaseAgent : MonoBehaviour
 {
     static uint entityIDGenerator = 0;
@@ -14,6 +15,7 @@ public class BaseAgent : MonoBehaviour
     protected NavigationSystem navSys;
     protected CollectiveAISystem AISys;
     private Vector3 rayDirection;
+
     [Header("Speed Settings")]
     public float baseSpeed = 5.0f;
     public float walkingBackSpeed = 4.0f;
@@ -21,13 +23,20 @@ public class BaseAgent : MonoBehaviour
 
     [Header("Animation Settings")]
     Animator animator;
+    [Tooltip("Minimal vector length to determine the whether the agent is walking or not")]
     public float epsilonWalking = 0.005f;
+    [Tooltip("Integer that determines the direction the agent is walking right now")]
     public string walkDirectionInt = "Walking Direction";
+    [Tooltip("Animator boolean that is true if the enemy had seen the player")]
     public string enemySpottedBool = "EnemySpotted";
+    [Tooltip("Trigger that toggles knockback animation")]
     public string knockbackTrigger = "ThrownBack";
+    [Tooltip("Trigger that toggles getting up animation")]
     public string getUpTrigger = "GetUp";
+    [Tooltip("Triggers that toggle idle animations")]
     public string[] idleActionTrigger = { "LookOverShoulder", "LookAround" };
-
+    private bool isDoingIdle = false;
+    [Tooltip("Determines whether the agent is allowed to attack or not")]
     public bool allowedToAttack = false;
     protected MovementSystem movement;
     protected int directionAnim = 0;
@@ -57,6 +66,11 @@ public class BaseAgent : MonoBehaviour
         return false;
     }
 
+    public bool IsDoingIdleAnimation
+    {
+        get { return isDoingIdle; }
+    }
+
     // Start is called before the first frame update
     protected void Awake()
     {
@@ -71,7 +85,7 @@ public class BaseAgent : MonoBehaviour
 
     protected virtual void Update()
     {
-        if (!isStunned)
+        if (!isStunned && !isDoingIdle)
         {
             UpdateMove();
         }
@@ -150,6 +164,7 @@ public class BaseAgent : MonoBehaviour
     private void UpdateMovementAnimation()
     {
         if (animator.GetBool(enemySpottedBool) != isAlerted) animator.SetBool(enemySpottedBool, isAlerted);
+
         animator.SetInteger(walkDirectionInt, directionAnim);
     }
     #endregion
@@ -160,6 +175,7 @@ public class BaseAgent : MonoBehaviour
         //Debug.Log("Agent" + ID + " saw " + something);
         isAlerted = true;
         canSeeEnemy = true;
+        FinalizeIdle();
         AISys.Notify(something);
     }
 
@@ -198,6 +214,18 @@ public class BaseAgent : MonoBehaviour
     public void SetTarget(GameObject go)
     {
         currentTarget = go;
+    }
+
+    public void StartDoingIdleThings()
+    {
+        isDoingIdle = true;
+        int index = Random.Range(0, idleActionTrigger.Length);
+        animator.SetTrigger(idleActionTrigger[index]);
+    }
+
+    public void FinalizeIdle()
+    {
+        isDoingIdle = false;
     }
     #endregion
 }

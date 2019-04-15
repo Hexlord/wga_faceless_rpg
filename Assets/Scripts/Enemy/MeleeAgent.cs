@@ -2,9 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[AddComponentMenu("ProjectFaceless/Enemy/MeleeAgent")]
 public class MeleeAgent : BaseAgent
 {
+    [Tooltip("Minimal range before attack starts")]
     public float attackRange = 0.7f;
+    [Tooltip("Frequency of attacks")]
     public float attackCooldown = 3.0f;
     private float attackStartTime;
 

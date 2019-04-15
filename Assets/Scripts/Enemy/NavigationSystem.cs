@@ -5,14 +5,14 @@ using UnityEngine;
 using UnityEngine.AI;
 using System.Threading;
 using Assets.Scripts.Tools;
-
+[AddComponentMenu("ProjectFaceless/Enemy/Navigation System")]
 public class NavigationSystem : MonoBehaviour
 {
-
-    Thread pathFindingThread;
-
+    [Tooltip("Minimal range before agent start moving towards new point")]
     public float agentWaypointStoppingDistance = 0.05f;
+    [Tooltip("Minimal range when agent stops moving")]
     public float agentDestinationStoppingDistance = 0.5f;
+    [Tooltip("Maximal range for searching navmesh point")]
     public float offNavMeshPointSearchRadius = 50.0f;
     public int numberOfTries = 3;
 
@@ -129,13 +129,6 @@ public class NavigationSystem : MonoBehaviour
         }
     }
 
-    private void StartPathFinding()
-    {
-        isCalculating = true;
-        pathFindingThread = new Thread(new ThreadStart(ProcessRequests));
-        pathFindingThread.Start();
-    }
-
     private void ProcessRequests()
     {
         PathFindingRequestInfo infoChunk;
@@ -189,6 +182,6 @@ public class NavigationSystem : MonoBehaviour
 
     public bool hasAgentReachedDestination(uint ID)
     {
-        return (AgentsRequestStatuses.ContainsKey(ID) && (AgentsRequestStatuses[ID] == RequestStatus.None));
+        return (AgentsRequestStatuses.ContainsKey(ID) && (AgentsRequestStatuses[ID] == RequestStatus.None)) || (!AgentsRequestStatuses.ContainsKey(ID));
     }
 }

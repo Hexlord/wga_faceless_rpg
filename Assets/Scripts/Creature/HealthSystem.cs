@@ -126,7 +126,8 @@ public class HealthSystem : MonoBehaviour
                 xpSystem.GrantXp(xpReward);
             }
         }
-
+        GetComponent<MovementSystem>().canMove = false;
+        GetComponent<Rigidbody>().velocity = Vector3.zero;
         gameObject.layer = LayerMask.NameToLayer("Valhalla");
         transform.Find("Hitbox").gameObject.layer = LayerMask.NameToLayer("Valhalla");
         if (GetComponent<BaseAgent>()) GetComponent<BaseAgent>().enabled = false;
