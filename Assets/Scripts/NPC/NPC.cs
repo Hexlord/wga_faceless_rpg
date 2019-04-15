@@ -16,15 +16,12 @@ using UnityEngine.UI;
 [AddComponentMenu("ProjectFaceless/NPC/NPC")]
 public class NPC : MonoBehaviour
 {
-    
-
     public enum DialogAction
     {
         None,
         EndDialog,
         Death
     }
-
 
     [Serializable]
     public class DialogEntry
@@ -57,6 +54,9 @@ public class NPC : MonoBehaviour
     [Tooltip("Dialog list")]
     public DialogEntry[] dialogEntries;
 
+    [Tooltip("Starts talking automatically")]
+    public bool autoTalk = false;
+
     // Private
 
     private GameObject player;
@@ -69,7 +69,7 @@ public class NPC : MonoBehaviour
     private bool inRange = false;
     private bool inDialog = false;
 
-    void Start()
+    void Awake()
     {
         player = GameObject.Find("Player");
         playerCharacterController = player.GetComponent<PlayerCharacterController>();
@@ -140,7 +140,7 @@ public class NPC : MonoBehaviour
             if (talkNode) talkNode.SetActive(true);
         }
 
-        if (inRange && InputManager.Pressed(InputAction.Use))
+        if (inRange && (autoTalk || InputManager.Pressed(InputAction.Use)))
         {
             if (!inDialog) OnDialogStart();
 

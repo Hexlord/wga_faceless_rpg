@@ -17,8 +17,12 @@ public class SkillCircleStrike : SkillBase
 
     private readonly GameObject effectPrefab;
 
+    private const float Strength = 40000.0f;
+    private const float Damage = 30.0f;
+    private const float AOE = 5.0f;
+
     public SkillCircleStrike() :
-        base(Skill.CircleStrike.ToString(), false, 10.0f)
+        base(Skill.CircleStrike, false, 10.0f)
     {
         effectPrefab = (GameObject)Resources.Load("Prefabs/Skills/CircleStrike", typeof(GameObject));
     }
@@ -26,14 +30,12 @@ public class SkillCircleStrike : SkillBase
     public override void PrepareEvent(GameObject caster)
     {
         base.PrepareEvent(caster);
-        Debug.Log("Preparing circlestrike, setting cooldawn");
         PutOnCooldawn();
     }
 
     public override void StartUpdate(GameObject caster, float delta, float time, float length)
     {
         base.StartUpdate(caster, delta, time, length);
-        Debug.Log("Casting circlestrike " + time + " / " + length);
     }
 
     public override void CastEvent(GameObject caster)
@@ -42,10 +44,10 @@ public class SkillCircleStrike : SkillBase
         var dummy = new GameObject("Dummy");
         dummy.transform.position = caster.transform.position;
         var attractor = dummy.AddComponent<AttractorPoint>();
-        attractor.damagePerSecond = 3000.0f;
-        attractor.distanceHighpass = 5.0f;
+        attractor.damagePerSecond = Damage / Time.fixedDeltaTime;
+        attractor.distanceHighpass = AOE;
         attractor.distancePower = 0.0f;
-        attractor.strength = -500.0f;
+        attractor.strength = -Strength;
         attractor.useForce = true;
         attractor.ignoreY = true;
         attractor.source = caster;
@@ -59,7 +61,6 @@ public class SkillCircleStrike : SkillBase
     public override void EndUpdate(GameObject caster, float delta, float time, float length)
     {
         base.EndUpdate(caster, delta, time, length);
-        Debug.Log("Ending circlestrike " + time + " / " + length);
     }
     
 }

@@ -104,6 +104,6 @@ public class DashSystem : MonoBehaviour
     {
         lastTimeDashedOrReload = Time.time;
         animator.SetBool(dashAnimationBool, true);
-        movement.RevertSpeed();
+        movement.ResetSpeed();
     }
 }

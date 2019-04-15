@@ -26,6 +26,11 @@ public class HealthSystem : MonoBehaviour
     [Range(0.0f, 10000.0f, order = 2)]
     public float healthMaximum = 100.0f;
 
+
+    [Tooltip("The amount of xp this object grants to killer")]
+    [Range(0.0f, 10000.0f, order = 2)]
+    public float xpReward = 10.0f;
+
     [Header("UI Settings")]
     [Tooltip("Health bar anchor offset from transform origin")]
     public Vector3 uiAnchorOffset = new Vector3(0.0f, 3.0f, 0.0f);
@@ -95,7 +100,7 @@ public class HealthSystem : MonoBehaviour
         {
             ConcentrationSystem concentrationSystem =
                 source.GetComponent<ConcentrationSystem>();
-            if(concentrationSystem)
+            if (concentrationSystem)
             {
                 concentrationSystem.Restore(amount * concentrationSystem.concentrationVampirism);
             }
@@ -104,8 +109,19 @@ public class HealthSystem : MonoBehaviour
 
     protected virtual void OnDeath(GameObject source)
     {
+        if (source && source != gameObject)
+        {
+            XpSystem xpSystem =
+                source.GetComponent<XpSystem>();
+            if (xpSystem)
+            {
+                xpSystem.GrantXp(xpReward);
+            }
+        }
+
         //Added for testing purposes
-        if (source.tag == "Player")
+        if (source && source.tag == "Player" &&
+            gameObject != source)
         {
             Destroy(gameObject);
         }

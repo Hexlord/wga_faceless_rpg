@@ -4,7 +4,15 @@
 TagManager:
   serializedVersion: 2
   tags:
-  - Shootable
+  - Faceless
+  - Environment
+  - Weapon
+  - Shield
+  - Small
+  - Planar
+  - Body
+  - Critical
+  - FacelessBoss
   layers:
   - Default
   - TransparentFX
@@ -14,13 +22,13 @@ TagManager:
   - UI
   - 
   - 
-  - Lighting
-  - Ground
-  - Postprocessing
-  - 
-  - 
-  - 
-  - 
+  - PostProcessing
+  - Environment
+  - Physical
+  - Magical
+  - Enemy
+  - IgnoreRaycast
+  - Character
   - 
   - 
   - 
@@ -39,9 +47,6 @@ TagManager:
   - 
   - 
   m_SortingLayers:
-  - name: Fire
-    uniqueID: 3804908061
-    locked: 0
   - name: Default
     uniqueID: 0
     locked: 0

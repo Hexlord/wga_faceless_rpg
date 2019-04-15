@@ -22,9 +22,6 @@ public class ThirdPersonCamera : ConstrainedCamera
     
     // Public
 
-    [Header("Player Settings")]
-
-
     [Header("Third Person Camera Settings")]
     [Tooltip("Distance from player anchor")]
     [Range(0.0f, 10.0f)]
@@ -33,9 +30,9 @@ public class ThirdPersonCamera : ConstrainedCamera
     [Tooltip("Player anchor offset from player origin")]
     public Vector3 thirdPersonAnchorOffset = Vector3.zero;
 
-    protected override void Start()
+    protected override void Awake()
     {
-        base.Start();
+        base.Awake();
 
         Yaw = constraintTarget.transform.rotation.eulerAngles.y;
         Pitch = constraintTarget.transform.rotation.eulerAngles.x;

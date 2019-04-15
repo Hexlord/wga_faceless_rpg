@@ -112,47 +112,57 @@ public class PlayerCameraController : MonoBehaviour
         get { return camera; }
     }
 
+    public ConstrainedCamera ConstrainedCamera
+    {
+        get { return constrainedCamera; }
+    }
+
     // Private
 
-    private bool freeze = false;
-
-    private float playerAutoRotateTimer = 0.0f;
-    private bool playerAutoRotateActive = false;
-
-    private float clippingAvoidanceOffset = 0.0f;
-
     [Header("Debug")]
+
+    public bool freeze = false;
+
+    public float playerAutoRotateTimer = 0.0f;
+    public bool playerAutoRotateActive = false;
+
+    public float clippingAvoidanceOffset = 0.0f;
+
     public ConstrainedCamera constrainedCamera;
     public float cameraTransition = 1.0f;
 
     /*
      * Camera rotation delta accumulated during state transition
      */
-    private float transitionDeltaYaw = 0.0f;
-    private float transitionDeltaPitch = 0.0f;
+    public float transitionDeltaYaw = 0.0f;
+    public float transitionDeltaPitch = 0.0f;
 
 
     /*
      * Camera transform on start of transition
      */
-    private float transitionStartYaw = 0.0f;
-    private float transitionStartPitch = 0.0f;
-    private Vector3 transitionStartPosition = Vector3.zero;
-    private float transitionStartFOV = 80.0f;
+    public float transitionStartYaw = 0.0f;
+    public float transitionStartPitch = 0.0f;
+    public Vector3 transitionStartPosition = Vector3.zero;
+    public float transitionStartFOV = 80.0f;
 
-    private float transitionSpeed = 0.0f;
+    public float transitionSpeed = 0.0f;
+
+    private Quaternion desiredRotation = Quaternion.identity;
 
     // Cache
 
     private new Camera camera;
     private Rigidbody body;
 
-    void Start()
+    void Awake()
     {
         // Cache
 
         camera = GameObject.Find("MainCamera").GetComponent<Camera>();
         body = GetComponent<Rigidbody>();
+
+        desiredRotation = body.rotation;
 
         transitionSpeed = 1.0f / transitionTime;
     }
@@ -187,9 +197,9 @@ public class PlayerCameraController : MonoBehaviour
 
         if (playerAutoRotateActive)
         {
-            body.rotation = Quaternion.Euler(
+            desiredRotation = Quaternion.Euler(
                 body.rotation.eulerAngles.x,
-                Mathf.MoveTowards(body.rotation.eulerAngles.y, body.rotation.eulerAngles.y + Mathf.DeltaAngle(0.0f, camera.transform.rotation.eulerAngles.y - body.rotation.eulerAngles.y), playerRotationSpeed * delta),
+                Mathf.MoveTowards(desiredRotation.eulerAngles.y, desiredRotation.eulerAngles.y + MathfExtensions.NormalizeAngle(camera.transform.rotation.eulerAngles.y - desiredRotation.eulerAngles.y), playerRotationSpeed * delta),
                 body.rotation.eulerAngles.z);
             yawDelta = Mathf.DeltaAngle(body.rotation.eulerAngles.y, camera.transform.rotation.eulerAngles.y);
             if (Mathf.Abs(yawDelta) <= Mathf.Epsilon)
@@ -198,84 +208,80 @@ public class PlayerCameraController : MonoBehaviour
                 playerAutoRotateTimer = 0.0f;
             }
         }
+
+        body.rotation = desiredRotation;
     }
 
     struct RayEntry
     {
         public Collider collider;
-        public bool small;
         public float angleFactor;
         public float distance;
     };
-    class SnapEntry
+    class SegmentEntry
     {
         public float distanceStart;
         public float distanceEnd;
     };
 
-    void ClipAnalyze(out float outDistance, out float outSnap, Vector3 cameraTarget, Vector3 fromCameraToTarget, float cameraDistance, Vector3 cameraForward)
+    private void ClipAnalyze(out float outDistance, out float outSnap, Vector3 cameraTarget, Vector3 fromCameraToTarget, float cameraDistance, Vector3 cameraForward)
     {
-        Vector3 fromTargetToCamera = -fromCameraToTarget;
-        Vector3 rayObject = cameraTarget;
+        var fromTargetToCamera = -fromCameraToTarget;
 
-        Vector3 cameraPosition = rayObject + fromTargetToCamera * cameraDistance;
+        const float range = 100.0f;
 
-        float range = 100.0f;
+        var mask = (1 << LayerMask.NameToLayer("Environment"));
 
-        int mask = (1 << LayerMask.NameToLayer("Environment"));
+        // Collect collisions 
 
-        RaycastHit[] hitsForward = Physics.RaycastAll(new Ray(cameraTarget + fromTargetToCamera * range, fromCameraToTarget), range, mask);
-        RaycastHit[] hitsBackwards = Physics.RaycastAll(new Ray(cameraTarget, fromTargetToCamera), range, mask);
-        RaycastHit[] hitsObjectForward = Physics.RaycastAll(new Ray(cameraTarget, fromCameraToTarget), range, mask);
+        var hitsForward = Physics.RaycastAll(new Ray(cameraTarget + fromTargetToCamera * range, fromCameraToTarget), range, mask);
+        var hitsBackwards = Physics.RaycastAll(new Ray(cameraTarget, fromTargetToCamera), range, mask);
+        var hitsObjectForward = Physics.RaycastAll(new Ray(cameraTarget, fromCameraToTarget), range, mask);
 
-        List<RayEntry> rayEntries = new List<RayEntry>();
+        var rayEntries = new List<RayEntry>();
 
+        // Go both ways, add planar objects twice (to compensate for their single side)
+        foreach (var hit in hitsBackwards)
         {
-            foreach (RaycastHit hit in hitsBackwards)
-            {
-                RayEntry entry;
-                entry.collider = hit.collider;
-                entry.small = hit.collider.gameObject.CompareTag("Small");
-                entry.distance = hit.distance;
-                float angle = Mathf.Abs(Vector3.Angle(hit.normal, cameraForward));
-                if (angle > 90.0f) angle = 180.0f - angle;
-                float factor = 1.0f - angle / 90.0f;
-                entry.angleFactor = Mathf.Min(1.0f, clippingAvoidanceNormalFactorBaseline + Mathf.Pow(factor, 1.0f / clippingAvoidanceNormalFactorReversed));
+            RayEntry entry;
+            entry.collider = hit.collider;
+            entry.distance = hit.distance;
+            var angle = Mathf.Abs(Vector3.Angle(hit.normal, cameraForward));
+            if (angle > 90.0f) angle = 180.0f - angle;
+            var factor = 1.0f - angle / 90.0f;
+            entry.angleFactor = Mathf.Min(1.0f, clippingAvoidanceNormalFactorBaseline + Mathf.Pow(factor, 1.0f / clippingAvoidanceNormalFactorReversed));
 
-                if (entry.collider.gameObject.CompareTag("Planar"))
-                {
-                    rayEntries.Add(entry);
-                }
-                rayEntries.Add(entry);
-            }
-            foreach (RaycastHit hit in hitsForward)
+            if (entry.collider.gameObject.CompareTag("Planar"))
             {
-                RayEntry entry;
-                entry.collider = hit.collider;
-                entry.small = hit.collider.gameObject.CompareTag("Small");
-                entry.distance = range - hit.distance;
-                float angle = Mathf.Abs(Vector3.Angle(hit.normal, cameraForward));
-                if (angle > 90.0f) angle = 180.0f - angle;
-                float factor = 1.0f - angle / 90.0f;
-                entry.angleFactor = Mathf.Min(1.0f, clippingAvoidanceNormalFactorBaseline + Mathf.Pow(factor, 1.0f / clippingAvoidanceNormalFactorReversed));
-                if (entry.collider.gameObject.CompareTag("Planar"))
-                {
-                    rayEntries.Add(entry);
-                }
                 rayEntries.Add(entry);
             }
+            rayEntries.Add(entry);
+        }
+        foreach (var hit in hitsForward)
+        {
+            RayEntry entry;
+            entry.collider = hit.collider;
+            entry.distance = range - hit.distance;
+            var angle = Mathf.Abs(Vector3.Angle(hit.normal, cameraForward));
+            if (angle > 90.0f) angle = 180.0f - angle;
+            var factor = 1.0f - angle / 90.0f;
+            entry.angleFactor = Mathf.Min(1.0f, clippingAvoidanceNormalFactorBaseline + Mathf.Pow(factor, 1.0f / clippingAvoidanceNormalFactorReversed));
+            if (entry.collider.gameObject.CompareTag("Planar"))
+            {
+                rayEntries.Add(entry);
+            }
+            rayEntries.Add(entry);
         }
 
-        rayEntries.Sort(delegate (RayEntry a, RayEntry b)
-        {
-            return a.distance.CompareTo(b.distance);
-        });
+        rayEntries.Sort((a, b) => a.distance.CompareTo(b.distance));
 
-        List<Collider> objectStuckColliders = new List<Collider>();
+        // If object is stuck inside other object, ignore that object
+        // Example is player being in cube of ice, when we should ignore ice cube boundaries in our calculations
+        var objectStuckColliders = new List<Collider>();
         {
-            foreach (RaycastHit hit in hitsBackwards)
+            foreach (var hit in hitsBackwards)
             {
-                foreach (RaycastHit hit2 in hitsObjectForward)
+                foreach (var hit2 in hitsObjectForward)
                 {
                     if (hit.collider == hit2.collider)
                     {
@@ -285,147 +291,100 @@ public class PlayerCameraController : MonoBehaviour
             }
         }
 
-        List<Collider> currentColliders = new List<Collider>();
-        List<SnapEntry> snapEntries = new List<SnapEntry>();
+        var currentColliders = new List<Collider>();
+        var segmentEntries = new List<SegmentEntry>();
 
-        float start = float.MaxValue;
-        float snap = float.MaxValue;
-        bool stuck = false;
+        var start = float.MaxValue;
+        var snap = float.MaxValue;
 
-        for (int i = 0; i < rayEntries.Count; ++i)
+        // Go starting from closest to target
+        foreach (var entry in rayEntries)
         {
-            RayEntry entry = rayEntries[i];
             if (objectStuckColliders.Contains(entry.collider)) continue;
 
             if (currentColliders.Contains(entry.collider))
             {
+                // Second collision means we are now out of boundaries for that collider
                 currentColliders.Remove(entry.collider);
             }
             else
             {
+                // First appearance means we must wait for the end of collider (furthest side collision)
                 currentColliders.Add(entry.collider);
+            }
+
+            if (start == float.MaxValue)
+            {
+                // Started segment (first distance is the lowest one, keep it)
+                start = entry.distance;
             }
 
             if (currentColliders.Count == 0)
             {
 
                 // Finished segment
-                SnapEntry snapEntry = new SnapEntry
+                var segmentEntry = new SegmentEntry
                 {
-
                     // Widen snap entries by cameraAvoidanceOffset
 
                     distanceStart = start - clippingAvoidanceRayAngleOffset * entry.angleFactor,
                     distanceEnd = entry.distance + clippingAvoidanceRayAngleOffset * entry.angleFactor
                 };
 
-                if (cameraDistance >= snapEntry.distanceStart &&
-                    cameraDistance <= snapEntry.distanceEnd)
-                {
-                    stuck = true;
-                }
-
-                snapEntries.Add(snapEntry);
+                segmentEntries.Add(segmentEntry);
                 start = float.MaxValue;
             }
-            else
-            {
-                // Started segment (first distance is the lowest one, keep it)
-                if (start == float.MaxValue)
-                {
-                    start = entry.distance;
-                }
-            }
+
 
             if (!entry.collider.gameObject.CompareTag("Small") &&
                 !entry.collider.gameObject.CompareTag("Player"))
             {
+                // If object is NOT marked as small, then we must minimize camera immediate position change to distance of any collision with this collider
+                // In other words: camera can be above small stone column blocking vision for target
+                // camera can NEVER be above big cave or mountain, it immediately goes through it to watch target without big object blocking its vision
                 snap = Mathf.Min(snap, entry.distance - clippingAvoidanceRayAngleOffset * entry.angleFactor);
             }
         }
 
+        // Can not go above snap
+        cameraDistance = Mathf.Min(cameraDistance, snap);
+
         // Join touching segments
-        for (int i = 0; i < snapEntries.Count - 1; ++i)
+        // As we are only interested in valid position segments now
+        for (var i = 0; i < segmentEntries.Count - 1; ++i)
         {
-            if (snapEntries[i].distanceEnd >=
-                snapEntries[i + 1].distanceStart)
-            {
-                snapEntries[i].distanceEnd = snapEntries[i + 1].distanceEnd;
-                snapEntries.RemoveAt(i + 1);
-            }
+            if (segmentEntries[i].distanceEnd < segmentEntries[i + 1].distanceStart) continue;
+            segmentEntries[i].distanceEnd = segmentEntries[i + 1].distanceEnd;
+            segmentEntries.RemoveAt(i + 1);
+            --i;
         }
 
-        if (!stuck &&
-            cameraDistance <= snap)
+        var stuck = false;
+        var stuckDown = float.MinValue;
+        var stuckUp = float.MaxValue;
+
+        foreach (var entry in segmentEntries)
+        {
+            if (cameraDistance < entry.distanceStart || cameraDistance > entry.distanceEnd) continue;
+
+            // Mark that desired camera position is inside some collider
+            stuck = true;
+            stuckDown = entry.distanceStart;
+            stuckUp = entry.distanceEnd;
+            break;
+        }
+
+        outSnap = snap;
+
+        if (stuck)
+        {
+            if (snap > stuckUp) outDistance = stuckDown; // As we usually move forward, prefer going closer to target
+            else if (snap > stuckDown) outDistance = stuckDown;
+            else outDistance = snap;
+        }
+        else
         {
             outDistance = cameraDistance;
-            outSnap = snap;
-        }
-        else // Need to find an extremum, which is both below snap and closest to cameraDistance
-        {
-            float distanceUp = float.MaxValue;
-            float distanceDown = float.MaxValue;
-            for (int i = 0; i < snapEntries.Count; ++i)
-            {
-                SnapEntry entry = snapEntries[i];
-                if (cameraDistance <= entry.distanceStart &&
-                    entry.distanceStart <= snap)
-                {
-                    distanceUp = entry.distanceStart;
-                    break;
-                }
-                if (cameraDistance <= entry.distanceEnd &&
-                    entry.distanceEnd <= snap)
-                {
-                    distanceUp = entry.distanceEnd;
-                    break;
-                }
-            }
-
-            for (int i = snapEntries.Count - 1; i >= 0; --i)
-            {
-                SnapEntry entry = snapEntries[i];
-                if (cameraDistance >= entry.distanceStart &&
-                    entry.distanceStart <= snap)
-                {
-                    distanceDown = entry.distanceStart;
-                    break;
-                }
-                if (cameraDistance >= entry.distanceEnd &&
-                    entry.distanceEnd <= snap)
-                {
-                    distanceDown = entry.distanceEnd;
-                    break;
-                }
-            }
-
-            /*
-             * Shortest snap is disabled for inconsistency with multiple ray result accumulation 
-             * (both avg and min/max lead to poor results)
-            // Shortest snap
-            float deltaUp = Mathf.Abs(distanceUp - cameraDistance);
-            float deltaDown = Mathf.Abs(distanceDown - cameraDistance);
-            if (deltaUp < deltaDown)
-            {
-                distance = distanceUp;
-            }
-            else
-            {
-                distance = distanceDown;
-            }
-            */
-
-            // Closest snap
-            if (distanceDown != float.MaxValue)
-            {
-                outDistance = distanceDown;
-                outSnap = snap;
-            }
-            else
-            {
-                outDistance = distanceUp;
-                outSnap = snap;
-            }
         }
 
     }
@@ -536,33 +495,29 @@ public class PlayerCameraController : MonoBehaviour
             ClipAnalyze(out d3, out s3, target, dir3, distance, forward);
             ClipAnalyze(out d4, out s4, target, dir4, distance, forward);
 
-            float dist = d1;
+            var dist = d1;
             dist = Mathf.Min(dist, d2);
             dist = Mathf.Min(dist, d3);
             dist = Mathf.Min(dist, d4);
 
-            float snap = s1;
+            var snap = s1;
             snap = Mathf.Min(snap, s2);
             snap = Mathf.Min(snap, s3);
             snap = Mathf.Min(snap, s4);
 
-            float compensation = Mathf.Min(distance - minDistance, distance - dist);
-            float snapCompensation = Mathf.Min(distance - minDistance, distance - snap);
-
-            if (clippingAvoidanceInstantSnap)
+            var compensation = Mathf.Min(distance - minDistance, distance - dist);
+            var snapCompensation = distance - minDistance;
+            if (snap < float.MaxValue)
             {
-                if (clippingAvoidanceOffset < snapCompensation)
-                {
-                    clippingAvoidanceOffset = snapCompensation;
-                }
+                snapCompensation = Mathf.Min(snapCompensation, distance - snap);
+            }
+
+            if (clippingAvoidanceInstantSnap && clippingAvoidanceOffset < snapCompensation)
+            {
+                clippingAvoidanceOffset = snapCompensation;
             }
 
             clippingAvoidanceOffset = Mathf.MoveTowards(clippingAvoidanceOffset, compensation, clippingAvoidanceSpeed * delta);
-
-            /*
-             * This makes no sense, why was it written?
-             */
-            // clippingAvoidanceOffset = Mathf.Min(clippingAvoidanceOffset, distance - minDistance);
 
             position += forward * clippingAvoidanceOffset;
         }
@@ -589,19 +544,24 @@ public class PlayerCameraController : MonoBehaviour
             otherCamera.Yaw = constrainedCamera.Yaw;
         }
 
-        //fix: NullReferenceException
         transitionStartFOV = camera.fieldOfView;
         transitionStartYaw = camera.transform.eulerAngles.y;
         transitionStartPitch = camera.transform.eulerAngles.x;
         transitionStartPosition = camera.transform.position;
 
-        transitionDeltaYaw = Mathf.DeltaAngle(0, otherCamera.Yaw - transitionStartYaw);
-        transitionDeltaPitch = Mathf.DeltaAngle(0, otherCamera.Pitch - transitionStartPitch);
+        transitionDeltaYaw = MathfExtensions.NormalizeAngle(otherCamera.Yaw - transitionStartYaw);
+        transitionDeltaPitch = MathfExtensions.NormalizeAngle(otherCamera.Pitch - transitionStartPitch);
+
 
         cameraTransition = instant
             ? 1.0f
             : 0.0f;
         constrainedCamera = otherCamera;
+
+        clippingAvoidanceOffset = 0 * Vector3.Distance(
+            Vector3Extensions.SmoothStep(transitionStartPosition, constrainedCamera.Position, cameraTransition), 
+            otherCamera.Target);
+
     }
 
 }

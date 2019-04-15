@@ -18,7 +18,7 @@ public class DeathUISystem : MonoBehaviour
 {
     
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
         GameObject.Find("ToMainMenuButton").GetComponent<Button>().onClick.AddListener(ToMainMenu);
         GameObject.Find("RestartButton").GetComponent<Button>().onClick.AddListener(Restart);
@@ -36,6 +36,6 @@ public class DeathUISystem : MonoBehaviour
     }
     void Restart()
     {
-        SceneManager.LoadScene("Game", LoadSceneMode.Single);
+        SceneManager.LoadScene("GameSasha", LoadSceneMode.Single);
     }
 }

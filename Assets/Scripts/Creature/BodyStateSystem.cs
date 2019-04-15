@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -32,6 +32,7 @@ public class BodyStateSystem : MonoBehaviour
     public GameObject physicalHitbox;
     public GameObject magicalHitbox;
 
+    private SkillSystem skillSystem;
 
     public BodyState State
     {
@@ -56,6 +57,7 @@ public class BodyStateSystem : MonoBehaviour
     protected void Start()
     {
         sheathSystem = GetComponent<SheathSystem>();
+        skillSystem = GetComponent<SkillSystem>();
 
         bool sheathed = sheathSystem.Sheathed;
 
@@ -64,13 +66,13 @@ public class BodyStateSystem : MonoBehaviour
         if (magicalAppearanceSheathed) magicalAppearance.SetActive(false);
 
         //Consistency checks
-        if (!magicalHitbox) Debug.LogError("No magical hitbox attached!");
+        if (!magicalHitbox) Debug.Log("No magical hitbox attached!");
         else
         {
             if (magicalHitbox.layer != LayerMask.NameToLayer("Magical")) Debug.LogError("Magical hitbox isn't placed on proper layer");
         }
 
-        if (!magicalHitbox) Debug.LogError("No physical hitbox attached!");
+        if (!magicalHitbox) Debug.Log("No physical hitbox attached!");
         else
         {
             if (magicalHitbox.layer != LayerMask.NameToLayer("Physical")) Debug.LogError("Physical hitbox isn't placed on proper layer");
@@ -101,7 +103,10 @@ public class BodyStateSystem : MonoBehaviour
         if (state == newState) return;
 
         state = newState;
-        
+        if (skillSystem && skillSystem.IsSkillSelected && !skillSystem.Busy)
+        {
+            skillSystem.UnselectSkill();
+        }
     }
 
     public static int StateToLayer(BodyState state)
