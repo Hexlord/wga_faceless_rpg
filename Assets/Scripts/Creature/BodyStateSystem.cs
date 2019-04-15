@@ -72,10 +72,10 @@ public class BodyStateSystem : MonoBehaviour
             if (magicalHitbox.layer != LayerMask.NameToLayer("Magical")) Debug.LogError("Magical hitbox isn't placed on proper layer");
         }
 
-        if (!magicalHitbox) Debug.Log("No physical hitbox attached!");
+        if (!physicalHitbox) Debug.LogError("No physical hitbox attached!");
         else
         {
-            if (magicalHitbox.layer != LayerMask.NameToLayer("Physical")) Debug.LogError("Physical hitbox isn't placed on proper layer");
+            if (physicalHitbox.layer != LayerMask.NameToLayer("Physical")) Debug.LogError("Physical hitbox isn't placed on proper layer");
         }
     }
 
@@ -106,6 +106,20 @@ public class BodyStateSystem : MonoBehaviour
         if (skillSystem && skillSystem.IsSkillSelected && !skillSystem.Busy)
         {
             skillSystem.UnselectSkill();
+        }
+    }
+
+    public void SetStateAffectedByDamage(BodyState state, bool isAffected)
+    {
+        switch(state)
+        {
+            case BodyState.Magical:
+                magicalHitbox.SetActive(isAffected);
+                break;
+            case BodyState.Physical:
+                physicalHitbox.SetActive(isAffected);
+                break;
+            
         }
     }
 

@@ -195,9 +195,11 @@ public class MovementSystem : MonoBehaviour
         if(animator) animator.SetFloat(animatorHorizontal, desiredMovementBodySpace.x, animationDamping, delta);
         if (animator) animator.SetFloat(animatorVertical, desiredMovementBodySpace.y, animationDamping, delta);
         if(sheathSystem) animator.SetFloat(animatorWeapon, sheathSystem.Sheathed ? 0.0f : 1.0f, animationDamping, delta);
-
-        MoveBody(delta);
-        RotateBody(delta);
+        if (canMove)
+        {
+            MoveBody(delta);
+            RotateBody(delta);
+        }
     }
 
     public void SetSpeed(float newSpeed)

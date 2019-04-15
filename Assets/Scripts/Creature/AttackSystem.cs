@@ -42,14 +42,14 @@ public class AttackSystem : MonoBehaviour
 
     public int animationLayer = 0;
 
-    public string attackAnimation = "attack";
-    public string attackAnimationTrigger = "attackTrigger";
-    public string interruptAnimation = "interruptedAttack";
+    //public string attackAnimation = "attack";
+    public string[] attackAnimationTriggers = { "attackTrigger" };
+    //public string interruptAnimation = "interruptedAttack";
     public string interruptAnimationTrigger = "interruptedAttackTrigger";
 
     public string idleAnimation = "idle";
 
-    public CollisionDamageBasic sword;
+    public CollisionDamageBasic[] weapons;
 
     public bool Attacking
     {
@@ -57,7 +57,8 @@ public class AttackSystem : MonoBehaviour
     }
 
     // Private
-
+    private int activeWeaponIndex = -1;
+    //Testing
     [Header("Debug")]
     public AttackSystemState state = AttackSystemState.None;
 
@@ -72,40 +73,45 @@ public class AttackSystem : MonoBehaviour
 
         animator = GetComponent<Animator>();
         movementSystem = GetComponent<MovementSystem>();
-        sword.Active = false;
-    }
-
-    void FixedUpdate()
-    {
-        bool transition = animator.IsInTransition(animationLayer);
-        AnimatorClipInfo info = animator.GetCurrentAnimatorClipInfo(animationLayer)[0];
-        AnimatorStateInfo animState = animator.GetCurrentAnimatorStateInfo(animationLayer);
-        AnimationClip clip = info.clip;
-        string clipName = clip.name;
-
-        bool isDefaultClip = clipName == idleAnimation;
-
-        if (transition) return;
-
-        switch (state)
+        for (int i = 0; i < weapons.Length; i++)
         {
-            case AttackSystemState.None:
-                break;
-            case AttackSystemState.Attacking:
-                if (isDefaultClip)
-                {
-                    state = AttackSystemState.None;
-                    sword.Active = false;
-                    sword.ResetHitTargets();
-                }
-                break;
+            weapons[i].DealsDamage = false;
         }
     }
 
-    public void Attack()
+    //void FixedUpdate()
+    //{
+    //    bool transition = animator.IsInTransition(animationLayer);
+    //    AnimatorStateInfo infoState = animator.GetCurrentAnimatorStateInfo(0);
+    //    bool isDefaultState = infoState.IsName("Idle");
+    //    //if (transform.tag != "Player") Debug.Log(isDefaultState);
+    //    AnimatorClipInfo info = animator.GetCurrentAnimatorClipInfo(animationLayer)[0];
+    //    AnimatorStateInfo animState = animator.GetCurrentAnimatorStateInfo(animationLayer);
+    //    AnimationClip clip = info.clip;
+    //    string clipName = clip.name;
+
+    //    bool isDefaultClip = clipName == idleAnimation;
+    //    //Debug.Log(isDefaultClip);
+    //    if (transition) return;
+
+    //    switch (state)
+    //    {
+    //        case AttackSystemState.None:
+    //            break;
+    //        case AttackSystemState.Attacking:
+    //            if (isDefaultState)
+    //            {
+    //                FinalizeAttack();
+    //            }
+    //            break;
+    //    }
+    //}
+
+    public void Attack(int attackIndex, int weaponIndex)
     {
-        sword.Active = true;
-        Debug.Assert(!Attacking);
+        activeWeaponIndex = weaponIndex;
+        weapons[activeWeaponIndex].DealsDamage = true;
+        //Debug.Assert(!Attacking);
 
         if (!canAttack) return;
 
@@ -115,11 +121,19 @@ public class AttackSystem : MonoBehaviour
             */
 
         state = AttackSystemState.Attacking;
-        animator.SetTrigger(attackAnimationTrigger);
+        animator.SetTrigger(attackAnimationTriggers[attackIndex]);
     }
 
     public void AttackInterrupted()
     {
-        //TO DO: Interrupt attack;
+        animator.SetTrigger(interruptAnimationTrigger);
+    }
+
+    public void FinalizeAttack()
+    {
+        state = AttackSystemState.None;
+        weapons[activeWeaponIndex].DealsDamage = false;
+        weapons[activeWeaponIndex].ResetHitTargets();
+        activeWeaponIndex = -1;
     }
 }
