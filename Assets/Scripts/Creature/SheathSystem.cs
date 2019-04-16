@@ -29,8 +29,7 @@ public class SheathSystem : MonoBehaviour
         Unsheathed,
         Sheathing,
     }
-
-
+    
     /*
      * Expected animation configuration:
      * 
@@ -47,16 +46,11 @@ public class SheathSystem : MonoBehaviour
 
     [Header("Animation Settings")]
 
-    public int animationLayer = 0;
+    private readonly int sheatheAnimationTrigger = Animator.StringToHash("sheatheTrigger");
+    private readonly int unsheatheAnimationTrigger = Animator.StringToHash("unsheatheTrigger");
 
-    public string sheatheAnimation = "sheathe";
-    public string sheatheAnimationTrigger = "sheatheTrigger";
-
-    public string unsheatheAnimation = "unsheathe";
-    public string unsheatheAnimationTrigger = "unsheatheTrigger";
-
-    public string idleAnimation = "idle";
-    public string unarmedIdleAnimation = "unarmedIdle";
+    [Tooltip("Smoothing factor for transitions")]
+    public float animationDamping = 0.15f;
 
     [Header("Advanced Settings")]
     [Tooltip("Sheathed weapon object")]
@@ -88,6 +82,8 @@ public class SheathSystem : MonoBehaviour
 
     [Header("Debug")]
     public SheathSystemState state = SheathSystemState.Sheathed;
+    
+    private readonly int animatorWeapon = Animator.StringToHash("Weapon");
 
     // Cache
 
@@ -96,7 +92,7 @@ public class SheathSystem : MonoBehaviour
     private AttackSystem attackSystem;
     private SkillSystem skillSystem;
 
-    void Start()
+    private void Start()
     {
         // Cache
 
@@ -109,45 +105,14 @@ public class SheathSystem : MonoBehaviour
         weaponUnsheathed.SetActive(false);
     }
 
-    void FixedUpdate()
+    private void FixedUpdate()
     {
-        bool transition = animator.IsInTransition(animationLayer);
-
-        AnimatorClipInfo info = animator.GetCurrentAnimatorClipInfo(animationLayer)[0];
-        AnimatorStateInfo animState = animator.GetCurrentAnimatorStateInfo(animationLayer);
-        AnimationClip clip = info.clip;
-        string clipName = clip.name;
-
-        if (transition) return;
-
-        switch (state)
-        {
-            case SheathSystemState.Sheathed:
-                break;
-            case SheathSystemState.Unsheathing:
-                if (clipName == idleAnimation)
-                {
-                    state = SheathSystemState.Unsheathed;
-                    
-                    weaponSheathed.SetActive(false);
-                    weaponUnsheathed.SetActive(true);
-                }
-                break;
-            case SheathSystemState.Unsheathed:
-                break;
-            case SheathSystemState.Sheathing:
-                if (clipName == unarmedIdleAnimation)
-                {
-                    state = SheathSystemState.Sheathed;
-
-                    weaponSheathed.SetActive(true);
-                    weaponUnsheathed.SetActive(false);
-                }
-                break;
-        }
+        var delta = Time.fixedDeltaTime;
+        
+        if(animator) animator.SetFloat(animatorWeapon, Sheathed ? 0.0f : 1.0f, animationDamping, delta);
     }
 
-    public void Sheath()
+    public void Sheathe()
     {
         Debug.Assert(!Busy);
 
@@ -157,7 +122,7 @@ public class SheathSystem : MonoBehaviour
         animator.SetTrigger(sheatheAnimationTrigger);
     }
 
-    public void Unsheath()
+    public void Unsheathe()
     {
         Debug.Assert(!Busy);
 
@@ -167,5 +132,22 @@ public class SheathSystem : MonoBehaviour
         animator.SetTrigger(unsheatheAnimationTrigger);
     }
 
+    public void FinalizeSheathing()
+    {
+        Debug.Assert(state == SheathSystemState.Sheathing);
 
+        state = SheathSystemState.Sheathed;
+
+        if (weaponSheathed) weaponSheathed.SetActive(true);
+        if (weaponUnsheathed) weaponUnsheathed.SetActive(false);
+    }
+    public void FinalizeUnsheathing()
+    {
+        Debug.Assert(state == SheathSystemState.Unsheathing);
+
+        state = SheathSystemState.Unsheathed;
+        
+        if(weaponSheathed) weaponSheathed.SetActive(false);
+        if (weaponUnsheathed) weaponUnsheathed.SetActive(true);
+    }
 }

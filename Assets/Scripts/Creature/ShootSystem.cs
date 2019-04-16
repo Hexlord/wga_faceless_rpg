@@ -109,34 +109,17 @@ public class ShootSystem : MonoBehaviour
     {
         var delta = Time.fixedDeltaTime;
         fireTimer = Mathf.MoveTowards(fireTimer, fireTime, delta);
-
-        bool transition = animator.IsInTransition(animationLayer);
-
-        AnimatorClipInfo info = animator.GetCurrentAnimatorClipInfo(animationLayer)[0];
-        AnimatorStateInfo animState = animator.GetCurrentAnimatorStateInfo(animationLayer);
-        AnimationClip clip = info.clip;
-        string clipName = clip.name;
-
-        bool isDefaultClip = clipName == idleAnimation;
-        isDefaultClip = true; // TODO: remove when animations ready
-
-        if (transition) return;
-
+        
         switch (state)
         {
             case ShootSystemState.None:
                 break;
             case ShootSystemState.Shooting:
-                if(isDefaultClip || clipName == shootRestoreAnimation)
-                {
-                    SpawnProjectile();
-                }
-
-                if (clipName == shootRestoreAnimation) state = ShootSystemState.Restoring;
-                if (isDefaultClip) state = ShootSystemState.None; // restoring already passed
+                state = ShootSystemState.Restoring;
+                SpawnProjectile();
                 break;
             case ShootSystemState.Restoring:
-                if (isDefaultClip) state = ShootSystemState.None;
+                state = ShootSystemState.None;
                 break;
         }
     }

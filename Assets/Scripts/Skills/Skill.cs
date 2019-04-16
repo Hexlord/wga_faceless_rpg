@@ -22,6 +22,13 @@ public enum Skill
     FireBreath,
 }
 
+public enum SkillAnimation
+{
+    First,
+    Second,
+    Third
+}
+
 public static class SkillExtensions
 {
     public static string ToString(this Skill skill)

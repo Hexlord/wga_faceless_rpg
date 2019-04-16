@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Random = System.Random;
 
 /*
  * History:
@@ -40,14 +41,10 @@ public class AttackSystem : MonoBehaviour
 
     [Header("Animation Settings")]
 
-    public int animationLayer = 0;
-
     //public string attackAnimation = "attack";
     public string[] attackAnimationTriggers = { "attackTrigger" };
     //public string interruptAnimation = "interruptedAttack";
     public string interruptAnimationTrigger = "interruptedAttackTrigger";
-
-    public string idleAnimation = "idle";
 
     public CollisionDamageBasic[] weapons;
 
@@ -57,7 +54,7 @@ public class AttackSystem : MonoBehaviour
     }
 
     // Private
-    private int activeWeaponIndex = -1;
+    private int activeWeaponIndex = 0;
     //Testing
     [Header("Debug")]
     public AttackSystemState state = AttackSystemState.None;
@@ -66,46 +63,19 @@ public class AttackSystem : MonoBehaviour
 
     private Animator animator;
     private MovementSystem movementSystem;
+    private Random random = new Random();
 
-    void Start()
+    void Awake()
     {
         // Cache
 
         animator = GetComponent<Animator>();
         movementSystem = GetComponent<MovementSystem>();
-        for (int i = 0; i < weapons.Length; i++)
+        for (var i = 0; i < weapons.Length; i++)
         {
             weapons[i].DealsDamage = false;
         }
     }
-
-    //void FixedUpdate()
-    //{
-    //    bool transition = animator.IsInTransition(animationLayer);
-    //    AnimatorStateInfo infoState = animator.GetCurrentAnimatorStateInfo(0);
-    //    bool isDefaultState = infoState.IsName("Idle");
-    //    //if (transform.tag != "Player") Debug.Log(isDefaultState);
-    //    AnimatorClipInfo info = animator.GetCurrentAnimatorClipInfo(animationLayer)[0];
-    //    AnimatorStateInfo animState = animator.GetCurrentAnimatorStateInfo(animationLayer);
-    //    AnimationClip clip = info.clip;
-    //    string clipName = clip.name;
-
-    //    bool isDefaultClip = clipName == idleAnimation;
-    //    //Debug.Log(isDefaultClip);
-    //    if (transition) return;
-
-    //    switch (state)
-    //    {
-    //        case AttackSystemState.None:
-    //            break;
-    //        case AttackSystemState.Attacking:
-    //            if (isDefaultState)
-    //            {
-    //                FinalizeAttack();
-    //            }
-    //            break;
-    //    }
-    //}
 
     public void Attack(int attackIndex, int weaponIndex)
     {
@@ -121,6 +91,10 @@ public class AttackSystem : MonoBehaviour
             */
 
         state = AttackSystemState.Attacking;
+        if (attackIndex == -1)
+        {
+            attackIndex = random.Next(attackAnimationTriggers.Length);
+        }
         animator.SetTrigger(attackAnimationTriggers[attackIndex]);
     }
 

@@ -27,7 +27,7 @@ public class SkillHook : SkillBase
     public static float targetDistance = 0.5f;
 
     public SkillHook() :
-        base(Skill.Hook, true, 1.0f)
+        base(Skill.Hook, SkillAnimation.First, true, 1.0f)
     {
         hookPrefab = (GameObject)Resources.Load("Prefabs/Skills/Hook", typeof(GameObject));
     }
@@ -68,7 +68,7 @@ public class SkillHook : SkillBase
         if (!hook)
         {
             var skillSystem = caster.GetComponent<SkillSystem>();
-            if (skillSystem.Channeling) skillSystem.Interrupt(false);
+            if (skillSystem.Channeling) skillSystem.Interrupt();
             return;
         }
 
@@ -118,7 +118,7 @@ public class SkillHook : SkillBase
         if (!hook)
         {
             var skillSystem = caster.GetComponent<SkillSystem>();
-            if(skillSystem.Channeling) skillSystem.Interrupt(false);
+            if(skillSystem.Channeling) skillSystem.Interrupt();
             return;
         }
 
