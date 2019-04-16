@@ -32,7 +32,9 @@ public class SkillSystemEditor : Editor
         for (var i = 0; i < list.arraySize; i++)
         {
             EditorGUILayout.BeginHorizontal();
-            EditorGUILayout.PropertyField(list.GetArrayElementAtIndex(i));
+            var name = i <= 1 ? "Physical " : "Magical";
+            name += " Skill " + ((i % 2) + 1);
+            EditorGUILayout.PropertyField(list.GetArrayElementAtIndex(i), new GUIContent(name));
             if(GUILayout.Button(moveButtonContent, EditorStyles.miniButtonLeft, miniButtonWidth))
             {
                 list.MoveArrayElement(i, i + 1);
@@ -59,27 +61,7 @@ public class SkillSystemEditor : Editor
     public override void OnInspectorGUI()
     {
         serializedObject.Update();
-        EditorGUILayout.PropertyField(serializedObject.FindProperty("skillAnimationStart"));
-        EditorGUILayout.PropertyField(serializedObject.FindProperty("skillAnimationEnd"));
-        EditorGUILayout.PropertyField(serializedObject.FindProperty("channelAnimationStart"));
-        EditorGUILayout.PropertyField(serializedObject.FindProperty("channelAnimationUpdate"));
-        EditorGUILayout.PropertyField(serializedObject.FindProperty("channelAnimationEnd"));
-        EditorGUILayout.PropertyField(serializedObject.FindProperty("idleAnimation"));
-        EditorGUILayout.PropertyField(serializedObject.FindProperty("skillAnimationStartTrigger"));
-        EditorGUILayout.PropertyField(serializedObject.FindProperty("channelAnimationStartTrigger"));
-        EditorGUILayout.PropertyField(serializedObject.FindProperty("interruptTrigger"));
-        EditorGUILayout.PropertyField(serializedObject.FindProperty("interruptInstantTrigger"));
-        EditorGUILayout.PropertyField(serializedObject.FindProperty("animationLayer"));
-        EditorGUILayout.PropertyField(serializedObject.FindProperty("preciseEnding"));
-        EditorGUILayout.PropertyField(serializedObject.FindProperty("preciseChanneling"));
-        EditorGUILayout.PropertyField(serializedObject.FindProperty("useAnimationTime"));
-        
-        EditorGUILayout.PropertyField(serializedObject.FindProperty("state"));
-        EditorGUILayout.PropertyField(serializedObject.FindProperty("skillAnimationStartLength"));
-        EditorGUILayout.PropertyField(serializedObject.FindProperty("skillAnimationEndLength"));
-        EditorGUILayout.PropertyField(serializedObject.FindProperty("channelAnimationStartLength"));
-        EditorGUILayout.PropertyField(serializedObject.FindProperty("channelAnimationUpdateLength"));
-        EditorGUILayout.PropertyField(serializedObject.FindProperty("channelAnimationEndLength"));
+        EditorGUILayout.PropertyField(serializedObject.FindProperty("canCast"));
         Show(serializedObject.FindProperty("startSkills"));
         serializedObject.ApplyModifiedProperties();
     }

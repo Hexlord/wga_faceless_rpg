@@ -188,8 +188,8 @@ public class PlayerCharacterController : MonoBehaviour
 
         if (InputManager.Released(InputAction.Sheathe))
         {
-            if (sheathSystem.Sheathed) sheathSystem.Unsheath();
-            else sheathSystem.Sheath();
+            if (sheathSystem.Sheathed) sheathSystem.Unsheathe();
+            else sheathSystem.Sheathe();
         }
     }
 
@@ -203,7 +203,7 @@ public class PlayerCharacterController : MonoBehaviour
 
         if (bodyStateSystem.State == BodyStateSystem.BodyState.Physical)
         {
-                attackSystem.Attack(0, 0);
+                attackSystem.Attack(-1, 0);
         }
         else if (bodyStateSystem.State == BodyStateSystem.BodyState.Magical)
         {
@@ -238,7 +238,7 @@ public class PlayerCharacterController : MonoBehaviour
         {
             if (sheathSystem.Sheathed)
             {
-                if (!sheathSystem.Busy) sheathSystem.Unsheath();
+                if (!sheathSystem.Busy) sheathSystem.Unsheathe();
 
                 wantToAttack = true;
                 return;
@@ -257,7 +257,7 @@ public class PlayerCharacterController : MonoBehaviour
         }
         else
         {
-            if (skillSystem.Channeling) skillSystem.Interrupt(false);
+            if (skillSystem.Channeling) skillSystem.Interrupt();
         }
 
     }

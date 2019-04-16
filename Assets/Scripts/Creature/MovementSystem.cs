@@ -21,7 +21,7 @@ public class MovementSystem : MonoBehaviour
 {
 
     // Public
-    
+
     [Header("Movement Settings")]
     [Tooltip("Toggles ability to move")]
     public bool canMove = true;
@@ -57,7 +57,6 @@ public class MovementSystem : MonoBehaviour
     [Range(0.001f, 10.0f)]
     public float airwalkFadeTime = 1.0f;
 
-
     [Header("Animation Settings")]
     [Tooltip("Smoothing factor for transitions")]
     public float animationDamping = 0.15f;
@@ -69,8 +68,7 @@ public class MovementSystem : MonoBehaviour
 
     private readonly int animatorHorizontal = Animator.StringToHash("Horizontal");
     private readonly int animatorVertical = Animator.StringToHash("Vertical");
-    private readonly int animatorWeapon = Animator.StringToHash("Weapon");
-    
+
     private float currentMovementSpeed;
 
     public bool Moving
@@ -86,7 +84,7 @@ public class MovementSystem : MonoBehaviour
     {
         get { return desiredMovement; }
         set
-        {        
+        {
             if (value.sqrMagnitude < Mathf.Epsilon) value = Vector2.zero;
             else if (value.sqrMagnitude > 1.0f) value = value.normalized;
 
@@ -137,7 +135,7 @@ public class MovementSystem : MonoBehaviour
     private void OnDesiredMovementUpdate()
     {
         var desiredMovementBodySpaceTemp =
-            Quaternion.Euler(0.0f, -transform.rotation.eulerAngles.y, 0.0f) * 
+            Quaternion.Euler(0.0f, -transform.rotation.eulerAngles.y, 0.0f) *
             (new Vector3(desiredMovement.x, 0.0f, desiredMovement.y));
 
         desiredMovementBodySpace = new Vector2(desiredMovementBodySpaceTemp.x, desiredMovementBodySpaceTemp.z);
@@ -158,7 +156,7 @@ public class MovementSystem : MonoBehaviour
             if (!legsTouchCondition.Touch)
             {
                 landFactor = Mathf.Max(0, airwalkFadeTime - legsTouchCondition.DetouchedTime) / airwalkFadeTime * landFactor;
-                
+
                 gravity = gravityMax * Mathf.Max(0, gravityFadeTime - legsTouchCondition.DetouchedTime) * delta;
             }
         }
@@ -182,7 +180,7 @@ public class MovementSystem : MonoBehaviour
 
     private void RotateBody(float delta)
     {
-        if(rotationStabilization)
+        if (rotationStabilization)
         {
             body.angularVelocity = new Vector3(0.0f, Mathf.Lerp(body.angularVelocity.y, 0.0f, delta), 0.0f);
         }
@@ -191,10 +189,10 @@ public class MovementSystem : MonoBehaviour
     protected void FixedUpdate()
     {
         var delta = Time.fixedDeltaTime;
-        
-        if(animator) animator.SetFloat(animatorHorizontal, desiredMovementBodySpace.x, animationDamping, delta);
+
+        if (animator) animator.SetFloat(animatorHorizontal, desiredMovementBodySpace.x, animationDamping, delta);
         if (animator) animator.SetFloat(animatorVertical, desiredMovementBodySpace.y, animationDamping, delta);
-        if(sheathSystem) animator.SetFloat(animatorWeapon, sheathSystem.Sheathed ? 0.0f : 1.0f, animationDamping, delta);
+
         if (canMove)
         {
             MoveBody(delta);
