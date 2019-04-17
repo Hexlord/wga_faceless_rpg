@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
 
 /*
@@ -35,8 +34,6 @@ public class SkillBase
         this.channeling = channeling;
         this.cooldown = cooldown;
         this.cooldownTimer = 0.0f;
-        
-        textPrefab = (GameObject)Resources.Load("Prefabs/FloatingText", typeof(GameObject));
     }
 
     public void Update(float delta)
@@ -66,10 +63,6 @@ public class SkillBase
      */
     public virtual void CastEvent(GameObject caster)
     {
-        GameObject text = UnityEngine.Object.Instantiate(textPrefab,
-            caster.transform.position + new Vector3(0, 3, 0),
-            Quaternion.identity);
-        text.GetComponent<TextMeshPro>().text = type.ToString();
     }
 
     /*

@@ -240,14 +240,14 @@ public class PlayerCameraController : MonoBehaviour
 
         // Collect collisions 
 
-        var hitsForward = Physics.RaycastAll(new Ray(cameraTarget + fromTargetToCamera * range, fromCameraToTarget), range, mask);
-        var hitsBackwards = Physics.RaycastAll(new Ray(cameraTarget, fromTargetToCamera), range, mask);
-        var hitsObjectForward = Physics.RaycastAll(new Ray(cameraTarget, fromCameraToTarget), range, mask);
+        var hitsForwardIntoTarget = Physics.RaycastAll(new Ray(cameraTarget + fromTargetToCamera * range, fromCameraToTarget), range, mask);
+        var hitsBackwardsIntoCamera = Physics.RaycastAll(new Ray(cameraTarget, fromTargetToCamera), range, mask);
+        var hitsBackwardsIntoTarget = Physics.RaycastAll(new Ray(cameraTarget + fromCameraToTarget * range, fromTargetToCamera), range, mask);
 
         var rayEntries = new List<RayEntry>();
 
         // Go both ways, add planar objects twice (to compensate for their single side)
-        foreach (var hit in hitsBackwards)
+        foreach (var hit in hitsBackwardsIntoCamera)
         {
             RayEntry entry;
             entry.collider = hit.collider;
@@ -263,7 +263,7 @@ public class PlayerCameraController : MonoBehaviour
             }
             rayEntries.Add(entry);
         }
-        foreach (var hit in hitsForward)
+        foreach (var hit in hitsForwardIntoTarget)
         {
             RayEntry entry;
             entry.collider = hit.collider;
@@ -285,13 +285,14 @@ public class PlayerCameraController : MonoBehaviour
         // Example is player being in cube of ice, when we should ignore ice cube boundaries in our calculations
         var objectStuckColliders = new List<Collider>();
         {
-            foreach (var hit in hitsBackwards)
+            foreach (var hit in hitsForwardIntoTarget)
             {
-                foreach (var hit2 in hitsObjectForward)
+                foreach (var hit2 in hitsBackwardsIntoTarget)
                 {
                     if (hit.collider == hit2.collider)
                     {
                         objectStuckColliders.Add(hit.collider);
+                        Debug.Log("Object stuck in " + hit.collider.name);
                     }
                 }
             }
