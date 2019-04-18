@@ -65,7 +65,7 @@ public class CollectiveAISystem : MonoBehaviour
         }
     }
 
-    private void Awake()
+    private void Start()
     {
         navSystem = GetComponent<NavigationSystem>();
         observer = GetComponent<Observer>();

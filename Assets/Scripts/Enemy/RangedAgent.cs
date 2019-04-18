@@ -34,7 +34,11 @@ public class RangedAgent : BaseAgent
 
     protected override void Update()
     {
-        Vector3 shootingVector = currentTarget.transform.position + Vector3.up * 2f - shootSys.ShootingPoint.position;
+        Vector3 shootingVector = Vector3.zero;
+        if (currentTarget)
+        {
+            shootingVector = currentTarget.transform.position + Vector3.up * 2f - shootSys.ShootingPoint.position;
+        }
 
         if (!isStunned && !IsDoingIdleAnimation)
         {

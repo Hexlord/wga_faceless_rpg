@@ -132,7 +132,10 @@ public class HealthSystem : MonoBehaviour
         gameObject.layer = LayerMask.NameToLayer("Valhalla");
         if (transform.tag != "Player")
         {
-            transform.Find("Hitbox").gameObject.layer = LayerMask.NameToLayer("Valhalla");
+            foreach (Transform gm in transform.FindPrecise("Hitbox"))
+            {
+                gm.gameObject.layer = LayerMask.NameToLayer("Valhalla");
+            }
             worldSpaceHealthBar.enabled = false;
         }
         if (GetComponent<BaseAgent>()) GetComponent<BaseAgent>().enabled = false;

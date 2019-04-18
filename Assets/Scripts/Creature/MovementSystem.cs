@@ -71,6 +71,13 @@ public class MovementSystem : MonoBehaviour
 
     private float currentMovementSpeed;
 
+    private float busyFactor;
+    private float landFactor;
+    private float gravity;
+    private Vector2 currentVelocity;
+    private Vector2 targetVelocity;
+    private Vector2 appliedVelocity;
+
     public bool Moving
     {
         get { return desiredMovementBodySpace.sqrMagnitude > Mathf.Epsilon; }
@@ -144,12 +151,12 @@ public class MovementSystem : MonoBehaviour
 
     private void MoveBody(float delta)
     {
-        var busyFactor = 1.0f;
+        busyFactor = 1.0f;
         if (skillSystem && skillSystem.Busy) busyFactor = busyMultiplier;
         if (attackSystem && attackSystem.Attacking) busyFactor = busyMultiplier;
 
-        var landFactor = 1.0f;
-        var gravity = 0.0f;
+        landFactor = 1.0f;
+        gravity = 0.0f;
 
         if (legsTouchCondition)
         {
@@ -161,18 +168,16 @@ public class MovementSystem : MonoBehaviour
             }
         }
 
-        var currentVelocity = (new Vector2(body.velocity.x, body.velocity.z));
-        var targetVelocity = desiredMovement * currentMovementSpeed * busyFactor;
+        currentVelocity = (new Vector2(body.velocity.x, body.velocity.z));
+        targetVelocity = desiredMovement * currentMovementSpeed * busyFactor;
         if (!ResistForces)
         {
             targetVelocity += currentVelocity;
         }
 
-        var deltaVelocity = targetVelocity - currentVelocity;
-
-        var appliedVelocity = Vector2.MoveTowards(
+        appliedVelocity = Vector2.MoveTowards(
             Vector2.zero,
-            deltaVelocity,
+            targetVelocity - currentVelocity,
             currentMovementSpeed * delta * landFactor / accelerationTime);
 
         body.AddForce(appliedVelocity.x, -gravity, appliedVelocity.y, ForceMode.VelocityChange);

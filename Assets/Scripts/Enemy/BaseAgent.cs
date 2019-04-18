@@ -76,6 +76,16 @@ public class BaseAgent : MonoBehaviour
         get { return isDoingIdle; }
     }
 
+    public void SetControllingSystems(CollectiveAISystem ai, NavigationSystem nav)
+    {
+        if (!systemsSet)
+        {
+            AISys = ai;
+            navSys = nav;
+        }
+    }
+
+    #region Monobehaviour voids
     // Start is called before the first frame update
     protected void Awake()
     {
@@ -102,15 +112,7 @@ public class BaseAgent : MonoBehaviour
         AISys.AgentDied(ID);
     }
     //
-
-    public void SetControllingSystems(CollectiveAISystem ai, NavigationSystem nav)
-    {
-        if (!systemsSet)
-        {
-            AISys = ai;
-            navSys = nav;
-        }
-    }
+    #endregion
 
     #region Actions
     public void ThrownBackAndGetUp()
