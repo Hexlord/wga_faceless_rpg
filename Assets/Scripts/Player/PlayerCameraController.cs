@@ -81,11 +81,11 @@ public class PlayerCameraController : MonoBehaviour
 
     [Tooltip("Camera distance change speed raw")]
     [Range(0.1f, 100.0f)]
-    public float clippingAvoidanceSpeed = 2.0f;
+    public float clippingAvoidanceSpeed = 0.5f;
 
     [Tooltip("Camera distance change speed linear interpolation per frame")]
     [Range(0.1f, 1.0f)]
-    public float clippingAvoidanceSpeedLerp = 0.01f;
+    public float clippingAvoidanceSpeedLerp = 0.05f;
 
     [Tooltip("Camera distance immediate snap for solid clipping")]
     public bool clippingAvoidanceInstantSnap = true;
@@ -292,7 +292,6 @@ public class PlayerCameraController : MonoBehaviour
                     if (hit.collider == hit2.collider)
                     {
                         objectStuckColliders.Add(hit.collider);
-                        Debug.Log("Object stuck in " + hit.collider.name);
                     }
                 }
             }

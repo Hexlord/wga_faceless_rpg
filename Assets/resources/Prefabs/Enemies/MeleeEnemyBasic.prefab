@@ -612,7 +612,7 @@ Animator:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 59942695730445792}
   m_Enabled: 1
-  m_Avatar: {fileID: 9000000, guid: ed9594a02bf2eaa4c9a1c1ede61e0b32, type: 3}
+  m_Avatar: {fileID: 9000000, guid: 8bf55beb4605bff41b373e9cde81641a, type: 3}
   m_Controller: {fileID: 9100000, guid: 314f00eca2d15c34ea661ac84c76b0b3, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
@@ -673,12 +673,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   canAttack: 1
-  animationLayer: 0
   attackAnimationTriggers:
   - PhysicalAttack
   - MagicalAttack
   interruptAnimationTrigger: Interrupted
-  idleAnimation: BaseEnemyIdle
   weapons:
   - {fileID: 59942694254955784}
   - {fileID: 59942695675542977}

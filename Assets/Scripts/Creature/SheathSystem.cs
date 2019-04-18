@@ -78,6 +78,11 @@ public class SheathSystem : MonoBehaviour
         }
     }
 
+    public SheathSystemState State
+    {
+        get { return state; }
+    }
+
     // Private
 
     [Header("Debug")]

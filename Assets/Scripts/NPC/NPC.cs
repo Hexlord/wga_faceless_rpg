@@ -64,6 +64,11 @@ public class NPC : MonoBehaviour
     [Tooltip("Dialog stage list")]
     public DialogStage[] dialogStages;
 
+    public DialogStage CurrentStage
+    {
+        get { return dialogStages[currentStageOffset]; }
+    }
+
     // Private
 
     private Text panelText;
@@ -174,7 +179,7 @@ public class NPC : MonoBehaviour
         return action == DialogAction.Death;
     }
 
-    private void OnAnswer(int offset)
+    public void OnAnswer(int offset)
     {
         var stage = dialogStages[currentStageOffset];
         var answer = stage.answers[offset];

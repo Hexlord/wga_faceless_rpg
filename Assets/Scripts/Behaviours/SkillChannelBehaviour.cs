@@ -2,14 +2,15 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SkillEndBehaviour : StateMachineBehaviour
+public class SkillChannelBehaviour : StateMachineBehaviour
 {
+
     public override void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
         var skillSystem = animator.GetComponent<SkillSystem>();
         if (skillSystem)
         {
-            skillSystem.OnRestoreEnd();
+            skillSystem.OnChannelEnd();
         }
     }
 }

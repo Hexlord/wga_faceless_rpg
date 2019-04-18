@@ -8,7 +8,7 @@ public class ArmedIdleBehaviour : StateMachineBehaviour
     public override void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
         var sheathSystem = animator.GetComponent<SheathSystem>();
-        if (sheathSystem && sheathSystem.Busy)
+        if (sheathSystem && sheathSystem.State == SheathSystem.SheathSystemState.Unsheathing)
         {
             sheathSystem.FinalizeUnsheathing();
         }

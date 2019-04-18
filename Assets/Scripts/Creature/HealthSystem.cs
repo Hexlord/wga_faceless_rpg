@@ -87,7 +87,7 @@ public class HealthSystem : MonoBehaviour
     public void Damage(GameObject source, float amount)
     {
         Health -= amount;
-        Debug.Log(this.gameObject.name + ": " + health + " HP");
+        // Debug.Log(this.gameObject.name + ": " + health + " HP");
         OnDamage(source, amount);
         if (Health <= 0.0f) OnDeath(source);
     }
