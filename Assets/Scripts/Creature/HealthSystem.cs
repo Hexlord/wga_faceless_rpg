@@ -38,7 +38,7 @@ public class HealthSystem : MonoBehaviour
     [Tooltip("Health bar enabled")]
     public bool uiHealthBarEnabled = true;
 
-    public Image worldSpaceHealthBar;
+    public Canvas worldSpaceHealthBar;
     [Tooltip("Triggers for death animation")]
     public int DeathVariants;
     public string DeathTrigger;
@@ -128,8 +128,13 @@ public class HealthSystem : MonoBehaviour
         }
         GetComponent<MovementSystem>().canMove = false;
         GetComponent<Rigidbody>().velocity = Vector3.zero;
+        GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeRotation;
         gameObject.layer = LayerMask.NameToLayer("Valhalla");
-        transform.Find("Hitbox").gameObject.layer = LayerMask.NameToLayer("Valhalla");
+        if (transform.tag != "Player")
+        {
+            transform.Find("Hitbox").gameObject.layer = LayerMask.NameToLayer("Valhalla");
+            worldSpaceHealthBar.enabled = false;
+        }
         if (GetComponent<BaseAgent>()) GetComponent<BaseAgent>().enabled = false;
         if (source && source.tag == "Player" &&
             gameObject != source)
@@ -160,7 +165,11 @@ public class HealthSystem : MonoBehaviour
         }
         else
         {
-            healthBar = worldSpaceHealthBar;
+            Image[] images = worldSpaceHealthBar.GetComponentsInChildren<Image>();
+            for (int i = 0; i < images.Length; i++)
+            {
+                if (images[i].type == Image.Type.Filled) healthBar = images[i];
+            }
         }
 
         Health = healthMaximum;

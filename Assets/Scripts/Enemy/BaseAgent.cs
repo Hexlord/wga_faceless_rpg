@@ -61,6 +61,11 @@ public class BaseAgent : MonoBehaviour
         get { return canSeeEnemy; }
     }
 
+    public virtual bool CanSeeTarget()
+    {
+        return false;
+    }
+
     public virtual bool CanAttackEnemy()
     {
         return false;

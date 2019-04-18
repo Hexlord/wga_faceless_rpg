@@ -105,9 +105,12 @@ public class AttackSystem : MonoBehaviour
 
     public void FinalizeAttack()
     {
-        state = AttackSystemState.None;
-        weapons[activeWeaponIndex].DealsDamage = false;
-        weapons[activeWeaponIndex].ResetHitTargets();
-        activeWeaponIndex = -1;
+        if (activeWeaponIndex != -1)
+        {
+            state = AttackSystemState.None;
+            weapons[activeWeaponIndex].DealsDamage = false;
+            weapons[activeWeaponIndex].ResetHitTargets();
+            activeWeaponIndex = -1;
+        }
     }
 }

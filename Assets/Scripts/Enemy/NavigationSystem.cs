@@ -65,6 +65,11 @@ public class NavigationSystem : MonoBehaviour
         AgentsToPaths.Add(agent.ID, new Queue<Vector3>());
         AgentsRequestStatuses.Add(agent.ID, RequestStatus.None);
     }
+    
+    public void ClearRequest(uint ID)
+    {
+        AgentsRequestStatuses[ID] = RequestStatus.None;
+    }
 
     public void PlacePathRequest(BaseAgent agent, Vector3 finish)
     {
