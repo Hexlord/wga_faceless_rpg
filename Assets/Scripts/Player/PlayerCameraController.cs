@@ -566,13 +566,6 @@ public class PlayerCameraController : MonoBehaviour
             ? 1.0f
             : 0.0f;
         constrainedCamera = otherCamera;
-
-        /*
-        clippingAvoidanceOffset = 0 * Vector3.Distance(
-            Vector3Extensions.SmoothStep(transitionStartPosition, constrainedCamera.Position, cameraTransition), 
-            otherCamera.Target);
-            */
-        clippingAvoidanceOffset = 0;
     }
 
 }

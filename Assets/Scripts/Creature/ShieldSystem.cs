@@ -28,7 +28,7 @@ public class ShieldSystem : MonoBehaviour
     void Awake()
     {
         shieldHP = maxShieldHP;
-        shield.SetActive(isRaised);
+        if(shield) shield.SetActive(isRaised);
         animator = GetComponent<Animator>();
     }
     

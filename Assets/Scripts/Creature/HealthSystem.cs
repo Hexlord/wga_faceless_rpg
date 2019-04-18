@@ -129,12 +129,13 @@ public class HealthSystem : MonoBehaviour
         GetComponent<MovementSystem>().canMove = false;
         GetComponent<Rigidbody>().velocity = Vector3.zero;
         gameObject.layer = LayerMask.NameToLayer("Valhalla");
-        transform.Find("Hitbox").gameObject.layer = LayerMask.NameToLayer("Valhalla");
+        var hitbox = transform.Find("Hitbox");
+        if(hitbox) hitbox.gameObject.layer = LayerMask.NameToLayer("Valhalla");
         if (GetComponent<BaseAgent>()) GetComponent<BaseAgent>().enabled = false;
         if (source && source.tag == "Player" &&
             gameObject != source)
         {
-            int index = Random.Range(1, DeathVariants + 1);
+            var index = Random.Range(1, DeathVariants + 1);
             animator.SetInteger(DeathVariantsInt, index);
             animator.SetTrigger(DeathTrigger);
         }

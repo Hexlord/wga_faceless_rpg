@@ -42,9 +42,6 @@ namespace Tests
                 {
                     ++current;
                     if (current >= npcList.Count) yield break;
-                    TeleportTo(player, Vector3.zero);
-                    yield return new WaitForFixedUpdate();
-                    yield return new WaitForFixedUpdate();
                     TeleportTo(player, npcList[current]);
                     yield return new WaitForFixedUpdate();
                 }
