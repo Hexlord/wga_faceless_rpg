@@ -9,6 +9,8 @@ public class PortalSystem : MonoBehaviour
     [Tooltip("Player")]
     public GameObject player;
 
+    SaveSystem saveSystem;
+
     int portalCount;
     void Start()
     {
@@ -25,5 +27,6 @@ public class PortalSystem : MonoBehaviour
     {
         player.transform.position = portals[portal].spawn.position;
         player.transform.rotation = portals[portal].spawn.rotation;
+
     }
 }

@@ -9,10 +9,18 @@ public class PortalComponent : MonoBehaviour
     [Tooltip("Spawn transform")]
     public Transform spawn;
 
+    [Tooltip("Player")]
+    public GameObject player;
+
     private PortalUIComponent portalUI;
+
+    PlayerCameraController playerCameraController;
+    PlayerCharacterController playerCharacterController;
     void Start()
     {
-        portalUI = GameObject.Find("UI").GetComponent<PortalUIComponent>();
+        playerCameraController = player.GetComponent<PlayerCameraController>();
+        playerCharacterController = player.GetComponent<PlayerCharacterController>();
+        portalUI = player.GetComponent<PortalUIComponent>();
     }
 
     // Update is called once per frame
@@ -23,6 +31,8 @@ public class PortalComponent : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
+        playerCameraController.Freeze = true;
+        playerCharacterController.Freeze = true;
         Debug.Log("Trigger");
         portalUI.ShowPortalUI();
     }

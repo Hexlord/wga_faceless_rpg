@@ -47,7 +47,8 @@ public class PortalUIComponent : MonoBehaviour
 
     private SaveSystem saveSystem;
 
-
+    PlayerCameraController playerCameraController;
+    PlayerCharacterController playerCharacterController;
 
     int portalCount;
 
@@ -61,9 +62,26 @@ public class PortalUIComponent : MonoBehaviour
 
     void Start()
     {
+        playerCameraController = gameObject.GetComponent<PlayerCameraController>();
+        playerCharacterController = gameObject.GetComponent<PlayerCharacterController>();
+
         activePortals[0].GetComponent<Button>().onClick.AddListener(() => teleport(0));
         activePortals[1].GetComponent<Button>().onClick.AddListener(() => teleport(1));
         activePortals[2].GetComponent<Button>().onClick.AddListener(() => teleport(2));
+        activePortals[0].GetComponent<Button>().onClick.AddListener(() => teleport(3));
+        activePortals[1].GetComponent<Button>().onClick.AddListener(() => teleport(4));
+        activePortals[2].GetComponent<Button>().onClick.AddListener(() => teleport(5));
+        for (int i = 0; i < portalCount; i++)
+        {
+            if (isActive[i] == true)
+            {
+                SetActive(i);
+            }
+            else
+            {
+                SetInactive(i);
+            }
+        }
     }
 
     void Update()
@@ -71,6 +89,8 @@ public class PortalUIComponent : MonoBehaviour
         if (portalMenu.activeSelf && Input.GetKeyDown(exitKey))
         {
             portalMenu.SetActive(false);
+            playerCharacterController.Freeze = false;
+            playerCameraController.Freeze = false;
         }
         for(int i = 0; i < portalCount; i++)
         {
@@ -120,6 +140,8 @@ public class PortalUIComponent : MonoBehaviour
         {
             throw new System.Exception("portal number out of range");
         }
+        playerCharacterController.Freeze = false;
+        playerCameraController.Freeze = false;
         portalSystem.teleport(portal);
         portalMenu.SetActive(false);
     }
