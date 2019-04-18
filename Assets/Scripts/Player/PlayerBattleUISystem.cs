@@ -35,13 +35,9 @@ public class PlayerBattleUISystem : MonoBehaviour
 
     // Cache
 
-    private GameObject PhysAttackFill;
-    private GameObject MageAttackFill;
-
-    private GameObject PhysStateFill;
-    private GameObject MageStateFill;
-    private GameObject PhysStateUpgrade;
-    private GameObject MageStateUpgrade;
+    private GameObject Raven;
+    private GameObject JewelRed;
+    private GameObject JewelBlue;
 
     private DashUISystem dashUiSystem;
 
@@ -54,7 +50,7 @@ public class PlayerBattleUISystem : MonoBehaviour
     {
         if (!battleUI)
         {
-            battleUI = GameObject.Find("UI").FindPrecise("Canvas").transform.FindPrecise("BattleUI").gameObject;
+            battleUI = GameObject.Find("UI").FindPrecise("Canvas").FindPrecise("BattleUI").gameObject;
         }
 
         healthSystem = GetComponent<HealthSystem>();
@@ -65,20 +61,23 @@ public class PlayerBattleUISystem : MonoBehaviour
         xpSystem = GetComponent<XpSystem>();
         bodyStateSystem = GetComponent<BodyStateSystem>();
 
-        PhysAttackFill = battleUI.transform.Find("PhysAttack").Find("Fill").gameObject;
-        MageAttackFill = battleUI.transform.Find("MageAttack").Find("Fill").gameObject;
+        var skillsPanel = battleUI.transform.Find("SkillsPanel");
 
-        PhysStateFill = battleUI.transform.Find("PhysState").Find("Fill").gameObject;
-        MageStateFill = battleUI.transform.Find("MageState").Find("Fill").gameObject;
-        PhysStateUpgrade = battleUI.transform.Find("PhysState").Find("Upgrade").gameObject;
-        MageStateUpgrade = battleUI.transform.Find("MageState").Find("Upgrade").gameObject;
+        Raven = skillsPanel.Find("Raven").gameObject;
+        JewelRed = Raven.FindPrecise("JewelRed").gameObject;
+        JewelBlue = Raven.FindPrecise("JewelBlue").gameObject;
 
-        dashUiSystem = battleUI.transform.Find("Dash").GetComponent<DashUISystem>();
+        dashUiSystem = battleUI.transform.Find("DashPanel").GetComponent<DashUISystem>();
 
-        Health = battleUI.transform.Find("Status").Find("Health").GetComponent<Image>();
-        Concentration = battleUI.transform.Find("Status").Find("Concentration").GetComponent<Image>();
-        XP            = battleUI.transform.Find("XPBar").Find("Fill").GetComponent<Image>();
+        var statusPanel = battleUI.transform.Find("StatusPanel");
+        var status = statusPanel.Find("Status");
 
+        Health = status.Find("Health").GetComponent<Image>();
+        Concentration = status.Find("Concentration").GetComponent<Image>();
+        XP = statusPanel.Find("XPPanel").Find("XPBar").GetComponent<Image>();
+
+        Health.fillAmount = 1;
+        Concentration.fillAmount = 0;
         XP.fillAmount = 0;
 
         battleUI.SetActive(true);
@@ -89,19 +88,13 @@ public class PlayerBattleUISystem : MonoBehaviour
         var physical = bodyStateSystem.State == BodyStateSystem.BodyState.Physical;
         var magical = !physical;
 
-        PhysAttackFill.SetActive(physical);
-        MageAttackFill.SetActive(magical);
-
-        PhysStateFill.SetActive(physical);
-        MageStateFill.SetActive(magical);
-        PhysStateUpgrade.SetActive(physical && xpSystem.SwordPoints > 0);
-        MageStateUpgrade.SetActive(magical && xpSystem.MaskPoints > 0);
+        JewelRed.SetActive(physical);
+        JewelBlue.SetActive(magical);
 
         dashUiSystem.DashCharges = dashSystem.ChargesAvailabe;
 
         Health.fillAmount = healthSystem.Health / healthSystem.healthMaximum;
         Concentration.fillAmount = concentrationSystem.Concentration / concentrationSystem.concentrationMaximum;
-
         XP.fillAmount = xpSystem.LevelCompletion;
         
     }
