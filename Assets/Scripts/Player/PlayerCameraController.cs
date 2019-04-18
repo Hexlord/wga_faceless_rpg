@@ -81,11 +81,11 @@ public class PlayerCameraController : MonoBehaviour
 
     [Tooltip("Camera distance change speed raw")]
     [Range(0.1f, 100.0f)]
-    public float clippingAvoidanceSpeed = 2.0f;
+    public float clippingAvoidanceSpeed = 0.5f;
 
     [Tooltip("Camera distance change speed linear interpolation per frame")]
     [Range(0.1f, 1.0f)]
-    public float clippingAvoidanceSpeedLerp = 0.01f;
+    public float clippingAvoidanceSpeedLerp = 0.05f;
 
     [Tooltip("Camera distance immediate snap for solid clipping")]
     public bool clippingAvoidanceInstantSnap = true;
@@ -240,14 +240,14 @@ public class PlayerCameraController : MonoBehaviour
 
         // Collect collisions 
 
-        var hitsForward = Physics.RaycastAll(new Ray(cameraTarget + fromTargetToCamera * range, fromCameraToTarget), range, mask);
-        var hitsBackwards = Physics.RaycastAll(new Ray(cameraTarget, fromTargetToCamera), range, mask);
-        var hitsObjectForward = Physics.RaycastAll(new Ray(cameraTarget, fromCameraToTarget), range, mask);
+        var hitsForwardIntoTarget = Physics.RaycastAll(new Ray(cameraTarget + fromTargetToCamera * range, fromCameraToTarget), range, mask);
+        var hitsBackwardsIntoCamera = Physics.RaycastAll(new Ray(cameraTarget, fromTargetToCamera), range, mask);
+        var hitsBackwardsIntoTarget = Physics.RaycastAll(new Ray(cameraTarget + fromCameraToTarget * range, fromTargetToCamera), range, mask);
 
         var rayEntries = new List<RayEntry>();
 
         // Go both ways, add planar objects twice (to compensate for their single side)
-        foreach (var hit in hitsBackwards)
+        foreach (var hit in hitsBackwardsIntoCamera)
         {
             RayEntry entry;
             entry.collider = hit.collider;
@@ -263,7 +263,7 @@ public class PlayerCameraController : MonoBehaviour
             }
             rayEntries.Add(entry);
         }
-        foreach (var hit in hitsForward)
+        foreach (var hit in hitsForwardIntoTarget)
         {
             RayEntry entry;
             entry.collider = hit.collider;
@@ -285,9 +285,9 @@ public class PlayerCameraController : MonoBehaviour
         // Example is player being in cube of ice, when we should ignore ice cube boundaries in our calculations
         var objectStuckColliders = new List<Collider>();
         {
-            foreach (var hit in hitsBackwards)
+            foreach (var hit in hitsForwardIntoTarget)
             {
-                foreach (var hit2 in hitsObjectForward)
+                foreach (var hit2 in hitsBackwardsIntoTarget)
                 {
                     if (hit.collider == hit2.collider)
                     {
@@ -565,13 +565,6 @@ public class PlayerCameraController : MonoBehaviour
             ? 1.0f
             : 0.0f;
         constrainedCamera = otherCamera;
-
-        /*
-        clippingAvoidanceOffset = 0 * Vector3.Distance(
-            Vector3Extensions.SmoothStep(transitionStartPosition, constrainedCamera.Position, cameraTransition), 
-            otherCamera.Target);
-            */
-        clippingAvoidanceOffset = 0;
     }
 
 }

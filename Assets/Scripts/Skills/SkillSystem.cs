@@ -57,6 +57,12 @@ public class SkillSystem : MonoBehaviour
     {
         get { return state != SkillSystemState.None; }
     }
+
+    public SkillSystemState State
+    {
+        get { return state; }
+    }
+
     public bool Casting
     {
         get
@@ -168,6 +174,8 @@ public class SkillSystem : MonoBehaviour
             case SkillSystemState.ChannelEnd:
                 activeSkill.EndUpdate(gameObject, delta, stateTimer, stateLength);
                 break;
+            case SkillSystemState.Preparing:
+                break;
             default:
                 throw new ArgumentOutOfRangeException();
         }
@@ -234,11 +242,17 @@ public class SkillSystem : MonoBehaviour
 
     public void OnCastStart()
     {
+        Debug.Log("Cast start");
         switch (state)
         {
             case SkillSystemState.Preparing:
                 activeSkill.PrepareEvent(gameObject);
                 SwitchState(activeSkill.Channeling ? SkillSystemState.ChannelStart : SkillSystemState.SkillStart);
+                if (!activeSkill.Channeling)
+                {
+                    // Skip channel animation
+                    animator.SetTrigger(CreatureAnimationBehaviour.interruptTriggerHash);
+                }
                 break;
             default:
                 throw new ArgumentOutOfRangeException();
@@ -247,15 +261,12 @@ public class SkillSystem : MonoBehaviour
 
     public void OnCastEnd()
     {
+        Debug.Log("Cast end");
         switch (state)
         {
             case SkillSystemState.SkillStart:
                 activeSkill.CastEvent(gameObject);
                 SwitchState(SkillSystemState.SkillEnd);
-                /*
-                 * Force skip channel update animation
-                 */
-                animator.SetTrigger(CreatureAnimationBehaviour.interruptTriggerHash);
                 break;
             case SkillSystemState.ChannelStart:
                 SwitchState(SkillSystemState.ChannelUpdate);
@@ -266,16 +277,19 @@ public class SkillSystem : MonoBehaviour
     }
 
 
-    public void OnRestoreStart()
+    public void OnChannelEnd()
     {
+        Debug.Log("Channel end");
         switch (state)
         {
             case SkillSystemState.ChannelUpdate:
                 SwitchState(SkillSystemState.ChannelEnd);
                 break;
             case SkillSystemState.SkillEnd:
-                // Intentionally blank
-                break;
+            case SkillSystemState.None:
+            case SkillSystemState.Preparing:
+            case SkillSystemState.ChannelStart:
+            case SkillSystemState.ChannelEnd:
             default:
                 throw new ArgumentOutOfRangeException();
         }
@@ -283,6 +297,8 @@ public class SkillSystem : MonoBehaviour
 
     public void OnRestoreEnd()
     {
+        Debug.Log("Restore end");
+
         SwitchState(SkillSystemState.None);
     }
     

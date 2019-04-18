@@ -85,6 +85,14 @@ public class BaseAgent : MonoBehaviour
         }
     }
 
+    public bool IsStunned
+    {
+        get
+        {
+            return isStunned;
+        }
+    }
+
     #region Monobehaviour voids
     // Start is called before the first frame update
     protected void Awake()

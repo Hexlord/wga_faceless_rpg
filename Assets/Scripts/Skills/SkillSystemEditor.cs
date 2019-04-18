@@ -63,6 +63,7 @@ public class SkillSystemEditor : Editor
         serializedObject.Update();
         EditorGUILayout.PropertyField(serializedObject.FindProperty("canCast"));
         Show(serializedObject.FindProperty("startSkills"));
+        EditorGUILayout.PropertyField(serializedObject.FindProperty("state"));
         serializedObject.ApplyModifiedProperties();
     }
 

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
 
 /*
@@ -20,7 +19,7 @@ public class SkillFireBreath : SkillBase
     private readonly GameObject firePrefab;
 
     public SkillFireBreath() :
-        base(Skill.FireBreath, SkillAnimation.First, false, 1.0f)
+        base(Skill.FireBreath, SkillAnimation.First, false, 5.0f)
     {
         firePrefab = (GameObject)Resources.Load("Prefabs/Skills/FireBreath", typeof(GameObject));
     }

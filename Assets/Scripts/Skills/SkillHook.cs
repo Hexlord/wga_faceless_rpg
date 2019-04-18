@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -99,6 +98,8 @@ public class SkillHook : SkillBase
                     direction.SafeNormalize();
                     hookComponent.Hit.GetComponent<Rigidbody>().AddForce(
                         direction * powerToBoss * distanceFactor * delta, ForceMode.Impulse);
+                    hookComponent.Hit.TraverseParent("Faceless").GetComponent<BaseAgent>().Stun(1.0f);
+
                 }
 
                 break;

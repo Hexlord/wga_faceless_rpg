@@ -47,6 +47,10 @@ class Observer : MonoBehaviour
                 min = i;
             }
         }
+        if (positions.Count == 0)
+        {
+            return target.position;
+        }
         chosenObserver = positions[min];
         return positions[min];
     }
