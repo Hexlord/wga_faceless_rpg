@@ -87,7 +87,7 @@ public class ShootSystem : MonoBehaviour
 
     private Animator animator;
 
-    void Awake()
+    private void Awake()
     {
         // Cache
 
@@ -105,7 +105,7 @@ public class ShootSystem : MonoBehaviour
         projectile.GetComponent<Rigidbody>().AddForce(shootingDirection * projectileSpeed);
     }
 
-    void FixedUpdate()
+    private void FixedUpdate()
     {
         var delta = Time.fixedDeltaTime;
         fireTimer = Mathf.MoveTowards(fireTimer, fireTime, delta);

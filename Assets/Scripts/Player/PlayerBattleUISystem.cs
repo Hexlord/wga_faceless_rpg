@@ -30,8 +30,14 @@ public class PlayerBattleUISystem : MonoBehaviour
     private SkillSystem skillSystem;
     private DashSystem dashSystem;
     private ShieldSystem shieldSystem;
+    private SheathSystem sheathSystem;
     private XpSystem xpSystem;
     private BodyStateSystem bodyStateSystem;
+
+    private SkillsUISystem slot1;
+    private SkillsUISystem slot2;
+    private SkillsUtilityUISystem slotUtility1;
+    private SkillsUtilityUISystem slotUtility2;
 
     // Cache
 
@@ -56,6 +62,7 @@ public class PlayerBattleUISystem : MonoBehaviour
         healthSystem = GetComponent<HealthSystem>();
         concentrationSystem = GetComponent<ConcentrationSystem>();
         skillSystem = GetComponent<SkillSystem>();
+        sheathSystem = GetComponent<SheathSystem>();
         dashSystem = GetComponent<DashSystem>();
         shieldSystem = GetComponent<ShieldSystem>();
         xpSystem = GetComponent<XpSystem>();
@@ -75,6 +82,11 @@ public class PlayerBattleUISystem : MonoBehaviour
         Health = status.Find("Health").GetComponent<Image>();
         Concentration = status.Find("Concentration").GetComponent<Image>();
         XP = statusPanel.Find("XPPanel").Find("XPBar").GetComponent<Image>();
+
+        slot1 = skillsPanel.FindPrecise("Slot1").GetComponent<SkillsUISystem>();
+        slot2 = skillsPanel.FindPrecise("Slot2").GetComponent<SkillsUISystem>();
+        slotUtility1 = skillsPanel.FindPrecise("SlotUtility1").GetComponent<SkillsUtilityUISystem>();
+        slotUtility2 = skillsPanel.FindPrecise("SlotUtility2").GetComponent<SkillsUtilityUISystem>();
 
         Health.fillAmount = 1;
         Concentration.fillAmount = 0;
@@ -96,7 +108,24 @@ public class PlayerBattleUISystem : MonoBehaviour
         Health.fillAmount = healthSystem.Health / healthSystem.healthMaximum;
         Concentration.fillAmount = concentrationSystem.Concentration / concentrationSystem.concentrationMaximum;
         XP.fillAmount = xpSystem.LevelCompletion;
-        
+
+        var offset = 0;
+        if (magical) offset += 2;
+
+        slot1.Slot = skillSystem.SkillTypes[offset];
+        slot2.Slot = skillSystem.SkillTypes[offset + 1];
+        slot1.Active = !sheathSystem.Sheathed;
+        slot2.Active = !sheathSystem.Sheathed;
+        slot1.CooldownNormalized = skillSystem.Skills[offset].CooldownTimerNormalized;
+        slot2.CooldownNormalized = skillSystem.Skills[offset + 1].CooldownTimerNormalized;
+        slot1.Selected = skillSystem.SelectedSkill == offset;
+        slot2.Selected = skillSystem.SelectedSkill == offset + 1;
+
+
+        slotUtility1.Slot = magical ? SkillUtility.Shoot : SkillUtility.Attack;
+        slotUtility2.Slot = magical ? SkillUtility.Dash : SkillUtility.Shield;
+        slotUtility1.Active = !sheathSystem.Sheathed;
+        slotUtility2.Active = !sheathSystem.Sheathed;
     }
 
 }

@@ -102,9 +102,10 @@ public class SkillBase
 
     public bool Channeling { get { return channeling; } }
 
-    public bool OnCooldawn {  get { return cooldownTimer > 0; } }
+    public bool OnCooldown { get { return cooldownTimer > 0; } }
+    public float CooldownTimerNormalized { get { return cooldownTimer / cooldown; } }
 
-    protected void PutOnCooldawn()
+    protected void PutOnCooldown()
     {
         cooldownTimer = cooldown;
     }

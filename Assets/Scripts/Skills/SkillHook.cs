@@ -34,7 +34,7 @@ public class SkillHook : SkillBase
     public override void PrepareEvent(GameObject caster)
     {
         base.PrepareEvent(caster);
-        PutOnCooldawn();
+        PutOnCooldown();
         casterMovementSystem = caster.GetComponent<MovementSystem>();
     }
 

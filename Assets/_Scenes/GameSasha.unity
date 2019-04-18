@@ -17947,7 +17947,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &758608890
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -30127,73 +30127,7 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0.5
       objectReference: {fileID: 0}
-    - target: {fileID: 5057129942574746548, guid: 2506a0cf8cbd8fb4da325cc66ae70516,
-        type: 3}
-      propertyPath: m_Name
-      value: SkillsPanel
-      objectReference: {fileID: 0}
-    - target: {fileID: 1195353017950330274, guid: 2506a0cf8cbd8fb4da325cc66ae70516,
-        type: 3}
-      propertyPath: m_Name
-      value: DashPanel
-      objectReference: {fileID: 0}
-    - target: {fileID: 1195353019051836485, guid: 2506a0cf8cbd8fb4da325cc66ae70516,
-        type: 3}
-      propertyPath: m_Name
-      value: ShieldPanel
-      objectReference: {fileID: 0}
-    - target: {fileID: 6507644823305792137, guid: 2506a0cf8cbd8fb4da325cc66ae70516,
-        type: 3}
-      propertyPath: m_Name
-      value: StatusPanel
-      objectReference: {fileID: 0}
-    - target: {fileID: 4283690336008676533, guid: 2506a0cf8cbd8fb4da325cc66ae70516,
-        type: 3}
-      propertyPath: m_Name
-      value: XPPanel
-      objectReference: {fileID: 0}
-    - target: {fileID: 6862653612098434302, guid: 2506a0cf8cbd8fb4da325cc66ae70516,
-        type: 3}
-      propertyPath: m_Name
-      value: Raven
-      objectReference: {fileID: 0}
-    - target: {fileID: 2526137412873425085, guid: 2506a0cf8cbd8fb4da325cc66ae70516,
-        type: 3}
-      propertyPath: m_Name
-      value: Head1
-      objectReference: {fileID: 0}
-    - target: {fileID: 924843811685032189, guid: 2506a0cf8cbd8fb4da325cc66ae70516,
-        type: 3}
-      propertyPath: m_Name
-      value: Head2
-      objectReference: {fileID: 0}
-    - target: {fileID: 5817501149440438428, guid: 2506a0cf8cbd8fb4da325cc66ae70516,
-        type: 3}
-      propertyPath: m_Name
-      value: Decals
-      objectReference: {fileID: 0}
-    - target: {fileID: 7733057296244803902, guid: 2506a0cf8cbd8fb4da325cc66ae70516,
-        type: 3}
-      propertyPath: m_Name
-      value: Head2Colored
-      objectReference: {fileID: 0}
-    - target: {fileID: 8043076498440457011, guid: 2506a0cf8cbd8fb4da325cc66ae70516,
-        type: 3}
-      propertyPath: m_Name
-      value: JewelBlue
-      objectReference: {fileID: 0}
-    - target: {fileID: 5333265936078477772, guid: 2506a0cf8cbd8fb4da325cc66ae70516,
-        type: 3}
-      propertyPath: m_Name
-      value: JewelRed
-      objectReference: {fileID: 0}
-    - target: {fileID: 3267813216996531198, guid: 2506a0cf8cbd8fb4da325cc66ae70516,
-        type: 3}
-      propertyPath: m_Name
-      value: JewelWhite
-      objectReference: {fileID: 0}
-    m_RemovedComponents:
-    - {fileID: 4593499717520350311, guid: 2506a0cf8cbd8fb4da325cc66ae70516, type: 3}
+    m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2506a0cf8cbd8fb4da325cc66ae70516, type: 3}
 --- !u!1001 &1140457495
 PrefabInstance:
@@ -46910,7 +46844,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh23434
+  m_Name: pb_Mesh127756
   serializedVersion: 10
   m_SubMeshes: []
   m_Shapes:
@@ -59881,7 +59815,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   dashDistance: 10
   timeForDash: 0.2
-  numberOfCharges: 3
+  numberOfCharges: 5
   chargesAvailable: 0
   reloadTime: 1
   dashAnimationBool: 
@@ -59951,6 +59885,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3364395bd9cfd2a4abbb049efd6439f1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &7484056357403912379
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7484056357403912367}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 53a80e7bd0bf70649a659bd685f17670, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  skillsUI: {fileID: 0}
 --- !u!114 &7484056357403912380
 MonoBehaviour:
   m_ObjectHideFlags: 0

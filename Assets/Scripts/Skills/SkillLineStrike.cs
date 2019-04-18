@@ -36,7 +36,7 @@ public class SkillLineStrike : SkillBase
     public override void PrepareEvent(GameObject caster)
     {
         base.PrepareEvent(caster);
-        PutOnCooldawn();
+        PutOnCooldown();
     }
 
     public override void StartUpdate(GameObject caster, float delta, float time, float length)
