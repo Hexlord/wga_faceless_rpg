@@ -101,7 +101,10 @@ public class NavigationSystem : MonoBehaviour
         if (!AgentsRequestStatuses.ContainsKey(ID)) return Vector2.zero;
         if (AgentsRequestStatuses[ID] == RequestStatus.Completed)
         {
-            direction = AgentsToPaths[ID].Peek() - agents[ID].transform.position;
+            if (AgentsToPaths[ID].Count > 0)
+            {
+                direction = AgentsToPaths[ID].Peek() - agents[ID].transform.position;
+            }
             direction.y = 0;
             agentStoppingDistance = (AgentsToPaths[ID].Count == 1) ? agentDestinationStoppingDistance : agentWaypointStoppingDistance;
 
