@@ -6,17 +6,17 @@ using UnityEngine;
 
 /*
  * History:
- * 
+ *
  * Date         Author      Description
- * 
+ *
  * 05.04.2019   aknorre     Created
- * 
+ *
  */
 [AddComponentMenu("ProjectFaceless/Creature/Effect System")]
 public class EffectSystem : MonoBehaviour
 {
     // Public
-    
+
     [Tooltip("Effects applied to this character")]
     public Effect[] startEffects;
 
