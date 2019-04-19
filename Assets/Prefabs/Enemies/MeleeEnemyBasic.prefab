@@ -683,8 +683,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   canMove: 1
   movementDesireThreshold: 0.2
-  baseMovementSpeed: 7
-  accelerationTime: 0.3
+  baseMovementSpeed: 6
+  accelerationTime: 0.1
   busyMultiplier: 0.6
   rotationStabilization: 0
   gravityMax: 20
@@ -3261,11 +3261,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 4855860174884548727}
     m_Modifications:
-    - target: {fileID: 2420536952422445884, guid: 99bb77f22cf25e34cb088bf64ad8d9ff,
-        type: 3}
-      propertyPath: m_Name
-      value: Hand
-      objectReference: {fileID: 0}
     - target: {fileID: 6196668420378138667, guid: 99bb77f22cf25e34cb088bf64ad8d9ff,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -3320,6 +3315,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2420536952422445884, guid: 99bb77f22cf25e34cb088bf64ad8d9ff,
+        type: 3}
+      propertyPath: m_Name
+      value: Hand
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 99bb77f22cf25e34cb088bf64ad8d9ff, type: 3}
