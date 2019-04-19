@@ -38,6 +38,7 @@ public class CreatureAnimationBehaviour : StateMachineBehaviour
      * Leads to idle animation
      */
     public static readonly int stopTriggerHash = Animator.StringToHash("stopTrigger");
+    public static readonly int channelingBooleanHash = Animator.StringToHash("Channeling");
 
     private static readonly int skill1TriggerHash = Animator.StringToHash("skill1Trigger");
     private static readonly int skill2TriggerHash = Animator.StringToHash("skill2Trigger");

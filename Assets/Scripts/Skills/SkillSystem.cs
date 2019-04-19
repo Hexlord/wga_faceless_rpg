@@ -258,11 +258,7 @@ public class SkillSystem : MonoBehaviour
             case SkillSystemState.Preparing:
                 activeSkill.PrepareEvent(gameObject);
                 SwitchState(activeSkill.Channeling ? SkillSystemState.ChannelStart : SkillSystemState.SkillStart);
-                if (!activeSkill.Channeling)
-                {
-                    // Skip channel animation
-                    animator.SetTrigger(CreatureAnimationBehaviour.interruptTriggerHash);
-                }
+                animator.SetBool(CreatureAnimationBehaviour.channelingBooleanHash, activeSkill.Channeling);
                 break;
             default:
                 throw new ArgumentOutOfRangeException();
@@ -309,7 +305,7 @@ public class SkillSystem : MonoBehaviour
     public void OnRestoreEnd()
     {
         Debug.Log("Restore end");
-
+        activeSkill.FinishEvent(gameObject);
         SwitchState(SkillSystemState.None);
     }
     
