@@ -31,7 +31,7 @@ public class PortalComponent : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.tag == "Player")
+        if (other.tag == "Player" && portalUI.IsAllowedToAppear())
         {
             playerCameraController.Freeze = true;
             playerCharacterController.Freeze = true;

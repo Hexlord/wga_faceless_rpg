@@ -54,6 +54,11 @@ public class PortalUIComponent : MonoBehaviour
 
     private PortalSystem portalSystem;
 
+    public bool IsAllowedToAppear()
+    {
+        return canAppear;
+    }
+
     private void Awake()
     {
         portalSystem = GameObject.Find("PortalSystem").GetComponent<PortalSystem>();
