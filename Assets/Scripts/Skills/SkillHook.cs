@@ -6,11 +6,11 @@ using Object = UnityEngine.Object;
 
 /*
  * History:
- * 
+ *
  * Date         Author      Description
- * 
+ *
  * 03.03.2019   aknorre     Created
- * 
+ *
  */
 
 public class SkillHook : SkillBase
@@ -72,7 +72,9 @@ public class SkillHook : SkillBase
         }
 
         var state = hookComponent.State;
-        
+
+
+        var step = power * Time.fixedDeltaTime;
 
         switch (state)
         {
@@ -145,4 +147,3 @@ public class SkillHook : SkillBase
     }
 
 }
-
