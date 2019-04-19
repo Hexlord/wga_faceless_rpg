@@ -421,7 +421,7 @@ GameObject:
   - component: {fileID: 4806010208796187863}
   - component: {fileID: 7848501938078454308}
   - component: {fileID: 2169033389271462883}
-  m_Layer: 12
+  m_Layer: 14
   m_Name: RangeEnemyBasic
   m_TagString: Faceless
   m_Icon: {fileID: 0}
@@ -545,7 +545,7 @@ MonoBehaviour:
   baseMovementSpeed: 7
   accelerationTime: 0.3
   busyMultiplier: 0.6
-  rotationStabilization: 1
+  rotationStabilization: 0
   gravityMax: 20
   gravityFadeTime: 1
   airwalkFadeTime: 1
@@ -592,7 +592,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   baseSpeed: 5
   walkingBackSpeed: 4
-  sprintingSpeed: 10
+  sprintingSpeed: 7
   epsilonWalking: 0.005
   walkDirectionInt: Walking Direction
   enemySpottedBool: EnemySpotted
@@ -602,7 +602,7 @@ MonoBehaviour:
   - LookOverShoulder
   - LookAround
   allowedToAttack: 0
-  seeingDistance: 100
+  seeingDistance: 10
 --- !u!1 &4665536811560053096
 GameObject:
   m_ObjectHideFlags: 0

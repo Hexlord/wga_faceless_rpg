@@ -6,7 +6,7 @@ public class CollectiveAISystem : MonoBehaviour
 {
 
     private NavigationSystem navSystem;
-    private Observer observer;
+    //private Observer observer;
     private Dictionary<uint, BaseAgent> agentsDictionary = new Dictionary<uint, BaseAgent>();
     private Dictionary<uint, float> agentsLastPathCalculated = new Dictionary<uint, float>();
     private Dictionary<uint, AgentType> agentsTypes = new Dictionary<uint, AgentType>();
@@ -69,7 +69,7 @@ public class CollectiveAISystem : MonoBehaviour
     private void Start()
     {
         navSystem = GetComponent<NavigationSystem>();
-        observer = GetComponent<Observer>();
+        //observer = GetComponent<Observer>();
         foreach(BaseAgent agent in agents)
         {
             agent.SetControllingSystems(this, navSystem);
@@ -208,16 +208,18 @@ public class CollectiveAISystem : MonoBehaviour
 
     private void RangedHuntDown(uint ID)
     {
-        if (!agentsDictionary[ID].CanSeeTarget() && !agentsDictionary[ID].IsStunned)
+        if (!agentsDictionary[ID].CanSeeTarget())
         {
-            if (Time.time > agentsLastPathCalculated[ID] + RecalculationTimer)
-            {
-                if (navSystem.hasAgentReachedDestination(ID) /*|| !observer.ChosenObserverCanStillSeeTarget(agentsOrders[ID].target.transform)*/)
+            if (!agentsDictionary[ID].IsStunned)
+                if (Time.time > agentsLastPathCalculated[ID] + RecalculationTimer)
                 {
-                    agentsLastPathCalculated[ID] = Time.time;
-                    navSystem.PlacePathRequest(agentsDictionary[ID], agentsOrders[ID].target.transform.position);
+                    if (navSystem.hasAgentReachedDestination(ID) /*|| !observer.ChosenObserverCanStillSeeTarget(agentsOrders[ID].target.transform)*/)
+                    {
+                        agentsLastPathCalculated[ID] = Time.time;
+                        navSystem.PlacePathRequest(agentsDictionary[ID], 
+                                                        agentsOrders[ID].target.transform.position);
+                    }
                 }
-            }
         }
         else
         {
