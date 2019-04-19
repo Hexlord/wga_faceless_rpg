@@ -168,10 +168,13 @@ public class HealthSystem : MonoBehaviour
         }
         else
         {
-            Image[] images = worldSpaceHealthBar.GetComponentsInChildren<Image>();
-            for (int i = 0; i < images.Length; i++)
+            if (worldSpaceHealthBar)
             {
-                if (images[i].type == Image.Type.Filled) healthBar = images[i];
+                Image[] images = worldSpaceHealthBar.GetComponentsInChildren<Image>();
+                for (int i = 0; i < images.Length; i++)
+                {
+                    if (images[i].type == Image.Type.Filled) healthBar = images[i];
+                }
             }
         }
 
