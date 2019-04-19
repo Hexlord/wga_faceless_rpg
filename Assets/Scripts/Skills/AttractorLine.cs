@@ -68,7 +68,7 @@ public class AttractorLine : AttractorBase
 
             if (useForce)
             {
-                body.GetComponent<MeleeAgent>().Stun(1.0f);
+                body.GetComponent<BaseAgent>().Stun(1.0f);
                 body.AddForce(force, ForceMode.Impulse);
             }
             else

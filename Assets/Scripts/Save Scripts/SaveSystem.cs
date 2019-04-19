@@ -1,37 +1,51 @@
-﻿#if false
+﻿
 
 using System.Collections;
 using System.Collections.Generic;
 using CI.QuickSave;
 using CI.QuickSave.Core.Helpers;
 using UnityEngine;
+using System.IO;
+using UnityEngine.SceneManagement;
 using System;
 using System.Linq;
 using System.Reflection;
+
+public enum SaveType
+{
+    Quick,
+    Auto
+}
 
 public class SaveSystem : MonoBehaviour
 {
     private string folderPath;
     public string folderName = "SaveFiles";
+    public string autoFilename = "AutoSave";
+    public string quickFilename = "QuickSave";
     public string saveFileName1 = "Save1";
     public string saveFileName2 = "Save2";
     public string saveFileName3 = "Save3";
 
+    public string loadingSceneName;
+    public string gameSceneName;
+
     public KeyCode saveKeyCode = KeyCode.C;
 
     public KeyCode loadKeyCode = KeyCode.V;
-    
-    
+
+
     void Awake()
     {
+        DontDestroyOnLoad(gameObject);
         folderPath = System.IO.Path.Combine(Application.persistentDataPath, folderName);
-        UnityEngine.Windows.Directory.CreateDirectory(folderPath);
+        System.IO.Directory.CreateDirectory(folderPath);
     }
-    
+
 
     void Update()
     {
-        if (Input.GetKeyDown(saveKeyCode))
+       /* if (Input.GetKeyDown(saveKeyCode))
         {
             QuickSaveWriter saver = QuickSaveWriter.Create(System.IO.Path.Combine(folderPath, saveFileName1));
             Debug.Log(Save(saver));
@@ -41,16 +55,65 @@ public class SaveSystem : MonoBehaviour
         {
             QuickSaveReader loader = QuickSaveReader.Create(System.IO.Path.Combine(folderPath, saveFileName1));
             Debug.Log(Load(loader));
-        }
+        }*/
     }
-    
 
-    bool Save(QuickSaveWriter saver)
+    public void Save()
+    {
+
+    }
+
+    public void Load(SaveType saveType)
+    {
+        SceneManager.LoadScene(loadingSceneName, LoadSceneMode.Single);
+        StartCoroutine("LoadGameScene", saveType);
+    }
+
+    IEnumerator LoadGameScene(SaveType saveType)
+    {
+        AsyncOperation asyncOperation = SceneManager.LoadSceneAsync(gameSceneName);
+        asyncOperation.allowSceneActivation = false;
+
+        Debug.Log("Pro :" + asyncOperation.progress);
+
+        while (!asyncOperation.isDone)
+        {
+            yield return null;
+        }
+        Scene gameScene = SceneManager.GetSceneByName(gameSceneName);
+        switch (saveType)
+        {
+            case SaveType.Auto:
+                _Load(gameScene.GetRootGameObjects(), QuickSaveReader.Create(System.IO.Path.Combine(folderPath, autoFilename)));
+                break;
+            case SaveType.Quick:
+                _Load(gameScene.GetRootGameObjects(), QuickSaveReader.Create(System.IO.Path.Combine(folderPath, quickFilename)));
+                break;
+        }
+        asyncOperation.allowSceneActivation = true;
+        yield return null;
+    }
+
+    GameObject[] GetAllGameObjects(GameObject[] rootGameObjects)
+    {
+        List<GameObject> result = new List<GameObject>();
+        foreach (GameObject gameObject in rootGameObjects)
+        {
+            foreach(Transform child in gameObject.transform)
+            {
+                result.Add(child.gameObject);
+            }
+        }
+        return result.ToArray();
+    }
+
+
+    bool _Save(QuickSaveWriter saver)
     {
         Debug.Log("Save");
 
         GameObject[] gameObjects = GetSaveableGameObjects(FindObjectsOfType<GameObject>());
-        
+
         foreach (GameObject gameObject in gameObjects)
         {
             if (TrySerializeGameObject(gameObject, saver) == false)
@@ -98,17 +161,17 @@ public class SaveSystem : MonoBehaviour
             Saveable[] attribute = fieldInfo.GetCustomAttributes(typeof(Saveable), true) as Saveable[];
             string fullFieldName = GetFullFieldName(component, fieldInfo.Name);
             saver.Write(fullFieldName, TypeHelper.ReplaceIfUnityType(fieldInfo.FieldType, fieldInfo.GetValue(component)));
-            
+
         }
         return true;
     }
 
-    
-    bool Load(QuickSaveReader loader)
+
+    bool _Load(GameObject [] rootGameObjects, QuickSaveReader loader)
     {
         Debug.Log("Load");
 
-        GameObject[] gameObjects = GetSaveableGameObjects(FindObjectsOfType<GameObject>());
+        GameObject[] gameObjects = GetAllGameObjects(rootGameObjects);
 
         foreach (GameObject gameObject in gameObjects)
         {
@@ -175,7 +238,7 @@ public class SaveSystem : MonoBehaviour
             Debug.Log("failed call onLoad, probably " + GetFieldPrefix(component) + " does not implement ISaveable. Exact Reason: " + e.Message);
             return false;
         }
-       
+
 
         return true;
     }
@@ -229,5 +292,3 @@ public class SaveSystem : MonoBehaviour
         return false;
     }
 }
-
-#endif

@@ -5,8 +5,8 @@ using UnityEngine;
 public class EyeSystem : MonoBehaviour
 {
     [Header("Line of sight settings")]
-    public Transform eyes;
-    public float maxDistance = 1000.0f;
+    public Transform target;
+    public float maxDistance = 100.0f;
     public float fieldOfViewWidth = 270.0f;
     public float rayDensity = 90.0f;
     public string targetTag = "Player";
@@ -15,6 +15,7 @@ public class EyeSystem : MonoBehaviour
     private Vector3 rayDirection;
     private BaseAgent agent;
     private GameObject spotted;
+    private Transform eyes;
 
 
 
@@ -52,6 +53,7 @@ public class EyeSystem : MonoBehaviour
     {
         spottedObject = null;
         rayDirection = eyes.forward;
+
         for (float i = 0.0f; i < fieldOfViewWidth * 0.5; i += rayStep)
         {
             rayDirection = Quaternion.AngleAxis(i, Vector3.up) * eyes.forward;
@@ -63,7 +65,7 @@ public class EyeSystem : MonoBehaviour
                     return true;
                 }
             }
-            Debug.DrawLine(eyes.position, eyes.position + rayDirection * 100);
+
             rayDirection = Quaternion.AngleAxis(i, Vector3.down) * eyes.forward;
             if (Physics.Raycast(eyes.position, rayDirection, out hit, maxDistance, LayerMask.GetMask("Character"), QueryTriggerInteraction.Ignore))
             {
@@ -74,7 +76,6 @@ public class EyeSystem : MonoBehaviour
                 }
 
             }
-            Debug.DrawLine(eyes.position, eyes.position + rayDirection * 100);
         }
         return false;
     }

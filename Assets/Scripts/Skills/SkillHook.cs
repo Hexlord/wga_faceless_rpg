@@ -98,6 +98,8 @@ public class SkillHook : SkillBase
                     direction.SafeNormalize();
                     hookComponent.Hit.GetComponent<Rigidbody>().AddForce(
                         direction * powerToBoss * distanceFactor * delta, ForceMode.Impulse);
+                    hookComponent.Hit.TraverseParent("Faceless").GetComponent<BaseAgent>().Stun(1.0f);
+
                 }
 
                 break;

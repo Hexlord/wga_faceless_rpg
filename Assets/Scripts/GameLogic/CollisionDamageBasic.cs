@@ -172,12 +172,13 @@ public class CollisionDamageBasic : MonoBehaviour
                         break;
                 }
             }
-            OnContact();
+
         }
         else
         {
         //TO DO: Show VFX if damage isn't dealt;
         }
+        OnContact();
 
     }
 

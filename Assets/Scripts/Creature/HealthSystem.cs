@@ -38,7 +38,7 @@ public class HealthSystem : MonoBehaviour
     [Tooltip("Health bar enabled")]
     public bool uiHealthBarEnabled = true;
 
-    public Image worldSpaceHealthBar;
+    public Canvas worldSpaceHealthBar;
     [Tooltip("Triggers for death animation")]
     public int DeathVariants;
     public string DeathTrigger;
@@ -87,7 +87,7 @@ public class HealthSystem : MonoBehaviour
     public void Damage(GameObject source, float amount)
     {
         Health -= amount;
-        // Debug.Log(this.gameObject.name + ": " + health + " HP");
+        Debug.Log(this.gameObject.name + ": " + health + " HP");
         OnDamage(source, amount);
         if (Health <= 0.0f) OnDeath(source);
     }
@@ -128,14 +128,21 @@ public class HealthSystem : MonoBehaviour
         }
         GetComponent<MovementSystem>().canMove = false;
         GetComponent<Rigidbody>().velocity = Vector3.zero;
+        GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeRotation;
         gameObject.layer = LayerMask.NameToLayer("Valhalla");
-        var hitbox = transform.Find("Hitbox");
-        if(hitbox) hitbox.gameObject.layer = LayerMask.NameToLayer("Valhalla");
+        if (transform.tag != "Player")
+        {
+            foreach (Transform gm in transform.FindPrecise("Hitbox"))
+            {
+                gm.gameObject.layer = LayerMask.NameToLayer("Valhalla");
+            }
+            worldSpaceHealthBar.enabled = false;
+        }
         if (GetComponent<BaseAgent>()) GetComponent<BaseAgent>().enabled = false;
         if (source && source.tag == "Player" &&
             gameObject != source)
         {
-            var index = Random.Range(1, DeathVariants + 1);
+            int index = Random.Range(1, DeathVariants + 1);
             animator.SetInteger(DeathVariantsInt, index);
             animator.SetTrigger(DeathTrigger);
         }
@@ -161,7 +168,11 @@ public class HealthSystem : MonoBehaviour
         }
         else
         {
-            healthBar = worldSpaceHealthBar;
+            Image[] images = worldSpaceHealthBar.GetComponentsInChildren<Image>();
+            for (int i = 0; i < images.Length; i++)
+            {
+                if (images[i].type == Image.Type.Filled) healthBar = images[i];
+            }
         }
 
         Health = healthMaximum;

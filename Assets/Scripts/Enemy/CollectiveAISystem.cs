@@ -6,7 +6,9 @@ public class CollectiveAISystem : MonoBehaviour
 {
 
     private NavigationSystem navSystem;
+    //private Observer observer;
     private Dictionary<uint, BaseAgent> agentsDictionary = new Dictionary<uint, BaseAgent>();
+    private Dictionary<uint, float> agentsLastPathCalculated = new Dictionary<uint, float>();
     private Dictionary<uint, AgentType> agentsTypes = new Dictionary<uint, AgentType>();
     private Dictionary<uint, Order> agentsOrders = new Dictionary<uint, Order>();
     private GameObject target;
@@ -17,8 +19,8 @@ public class CollectiveAISystem : MonoBehaviour
     public GameObject[] recreationalArea;
     [Tooltip("Maximal range the agents can move away from recreational area")]
     public float RecreationalAreaRadius = 7.5f;
-    [Tooltip("Maximal distance the target can travel before the agents paths will be recalculated")]
-    public float RecalculationDistance = 1.0f;
+    [Tooltip("Minimal time before the agents paths will be recalculated")]
+    public float RecalculationTimer = 0.5f;
     [Tooltip("How many attacks the agents can perform simultaniously")]
     public int basicAttacksTickets;
     [Tooltip("Home many special attacks the agents can perform simultaniously")]
@@ -64,15 +66,17 @@ public class CollectiveAISystem : MonoBehaviour
         }
     }
 
-    private void Awake()
+    private void Start()
     {
         navSystem = GetComponent<NavigationSystem>();
+        //observer = GetComponent<Observer>();
         foreach(BaseAgent agent in agents)
         {
             agent.SetControllingSystems(this, navSystem);
             agentsDictionary.Add(agent.ID, agent);
             agentsTypes.Add(agent.ID, agent.AgentType());
             agentsOrders.Add(agent.ID, new Order(OrderType.RoamAround, ClosestRecreationalArea(agent.transform.position)));
+            agentsLastPathCalculated.Add(agent.ID, 0);
             agent.SetTarget(agentsOrders[agent.ID].target);
         }
     }
@@ -87,8 +91,8 @@ public class CollectiveAISystem : MonoBehaviour
             case AgentType.Melee:
                 if (basicAttacksTickets > 0)
                 {
-                    int rnd = Random.Range(0, 2);
-                    return (rnd == 1) ? AttackTikets.MeleePhysical : AttackTikets.MeleeMagical;
+                    int rnd = Random.Range(0, 101);
+                    return (rnd > 50) ? AttackTikets.MeleePhysical : AttackTikets.MeleeMagical;
                 }
                 else
                 {
@@ -97,7 +101,15 @@ public class CollectiveAISystem : MonoBehaviour
             case AgentType.EliteMelee:
                 return AttackTikets.None;
             case AgentType.Ranged:
-                return AttackTikets.None;
+                if (basicAttacksTickets > 0)
+                {
+                    int rnd = Random.Range(0, 101);
+                    return (rnd > 50) ? AttackTikets.RangedPhysical : AttackTikets.RangedMagical;
+                }
+                else
+                {
+                    return AttackTikets.None;
+                }
             case AgentType.EliteRanged:
                 return AttackTikets.None;
         }
@@ -164,6 +176,7 @@ public class CollectiveAISystem : MonoBehaviour
                                 MeleeHuntDown(agent.ID);
                                 break;
                             case AgentType.Ranged:
+                                RangedHuntDown(agent.ID);
                                 break;
                             case AgentType.EliteRanged:
                                 break;
@@ -183,12 +196,34 @@ public class CollectiveAISystem : MonoBehaviour
 
     private void MeleeHuntDown(uint ID)
     {
-        if (!agentsDictionary[ID].CanAttackEnemy())
+        if (!agentsDictionary[ID].CanAttackEnemy() && !agentsDictionary[ID].IsStunned)
         {
-            if (((navSystem.AgentDestination(ID) - agentsOrders[ID].target.transform.position).magnitude > RecalculationDistance) || navSystem.hasAgentReachedDestination(ID))
+            if ((Time.time > agentsLastPathCalculated[ID] + RecalculationTimer) || navSystem.hasAgentReachedDestination(ID))
             {
+                agentsLastPathCalculated[ID] = Time.time;
                 navSystem.PlacePathRequest(agentsDictionary[ID], agentsOrders[ID].target.transform.position);
             }
+        }
+    }
+
+    private void RangedHuntDown(uint ID)
+    {
+        if (!agentsDictionary[ID].CanSeeTarget())
+        {
+            if (!agentsDictionary[ID].IsStunned)
+                if (Time.time > agentsLastPathCalculated[ID] + RecalculationTimer)
+                {
+                    if (navSystem.hasAgentReachedDestination(ID) /*|| !observer.ChosenObserverCanStillSeeTarget(agentsOrders[ID].target.transform)*/)
+                    {
+                        agentsLastPathCalculated[ID] = Time.time;
+                        navSystem.PlacePathRequest(agentsDictionary[ID], 
+                                                        agentsOrders[ID].target.transform.position);
+                    }
+                }
+        }
+        else
+        {
+            navSystem.ClearRequest(ID);
         }
     }
 
@@ -199,10 +234,14 @@ public class CollectiveAISystem : MonoBehaviour
             int index = Random.Range(0, 2);
             if (index == 1)
             {
-                if (navSystem.hasAgentReachedDestination(ID))
+                if (Time.time > agentsLastPathCalculated[ID] + RecalculationTimer)
                 {
-                    Vector3 vector = Quaternion.AngleAxis(Random.Range(0, 360), Vector3.up) * Vector3.forward * Random.Range(0, RecreationalAreaRadius);
-                    navSystem.PlacePathRequest(agentsDictionary[ID], agentsOrders[ID].target.transform.position + vector);
+                    if (navSystem.hasAgentReachedDestination(ID))
+                    {
+                        Vector3 vector = Quaternion.AngleAxis(Random.Range(0, 360), Vector3.up) * Vector3.forward * Random.Range(0, RecreationalAreaRadius);
+                        agentsLastPathCalculated[ID] = Time.time;
+                        navSystem.PlacePathRequest(agentsDictionary[ID], agentsOrders[ID].target.transform.position + vector);
+                    }
                 }
             }
             if (index == 0)

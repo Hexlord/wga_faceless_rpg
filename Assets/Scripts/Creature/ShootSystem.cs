@@ -62,12 +62,36 @@ public class ShootSystem : MonoBehaviour
 
     private GameObject projectile;
     private Vector3 shootingDirection;
-    private float fireTime = 0.0f;
-    private float fireTimer = 0.0f;
+    private float fireLastTime = 0.0f;
+    private int indexOfChosenProjectile = 0;
 
     public bool Shooting
     {
-        get { return state != ShootSystemState.None; }
+        get { return state != ShootSystemState.None || (Time.time < fireLastTime + fireRate); }
+    }
+
+    public Vector3 ShootingDirection
+    {
+        get
+        {
+            return shootingDirection;
+        }
+        set
+        {
+            shootingDirection = value.normalized;
+        }
+    }
+
+    public int ShootingProjectileIndex
+    {
+        get
+        {
+            return indexOfChosenProjectile;
+        }
+        set
+        {
+            indexOfChosenProjectile = value;
+        }
     }
 
     // Private
@@ -87,55 +111,44 @@ public class ShootSystem : MonoBehaviour
 
     private Animator animator;
 
-    private void Awake()
+    void Awake()
     {
         // Cache
 
         animator = GetComponent<Animator>();
-
-        fireTime = 1.0f / fireRate;
     }
 
     private void SpawnProjectile()
     {
-        projectile = Instantiate(projectilePrefabs[0], ShootingPoint.position, ShootingPoint.rotation);
+
+        projectile = Instantiate(projectilePrefabs[indexOfChosenProjectile], ShootingPoint.position, ShootingPoint.rotation);
         //TO DO: Find the way to omitt next line
-        projectile.GetComponent<CollisionDamageProjectile>().source = gameObject;
-        projectile.GetComponent<CollisionDamageProjectile>().traverseParentTag = targetTag;
+        foreach (CollisionDamageProjectile p in projectile.GetComponentsInChildren<CollisionDamageProjectile>())
+        {
+            p.source = gameObject;
+            p.traverseParentTag = targetTag;
+        }
         projectile.GetComponent<Rigidbody>().AddForce(shootingDirection * projectileSpeed);
     }
 
-    private void FixedUpdate()
+    public void EndShooting()
     {
-        var delta = Time.fixedDeltaTime;
-        fireTimer = Mathf.MoveTowards(fireTimer, fireTime, delta);
-        
-        switch (state)
-        {
-            case ShootSystemState.None:
-                break;
-            case ShootSystemState.Shooting:
-                state = ShootSystemState.Restoring;
-                SpawnProjectile();
-                break;
-            case ShootSystemState.Restoring:
-                state = ShootSystemState.None;
-                break;
-        }
+        state = ShootSystemState.None;
     }
 
-    public void Shoot(Vector3 direction)
+    public void Shoot(Vector3 direction, int projectileIndex)
     {
         Debug.Assert(!Shooting);
         shootingDirection = direction.normalized;
 
-        if (!canShoot ||
-            fireTimer < fireTime) return;
+        if (Shooting || !canShoot ||
+            Time.time < fireLastTime + fireRate) return;
 
-        fireTimer -= fireTime;
+        fireLastTime = Time.time;
 
         state = ShootSystemState.Shooting;
         animator.SetTrigger(shootAnimationTrigger);
+        indexOfChosenProjectile = projectileIndex;
     }
 
 }

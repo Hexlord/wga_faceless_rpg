@@ -34,7 +34,10 @@ public class MeleeAgent : BaseAgent
         if (!isStunned)
         {
             UpdateMove();
-            if (allowedToAttack && ((currentTarget.transform.position - transform.position).magnitude < attackRange) && attackSys.canAttack && (attackStartTime + attackCooldown < Time.time))
+            if (allowedToAttack &&
+                ((currentTarget.transform.position - transform.position).magnitude < attackRange) &&
+                    attackSys.canAttack &&
+                        (attackStartTime + attackCooldown < Time.time))
             {
                 switch (AISys.GetTicket(ID))
                 {

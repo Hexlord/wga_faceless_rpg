@@ -234,7 +234,7 @@ public class PlayerCharacterController : MonoBehaviour
                 shootingDirection = camera.transform.forward;
             }
             cameraController.TriggerPlayerAutoRotation();
-            shootSystem.Shoot(shootingDirection);
+            shootSystem.Shoot(shootingDirection, 0);
         }
     }
 
