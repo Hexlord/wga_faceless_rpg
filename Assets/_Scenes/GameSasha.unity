@@ -21961,7 +21961,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a2c5d7025fc5af5418f832c9bcfa1242, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  protectionRange: 100
+  protectionRange: 1000
 --- !u!65 &944817815
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -46888,7 +46888,6 @@ GameObject:
   - component: {fileID: 2064586256}
   - component: {fileID: 2064586255}
   - component: {fileID: 2064586254}
-  - component: {fileID: 2064586253}
   - component: {fileID: 2064586252}
   m_Layer: 9
   m_Name: Talk
@@ -46929,18 +46928,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   flip: 1
---- !u!114 &2064586253
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2064586250}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9541d86e2fd84c1d9990edf0852d74ab, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!222 &2064586254
 CanvasRenderer:
   m_ObjectHideFlags: 2
@@ -51059,6 +51046,21 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 2169033389271462883, guid: 168dbf65d26fceb439ce8a40c47d910a,
+        type: 3}
+      propertyPath: baseSpeed
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 2169033389271462883, guid: 168dbf65d26fceb439ce8a40c47d910a,
+        type: 3}
+      propertyPath: walkingBackSpeed
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 2169033389271462883, guid: 168dbf65d26fceb439ce8a40c47d910a,
+        type: 3}
+      propertyPath: sprintingSpeed
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 2667227862629441149, guid: 168dbf65d26fceb439ce8a40c47d910a,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -51117,21 +51119,6 @@ PrefabInstance:
     - target: {fileID: 4806010208796187863, guid: 168dbf65d26fceb439ce8a40c47d910a,
         type: 3}
       propertyPath: rotationStabilization
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2169033389271462883, guid: 168dbf65d26fceb439ce8a40c47d910a,
-        type: 3}
-      propertyPath: baseSpeed
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 2169033389271462883, guid: 168dbf65d26fceb439ce8a40c47d910a,
-        type: 3}
-      propertyPath: walkingBackSpeed
-      value: 4
-      objectReference: {fileID: 0}
-    - target: {fileID: 2169033389271462883, guid: 168dbf65d26fceb439ce8a40c47d910a,
-        type: 3}
-      propertyPath: sprintingSpeed
       value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
