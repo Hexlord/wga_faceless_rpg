@@ -43,7 +43,7 @@ namespace Tests
                     continue;
                 }
 
-                skillSystem.SelectSkill(skillSystem.Skills[random.Next(skillSystem.Skills.Count)]);
+                skillSystem.SelectSkill(random.Next(skillSystem.Skills.Count));
                 if (!skillSystem.IsSkillSelected)
                 {
                     yield return new WaitForSeconds(0.1f);

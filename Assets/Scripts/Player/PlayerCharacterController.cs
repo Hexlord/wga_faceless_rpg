@@ -138,11 +138,11 @@ public class PlayerCharacterController : MonoBehaviour
         var magicalOffset = bodyStateSystem.State == BodyStateSystem.BodyState.Magical ? 2 : 0;
 
         var key = -1;
-        if (InputManager.Down(InputAction.Skill_1))
+        if (InputManager.Pressed(InputAction.Skill_1))
         {
             key = 0;
         }
-        else if (InputManager.Down(InputAction.Skill_2))
+        else if (InputManager.Pressed(InputAction.Skill_2))
         {
             key = 1;
         }
@@ -158,12 +158,19 @@ public class PlayerCharacterController : MonoBehaviour
 
     private void UpdateSkills()
     {
-        int selectedSkill = GetSkillSelection();
+        var selectedSkill = GetSkillSelection();
 
         if (selectedSkill >= 0 &&
             !skillSystem.Busy)
         {
-            skillSystem.SelectSkill(selectedSkill);
+            if (skillSystem.SelectedSkill == selectedSkill)
+            {
+                skillSystem.UnselectSkill();
+            }
+            else
+            {
+                skillSystem.SelectSkill(selectedSkill);
+            }
         }
     }
 

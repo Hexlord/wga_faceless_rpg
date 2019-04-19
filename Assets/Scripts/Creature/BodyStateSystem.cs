@@ -59,7 +59,7 @@ public class BodyStateSystem : MonoBehaviour
         sheathSystem = GetComponent<SheathSystem>();
         skillSystem = GetComponent<SkillSystem>();
 
-        bool sheathed = sheathSystem.Sheathed;
+        var sheathed = sheathSystem.Sheathed;
 
         Show(sheathed, physicalAppearance, physicalAppearanceSheathed);
         if (magicalAppearance) magicalAppearance.SetActive(false);
@@ -81,7 +81,7 @@ public class BodyStateSystem : MonoBehaviour
 
     protected void FixedUpdate()
     {
-        bool sheathed = sheathSystem.Sheathed;
+        var sheathed = sheathSystem.Sheathed;
 
         if (state == BodyState.Physical)
         {

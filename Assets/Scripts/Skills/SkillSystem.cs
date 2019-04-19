@@ -81,19 +81,27 @@ public class SkillSystem : MonoBehaviour
         }
     }
 
-    public IList<string> Skills
+    public IList<Skill> SkillTypes
     {
-        get { return skillNames; }
+        get { return skillTypes; }
+    }
+    public IList<SkillBase> Skills
+    {
+        get { return skills; }
     }
 
     public int ActiveSkillNumber
     {
         get { return activeSkillNumber; }
     }
-
     public bool IsSkillSelected
     {
         get { return activeSkill != null; }
+    }
+
+    public int SelectedSkill
+    {
+        get { return activeSkillNumber; }
     }
 
     // Private
@@ -105,7 +113,7 @@ public class SkillSystem : MonoBehaviour
     public bool stop = false;
 
     private readonly IList<SkillBase> skills = new List<SkillBase>();
-    private readonly IList<string> skillNames = new List<string>();
+    private readonly IList<Skill> skillTypes = new List<Skill>();
     private SkillBase activeSkill = null;
     private int activeSkillNumber = -1;
 
@@ -128,8 +136,10 @@ public class SkillSystem : MonoBehaviour
         foreach (var skill in startSkills)
         {
             skills.Add(skill.Instantiate());
-            skillNames.Add(skill.ToString());
+            skillTypes.Add(skill);
         }
+
+
     }
 
     private void SwitchState(SkillSystemState state)
@@ -206,9 +216,9 @@ public class SkillSystem : MonoBehaviour
 
         if (!canCast) return;
 
-        SkillBase skill = skills[skillNumber];
+        var skill = skills[skillNumber];
 
-        if (skill.OnCooldawn) return;
+        if (skill.OnCooldown) return;
 
         activeSkill = skill;
         activeSkillNumber = skillNumber;
@@ -269,6 +279,7 @@ public class SkillSystem : MonoBehaviour
                 SwitchState(SkillSystemState.SkillEnd);
                 break;
             case SkillSystemState.ChannelStart:
+                activeSkill.CastEvent(gameObject);
                 SwitchState(SkillSystemState.ChannelUpdate);
                 break;
             default:

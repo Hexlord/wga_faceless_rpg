@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 1376648667276994722}
   - component: {fileID: 1385139383253523682}
   m_Layer: 5
-  m_Name: HealthPannel
+  m_Name: StatusPanel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -209,11 +209,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1024627635580753816}
     m_Modifications:
-    - target: {fileID: 4913137866420394963, guid: e614ab323aa007046938fc8e5a897bb0,
-        type: 3}
-      propertyPath: m_Name
-      value: PhisXPPanel
-      objectReference: {fileID: 0}
     - target: {fileID: 2330970249309999822, guid: e614ab323aa007046938fc8e5a897bb0,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -318,6 +313,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Pivot.y
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4913137866420394963, guid: e614ab323aa007046938fc8e5a897bb0,
+        type: 3}
+      propertyPath: m_Name
+      value: PhisXPPanel
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e614ab323aa007046938fc8e5a897bb0, type: 3}

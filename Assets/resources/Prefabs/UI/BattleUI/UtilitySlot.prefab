@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 8759332981408137544}
   - component: {fileID: 6107142402585579050}
   m_Layer: 5
-  m_Name: BaseMageAttack_Off
+  m_Name: Shoot
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -86,7 +86,7 @@ GameObject:
   - component: {fileID: 6550086674772696724}
   - component: {fileID: 8290117019354060269}
   m_Layer: 5
-  m_Name: BaseMageDash_Off
+  m_Name: Dash
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -160,7 +160,7 @@ GameObject:
   - component: {fileID: 5420210256162374691}
   - component: {fileID: 1282505354054589890}
   m_Layer: 5
-  m_Name: BasePhisAttack_On
+  m_Name: AttackActive
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -234,7 +234,7 @@ GameObject:
   - component: {fileID: 7394055107392217677}
   - component: {fileID: 8418119568520222}
   m_Layer: 5
-  m_Name: SkillNotSelected
+  m_Name: Background
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -382,7 +382,7 @@ GameObject:
   - component: {fileID: 4302080080501158888}
   - component: {fileID: 7880845524239230790}
   m_Layer: 5
-  m_Name: BasePhisDefence_On
+  m_Name: ShieldActive
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -456,7 +456,7 @@ GameObject:
   - component: {fileID: 3260276935061439364}
   - component: {fileID: 1829783558816647625}
   m_Layer: 5
-  m_Name: BasePhisDefence_Off
+  m_Name: Shield
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -530,7 +530,7 @@ GameObject:
   - component: {fileID: 5755800146164621071}
   - component: {fileID: 7761464168236617132}
   m_Layer: 5
-  m_Name: BasePhisAttack_Off
+  m_Name: Attack
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -604,7 +604,7 @@ GameObject:
   - component: {fileID: 6132984102290175613}
   - component: {fileID: 6685123312099378850}
   m_Layer: 5
-  m_Name: BaseMageAttack_On
+  m_Name: ShootActive
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -677,8 +677,9 @@ GameObject:
   - component: {fileID: 8411423713359275513}
   - component: {fileID: 8411423713359275399}
   - component: {fileID: 8411423713359275398}
+  - component: {fileID: 6997345720434376969}
   m_Layer: 5
-  m_Name: BattleUIBaseSlot
+  m_Name: UtilitySlot
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -750,6 +751,18 @@ MonoBehaviour:
   m_FillClockwise: 1
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
+--- !u!114 &6997345720434376969
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8411423713359275512}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2bedff7732e280c47a28cf090dd4eed1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &8909560392136785958
 GameObject:
   m_ObjectHideFlags: 0
@@ -762,7 +775,7 @@ GameObject:
   - component: {fileID: 3955759260728999388}
   - component: {fileID: 2877152496444847047}
   m_Layer: 5
-  m_Name: BaseMageDash_On
+  m_Name: DashActive
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
