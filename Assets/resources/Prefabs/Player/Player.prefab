@@ -1488,7 +1488,9 @@ GameObject:
   - component: {fileID: 7484056357403912384}
   - component: {fileID: 1268358755}
   - component: {fileID: 1268358756}
-  m_Layer: 0
+  - component: {fileID: 1268358773}
+  - component: {fileID: 1268358774}
+  m_Layer: 14
   m_Name: Player
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -1686,6 +1688,7 @@ MonoBehaviour:
   animationDamping: 0.15
   weaponSheathed: {fileID: 5314097334704263717}
   weaponUnsheathed: {fileID: 5314097334704263723}
+  SwordVFX: {fileID: 4422874620800992275}
   state: 0
 --- !u!114 &7484056357403912372
 MonoBehaviour:
@@ -1723,11 +1726,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7c45af2a858bb6d43b254e5a55c7c9ca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  dashDistance: 10
-  timeForDash: 0.2
-  numberOfCharges: 3
+  dashDistance: 5
+  timeForDash: 0.1
+  numberOfCharges: 5
   chargesAvailable: 0
-  reloadTime: 1
+  reloadTime: 1.5
   dashAnimationBool: 
   animDash: 
 --- !u!114 &7484056357403912375
@@ -1875,6 +1878,43 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   battleUI: {fileID: 0}
+--- !u!114 &1268358773
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5314097334704264091}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 750162c11c49e084ebafdac25ae293d8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  portalMenu: {fileID: 0}
+  portalMenuBackground: {fileID: 0}
+  activePortals:
+  - {fileID: 0}
+  - {fileID: 0}
+  inactivePortals:
+  - {fileID: 0}
+  - {fileID: 0}
+  isActive: 0101
+  exitKey: 27
+  activation: 
+  inactivation: 
+--- !u!114 &1268358774
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5314097334704264091}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b87f15ad545e39546b78d05cff8caeb7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  deathUI: {fileID: 0}
 --- !u!1 &5314097334704264093
 GameObject:
   m_ObjectHideFlags: 0
@@ -3341,16 +3381,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 4472416737911977895}
     m_Modifications:
-    - target: {fileID: 5388156072598406187, guid: bbf1fd3dfdeda3a4883ca803eac10ad2,
-        type: 3}
-      propertyPath: m_Name
-      value: trail_sword
-      objectReference: {fileID: 0}
-    - target: {fileID: 5388156072598406187, guid: bbf1fd3dfdeda3a4883ca803eac10ad2,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 5388156072598406188, guid: bbf1fd3dfdeda3a4883ca803eac10ad2,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -3421,8 +3451,24 @@ PrefabInstance:
       propertyPath: m_LocalScale.z
       value: 1.0152171
       objectReference: {fileID: 0}
+    - target: {fileID: 5388156072598406187, guid: bbf1fd3dfdeda3a4883ca803eac10ad2,
+        type: 3}
+      propertyPath: m_Name
+      value: trail_sword
+      objectReference: {fileID: 0}
+    - target: {fileID: 5388156072598406190, guid: bbf1fd3dfdeda3a4883ca803eac10ad2,
+        type: 3}
+      propertyPath: playOnAwake
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: bbf1fd3dfdeda3a4883ca803eac10ad2, type: 3}
+--- !u!198 &4422874620800992275 stripped
+ParticleSystem:
+  m_CorrespondingSourceObject: {fileID: 5388156072598406190, guid: bbf1fd3dfdeda3a4883ca803eac10ad2,
+    type: 3}
+  m_PrefabInstance: {fileID: 8622043006213062717}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &4422874620800992273 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 5388156072598406188, guid: bbf1fd3dfdeda3a4883ca803eac10ad2,
