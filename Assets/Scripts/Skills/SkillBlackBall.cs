@@ -28,7 +28,7 @@ public class SkillBlackBall : SkillBase
     {
         base.PrepareEvent(caster);
         Debug.Log("Preparing blackball, setting cooldawn");
-        PutOnCooldawn();
+        PutOnCooldown();
     }
 
     public override void StartUpdate(GameObject caster, float delta, float time, float length)

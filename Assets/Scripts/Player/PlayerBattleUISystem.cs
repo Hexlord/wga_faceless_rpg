@@ -30,18 +30,20 @@ public class PlayerBattleUISystem : MonoBehaviour
     private SkillSystem skillSystem;
     private DashSystem dashSystem;
     private ShieldSystem shieldSystem;
+    private SheathSystem sheathSystem;
     private XpSystem xpSystem;
     private BodyStateSystem bodyStateSystem;
 
+    private SkillsUISystem slot1;
+    private SkillsUISystem slot2;
+    private SkillsUtilityUISystem slotUtility1;
+    private SkillsUtilityUISystem slotUtility2;
+
     // Cache
 
-    private GameObject PhysAttackFill;
-    private GameObject MageAttackFill;
-
-    private GameObject PhysStateFill;
-    private GameObject MageStateFill;
-    private GameObject PhysStateUpgrade;
-    private GameObject MageStateUpgrade;
+    private GameObject Raven;
+    private GameObject JewelRed;
+    private GameObject JewelBlue;
 
     private DashUISystem dashUiSystem;
 
@@ -54,31 +56,40 @@ public class PlayerBattleUISystem : MonoBehaviour
     {
         if (!battleUI)
         {
-            battleUI = GameObject.Find("UI").FindPrecise("Canvas").transform.FindPrecise("BattleUI").gameObject;
+            battleUI = GameObject.Find("UI").FindPrecise("Canvas").FindPrecise("BattleUI").gameObject;
         }
 
         healthSystem = GetComponent<HealthSystem>();
         concentrationSystem = GetComponent<ConcentrationSystem>();
         skillSystem = GetComponent<SkillSystem>();
+        sheathSystem = GetComponent<SheathSystem>();
         dashSystem = GetComponent<DashSystem>();
         shieldSystem = GetComponent<ShieldSystem>();
         xpSystem = GetComponent<XpSystem>();
         bodyStateSystem = GetComponent<BodyStateSystem>();
 
-        PhysAttackFill = battleUI.transform.Find("PhysAttack").Find("Fill").gameObject;
-        MageAttackFill = battleUI.transform.Find("MageAttack").Find("Fill").gameObject;
+        var skillsPanel = battleUI.transform.Find("SkillsPanel");
 
-        PhysStateFill = battleUI.transform.Find("PhysState").Find("Fill").gameObject;
-        MageStateFill = battleUI.transform.Find("MageState").Find("Fill").gameObject;
-        PhysStateUpgrade = battleUI.transform.Find("PhysState").Find("Upgrade").gameObject;
-        MageStateUpgrade = battleUI.transform.Find("MageState").Find("Upgrade").gameObject;
+        Raven = skillsPanel.Find("Raven").gameObject;
+        JewelRed = Raven.FindPrecise("JewelRed").gameObject;
+        JewelBlue = Raven.FindPrecise("JewelBlue").gameObject;
 
-        dashUiSystem = battleUI.transform.Find("Dash").GetComponent<DashUISystem>();
+        dashUiSystem = battleUI.transform.Find("DashPanel").GetComponent<DashUISystem>();
 
-        Health = battleUI.transform.Find("Status").Find("Health").GetComponent<Image>();
-        Concentration = battleUI.transform.Find("Status").Find("Concentration").GetComponent<Image>();
-        XP            = battleUI.transform.Find("XPBar").Find("Fill").GetComponent<Image>();
+        var statusPanel = battleUI.transform.Find("StatusPanel");
+        var status = statusPanel.Find("Status");
 
+        Health = status.Find("Health").GetComponent<Image>();
+        Concentration = status.Find("Concentration").GetComponent<Image>();
+        XP = statusPanel.Find("XPPanel").Find("XPBar").GetComponent<Image>();
+
+        slot1 = skillsPanel.FindPrecise("Slot1").GetComponent<SkillsUISystem>();
+        slot2 = skillsPanel.FindPrecise("Slot2").GetComponent<SkillsUISystem>();
+        slotUtility1 = skillsPanel.FindPrecise("SlotUtility1").GetComponent<SkillsUtilityUISystem>();
+        slotUtility2 = skillsPanel.FindPrecise("SlotUtility2").GetComponent<SkillsUtilityUISystem>();
+
+        Health.fillAmount = 1;
+        Concentration.fillAmount = 0;
         XP.fillAmount = 0;
 
         battleUI.SetActive(true);
@@ -89,21 +100,32 @@ public class PlayerBattleUISystem : MonoBehaviour
         var physical = bodyStateSystem.State == BodyStateSystem.BodyState.Physical;
         var magical = !physical;
 
-        PhysAttackFill.SetActive(physical);
-        MageAttackFill.SetActive(magical);
-
-        PhysStateFill.SetActive(physical);
-        MageStateFill.SetActive(magical);
-        PhysStateUpgrade.SetActive(physical && xpSystem.SwordPoints > 0);
-        MageStateUpgrade.SetActive(magical && xpSystem.MaskPoints > 0);
+        JewelRed.SetActive(physical);
+        JewelBlue.SetActive(magical);
 
         dashUiSystem.DashCharges = dashSystem.ChargesAvailabe;
 
         Health.fillAmount = healthSystem.Health / healthSystem.healthMaximum;
         Concentration.fillAmount = concentrationSystem.Concentration / concentrationSystem.concentrationMaximum;
-
         XP.fillAmount = xpSystem.LevelCompletion;
-        
+
+        var offset = 0;
+        if (magical) offset += 2;
+
+        slot1.Slot = skillSystem.SkillTypes[offset];
+        slot2.Slot = skillSystem.SkillTypes[offset + 1];
+        slot1.Active = !sheathSystem.Sheathed;
+        slot2.Active = !sheathSystem.Sheathed;
+        slot1.CooldownNormalized = skillSystem.Skills[offset].CooldownTimerNormalized;
+        slot2.CooldownNormalized = skillSystem.Skills[offset + 1].CooldownTimerNormalized;
+        slot1.Selected = skillSystem.SelectedSkill == offset;
+        slot2.Selected = skillSystem.SelectedSkill == offset + 1;
+
+
+        slotUtility1.Slot = magical ? SkillUtility.Shoot : SkillUtility.Attack;
+        slotUtility2.Slot = magical ? SkillUtility.Dash : SkillUtility.Shield;
+        slotUtility1.Active = !sheathSystem.Sheathed;
+        slotUtility2.Active = !sheathSystem.Sheathed;
     }
 
 }
