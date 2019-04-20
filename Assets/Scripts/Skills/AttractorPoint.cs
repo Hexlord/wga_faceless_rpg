@@ -51,7 +51,10 @@ public class AttractorPoint : AttractorBase
         var force = direction * strength / Mathf.Pow(distance, distancePower) * Time.fixedDeltaTime;
 
         if (useForce)
+        {
+            body.GetComponent<BaseAgent>().Stun(1.0f);
             body.AddForce(force, ForceMode.Impulse);
+        }
         else
             body.MovePosition(body.position + force);
 

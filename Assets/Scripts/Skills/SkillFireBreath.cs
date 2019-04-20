@@ -1,16 +1,15 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
 
 /*
  * History:
- * 
+ *
  * Date         Author      Description
- * 
+ *
  * 03.03.2019   aknorre     Created
- * 
+ *
  */
 
 public class SkillFireBreath : SkillBase
@@ -20,7 +19,7 @@ public class SkillFireBreath : SkillBase
     private readonly GameObject firePrefab;
 
     public SkillFireBreath() :
-        base(Skill.FireBreath, false, 1.0f)
+        base(Skill.FireBreath, SkillAnimation.First, false, 5.0f)
     {
         firePrefab = (GameObject)Resources.Load("Prefabs/Skills/FireBreath", typeof(GameObject));
     }
@@ -28,7 +27,7 @@ public class SkillFireBreath : SkillBase
     public override void PrepareEvent(GameObject caster)
     {
         base.PrepareEvent(caster);
-        PutOnCooldawn();
+        PutOnCooldown();
     }
 
     public override void StartUpdate(GameObject caster, float delta, float time, float length)
@@ -46,7 +45,7 @@ public class SkillFireBreath : SkillBase
 
         var rotation = Quaternion.Euler(0.0f, sourceRotation.eulerAngles.y, 0.0f);
         var position = caster.transform.position + rotation * Vector3.forward * forwardOffset;
-        
+
         var projectile =
             UnityEngine.Object.Instantiate(firePrefab,
                 position, rotation);
@@ -61,4 +60,3 @@ public class SkillFireBreath : SkillBase
     }
 
 }
-

@@ -5,9 +5,9 @@ using UnityEngine;
 
 /*
  * History:
- * 
+ *
  * Date         Author      Description
- * 
+ *
  * 15.03.2019   aknorre     Created
  * 16.03.2019   bkrylov     Allocated to Component Menu
  * 25.03.2019   bkrylov     Added dashing
@@ -21,7 +21,7 @@ public class MovementSystem : MonoBehaviour
 {
 
     // Public
-    
+
     [Header("Movement Settings")]
     [Tooltip("Toggles ability to move")]
     public bool canMove = true;
@@ -57,7 +57,6 @@ public class MovementSystem : MonoBehaviour
     [Range(0.001f, 10.0f)]
     public float airwalkFadeTime = 1.0f;
 
-
     [Header("Animation Settings")]
     [Tooltip("Smoothing factor for transitions")]
     public float animationDamping = 0.15f;
@@ -69,9 +68,15 @@ public class MovementSystem : MonoBehaviour
 
     private readonly int animatorHorizontal = Animator.StringToHash("Horizontal");
     private readonly int animatorVertical = Animator.StringToHash("Vertical");
-    private readonly int animatorWeapon = Animator.StringToHash("Weapon");
-    
+
     private float currentMovementSpeed;
+
+    private float busyFactor;
+    private float landFactor;
+    private float gravity;
+    private Vector2 currentVelocity;
+    private Vector2 targetVelocity;
+    private Vector2 appliedVelocity;
 
     public bool Moving
     {
@@ -86,7 +91,7 @@ public class MovementSystem : MonoBehaviour
     {
         get { return desiredMovement; }
         set
-        {        
+        {
             if (value.sqrMagnitude < Mathf.Epsilon) value = Vector2.zero;
             else if (value.sqrMagnitude > 1.0f) value = value.normalized;
 
@@ -137,7 +142,7 @@ public class MovementSystem : MonoBehaviour
     private void OnDesiredMovementUpdate()
     {
         var desiredMovementBodySpaceTemp =
-            Quaternion.Euler(0.0f, -transform.rotation.eulerAngles.y, 0.0f) * 
+            Quaternion.Euler(0.0f, -transform.rotation.eulerAngles.y, 0.0f) *
             (new Vector3(desiredMovement.x, 0.0f, desiredMovement.y));
 
         desiredMovementBodySpace = new Vector2(desiredMovementBodySpaceTemp.x, desiredMovementBodySpaceTemp.z);
@@ -146,35 +151,33 @@ public class MovementSystem : MonoBehaviour
 
     private void MoveBody(float delta)
     {
-        var busyFactor = 1.0f;
+        busyFactor = 1.0f;
         if (skillSystem && skillSystem.Busy) busyFactor = busyMultiplier;
         if (attackSystem && attackSystem.Attacking) busyFactor = busyMultiplier;
 
-        var landFactor = 1.0f;
-        var gravity = 0.0f;
+        landFactor = 1.0f;
+        gravity = 0.0f;
 
         if (legsTouchCondition)
         {
             if (!legsTouchCondition.Touch)
             {
                 landFactor = Mathf.Max(0, airwalkFadeTime - legsTouchCondition.DetouchedTime) / airwalkFadeTime * landFactor;
-                
+
                 gravity = gravityMax * Mathf.Max(0, gravityFadeTime - legsTouchCondition.DetouchedTime) * delta;
             }
         }
 
-        var currentVelocity = (new Vector2(body.velocity.x, body.velocity.z));
-        var targetVelocity = desiredMovement * currentMovementSpeed * busyFactor;
+        currentVelocity = (new Vector2(body.velocity.x, body.velocity.z));
+        targetVelocity = desiredMovement * currentMovementSpeed * busyFactor;
         if (!ResistForces)
         {
             targetVelocity += currentVelocity;
         }
 
-        var deltaVelocity = targetVelocity - currentVelocity;
-
-        var appliedVelocity = Vector2.MoveTowards(
+        appliedVelocity = Vector2.MoveTowards(
             Vector2.zero,
-            deltaVelocity,
+            targetVelocity - currentVelocity,
             currentMovementSpeed * delta * landFactor / accelerationTime);
 
         body.AddForce(appliedVelocity.x, -gravity, appliedVelocity.y, ForceMode.VelocityChange);
@@ -182,7 +185,7 @@ public class MovementSystem : MonoBehaviour
 
     private void RotateBody(float delta)
     {
-        if(rotationStabilization)
+        if (rotationStabilization)
         {
             body.angularVelocity = new Vector3(0.0f, Mathf.Lerp(body.angularVelocity.y, 0.0f, delta), 0.0f);
         }
@@ -191,13 +194,15 @@ public class MovementSystem : MonoBehaviour
     protected void FixedUpdate()
     {
         var delta = Time.fixedDeltaTime;
-        
-        animator.SetFloat(animatorHorizontal, desiredMovementBodySpace.x, animationDamping, delta);
-        animator.SetFloat(animatorVertical, desiredMovementBodySpace.y, animationDamping, delta);
-        if(sheathSystem) animator.SetFloat(animatorWeapon, sheathSystem.Sheathed ? 0.0f : 1.0f, animationDamping, delta);
 
-        MoveBody(delta);
-        RotateBody(delta);
+        if (animator) animator.SetFloat(animatorHorizontal, desiredMovementBodySpace.x, animationDamping, delta);
+        if (animator) animator.SetFloat(animatorVertical, desiredMovementBodySpace.y, animationDamping, delta);
+
+        if (canMove)
+        {
+            MoveBody(delta);
+            RotateBody(delta);
+        }
     }
 
     public void SetSpeed(float newSpeed)

@@ -4,11 +4,11 @@ using UnityEngine;
 
 /*
  * History:
- * 
+ *
  * Date         Author      Description
- * 
+ *
  * 15.03.2019   aknorre     Created
- * 
+ *
  */
 
 public static class GameObjectExtensions

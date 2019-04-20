@@ -28,7 +28,7 @@ public class SkillLineStrike : SkillBase
     private readonly GameObject effectPrefab;
 
     public SkillLineStrike() :
-        base(Skill.LineStrike, false, 10.0f)
+        base(Skill.LineStrike, SkillAnimation.Second, false, 10.0f)
     {
         effectPrefab = (GameObject)Resources.Load("Prefabs/Skills/CircleStrike", typeof(GameObject));
     }
@@ -36,7 +36,7 @@ public class SkillLineStrike : SkillBase
     public override void PrepareEvent(GameObject caster)
     {
         base.PrepareEvent(caster);
-        PutOnCooldawn();
+        PutOnCooldown();
     }
 
     public override void StartUpdate(GameObject caster, float delta, float time, float length)

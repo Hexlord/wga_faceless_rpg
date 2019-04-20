@@ -17,7 +17,7 @@ public class DashElementUISystem : MonoBehaviour
     private GameObject ready;
     private GameObject used;
 
-    void Awake()
+    private void Awake()
     {
         ready = transform.FindPrecise("DashFull").gameObject;
         used = transform.FindPrecise("DashUsed").gameObject;

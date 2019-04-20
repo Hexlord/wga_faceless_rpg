@@ -1,17 +1,16 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
 /*
  * History:
- * 
+ *
  * Date         Author      Description
- * 
+ *
  * 03.03.2019   aknorre     Created
- * 
+ *
  */
 
 public class SkillHook : SkillBase
@@ -22,12 +21,12 @@ public class SkillHook : SkillBase
     private Hook hookComponent;
     private MovementSystem casterMovementSystem;
 
-    public static float power = 17.0f;
-    public static float powerToBoss = 300.0f;
-    public static float targetDistance = 1.5f;
+    public static float power = 50.0f;
+    public static float powerToBoss = 500.0f;
+    public static float targetDistance = 0.5f;
 
     public SkillHook() :
-        base(Skill.Hook, true, 1.0f)
+        base(Skill.Hook, SkillAnimation.First, true, 1.0f)
     {
         hookPrefab = (GameObject)Resources.Load("Prefabs/Skills/Hook", typeof(GameObject));
     }
@@ -35,7 +34,7 @@ public class SkillHook : SkillBase
     public override void PrepareEvent(GameObject caster)
     {
         base.PrepareEvent(caster);
-        PutOnCooldawn();
+        PutOnCooldown();
         casterMovementSystem = caster.GetComponent<MovementSystem>();
     }
 
@@ -68,12 +67,14 @@ public class SkillHook : SkillBase
         if (!hook)
         {
             var skillSystem = caster.GetComponent<SkillSystem>();
-            if (skillSystem.Channeling) skillSystem.Interrupt(false);
+            if (skillSystem.Channeling) skillSystem.Interrupt();
             return;
         }
 
         var state = hookComponent.State;
-        
+
+
+        var step = power * Time.fixedDeltaTime;
 
         switch (state)
         {
@@ -96,8 +97,11 @@ public class SkillHook : SkillBase
                 else
                 {
                     var direction = (caster.transform.position - hookComponent.Hit.transform.position);
+                    direction.SafeNormalize();
                     hookComponent.Hit.GetComponent<Rigidbody>().AddForce(
                         direction * powerToBoss * distanceFactor * delta, ForceMode.Impulse);
+                    hookComponent.Hit.TraverseParent("Faceless").GetComponent<BaseAgent>().Stun(1.0f);
+
                 }
 
                 break;
@@ -117,7 +121,7 @@ public class SkillHook : SkillBase
         if (!hook)
         {
             var skillSystem = caster.GetComponent<SkillSystem>();
-            if(skillSystem.Channeling) skillSystem.Interrupt(false);
+            if(skillSystem.Channeling) skillSystem.Interrupt();
             return;
         }
 
@@ -143,4 +147,3 @@ public class SkillHook : SkillBase
     }
 
 }
-

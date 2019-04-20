@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
 
 /*
@@ -20,7 +19,7 @@ public class SkillBlackBall : SkillBase
     private readonly GameObject projectilePrefab;
 
     public SkillBlackBall() :
-        base(Skill.BlackBall, false, 10.0f)
+        base(Skill.BlackBall, SkillAnimation.First, false, 10.0f)
     {
         projectilePrefab = (GameObject)Resources.Load("Prefabs/Skills/BlackBall", typeof(GameObject));
     }
@@ -29,7 +28,7 @@ public class SkillBlackBall : SkillBase
     {
         base.PrepareEvent(caster);
         Debug.Log("Preparing blackball, setting cooldawn");
-        PutOnCooldawn();
+        PutOnCooldown();
     }
 
     public override void StartUpdate(GameObject caster, float delta, float time, float length)

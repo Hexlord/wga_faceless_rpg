@@ -10,6 +10,7 @@ using UnityEngine;
  * 
  * 15.03.2019   aknorre     Created
  * 16.03.2019   bkrylov     Allocated to Component Menu
+ * 25.03.2019   bkrylov     Remade Component to better collider filtration
  * 
  */
 [AddComponentMenu("ProjectFaceless/GameLogic/Collision Damage Basic")]
@@ -18,115 +19,170 @@ public class CollisionDamageBasic : MonoBehaviour
 
     // Public
 
-    public enum DamageBodyState
-    {
-        Any,
-        Physical,
-        Magical
-    }
-
-
     [Header("Basic Settings")]
     [Tooltip("Toggles whether it does damage")]
     public bool canDamage = true;
 
-    [Tooltip("What body states can be damaged")]
-    public DamageBodyState damageBodyState = DamageBodyState.Any;
-
     [Tooltip("Object that does the damage")]
     public GameObject source;
-    
+
     [Tooltip("Object that never receives the damage (if any)")]
     public GameObject negativeFilterTarget;
 
     [Tooltip("Object tag that never receives the damage (if any)")]
     public string negativeFilterTargetTag;
 
-    [Tooltip("Object that receives the damage (if any)")]
-    public GameObject filterTarget;
-
-    [Tooltip("Object tag that receives the damage (if any)")]
-    public string filterTargetTag;
-
     [Tooltip("Amount of damage done on collision")]
     [Range(0.0f, 1000.0f, order = 2)]
     public float damage = 10.0f;
 
+    [Tooltip("Amount of damage to shield HP done on collision with shields. Always unique")]
+    [Range(0.0f, 1000.0f, order = 2)]
+    public float shieldDamage = 10.0f;
+
     [Tooltip("Unique damage (only damage each GameObject once per lifetime)")]
     public bool uniqueDamage = true;
+
+    [Tooltip("Effects to apply on damage")]
+    public Effect[] effectsOnDamage;
+
+    public bool Active
+    {
+        get { return active; }
+        set { active = value; }
+    }
+
+
+    // Cache
+    private AttackSystem sourceAttackSystem;
+    private bool sourceAttackSystemCached = false;
+    private new Collider collider;
 
     // Private
 
     [Header("Debug")]
 
-    // Cache
-
-    private Animator animator;
-    private new Collider collider;
-
     private ArrayList hitTargets = new ArrayList();
 
-<<<<<<< HEAD
-    protected void Awake()
-=======
-    protected void Start()
->>>>>>> origin/master
-    {
-        // Cache
+    private bool active = true;
 
-        animator = GetComponent<Animator>();
+<<<<<<< HEAD
+    protected virtual void Awake()
+=======
+    private AttackSystem SourceAttackSystem
+    {
+        get
+        {
+            if (!sourceAttackSystemCached && source)
+            {
+                sourceAttackSystem = source.GetComponent<AttackSystem>();
+            }
+
+            sourceAttackSystemCached = true;
+
+            return sourceAttackSystem;
+        }
+    }
+
+
+    protected void Awake()
+>>>>>>> origin/release/4.0
+    {
         collider = GetComponent<Collider>();
 
         if (negativeFilterTarget) collider.IgnoreCollisionsWith(negativeFilterTarget);
         if (negativeFilterTargetTag.Length > 0) collider.IgnoreCollisionsWith(negativeFilterTargetTag);
     }
 
-    protected virtual void OnDamage(GameObject source, float amount)
+    protected virtual void Interrupted(Collider other)
+    {
+        if (SourceAttackSystem)
+        {
+            SourceAttackSystem.AttackInterrupted();
+        }
+    }
+
+    public virtual void OnContact()
     {
         // Intentionally left empty
     }
 
-    protected void OnTriggerEnter(Collider other)
+    public void OnTriggerEnter(Collider other)
     {
-        if (filterTarget &&
-            !other.IsPartOf(filterTarget)) return;
+        if (!canDamage || !active) return;
+        Debug.Log(other);
+        GameObject target = other.gameObject.TraverseParent("Faceless");
+        string hitTag = other.tag;
 
-        GameObject target = other.gameObject.TraverseParent();
-
-<<<<<<< HEAD
-        //if (filterTargetTag.Length > 0 &&
-        //    target.tag != filterTargetTag) return;
-=======
-        if (filterTargetTag.Length > 0 &&
-            target.tag != filterTargetTag) return;
->>>>>>> origin/master
-        
         HealthSystem healthSystem = target.GetComponent<HealthSystem>();
-        if (!healthSystem) return;
-
-        if(damageBodyState != DamageBodyState.Any)
+        BodyStateSystem bodyState = target.GetComponent<BodyStateSystem>();
+        if ((!bodyState) || (BodyStateSystem.StateToLayer(bodyState.State) == this.gameObject.layer))
         {
-            BodyStateSystem bodyStateSystem = target.GetComponent<BodyStateSystem>();
-            if (!bodyStateSystem) return;
 
-            if (bodyStateSystem.State == BodyStateSystem.BodyState.Physical &&
-                damageBodyState == DamageBodyState.Magical ||
-                bodyStateSystem.State == BodyStateSystem.BodyState.Magical &&
-                damageBodyState == DamageBodyState.Physical)
+            if (uniqueDamage &&
+                hitTargets.Contains(target)) return;
+
+            var hit = hitTag == "Critical" || hitTag == "Body";
+
+            /*
+             * Apply effects before the damage
+             */
+            if (hit)
             {
-                //Add visual effects
-                return;
+                var effectSystem = target.GetComponent<EffectSystem>();
+                if (effectSystem)
+                {
+                    foreach(var effect in effectsOnDamage)
+                    {
+                        effectSystem.Apply(effect, source);
+                    }
+                }
             }
-        }
-        
-        if (uniqueDamage &&
-            hitTargets.Contains(target)) return;
 
-        hitTargets.Add(target);
-        healthSystem.Damage(source, damage);
-        OnDamage(source, damage);
+            switch (hitTag)
+            {
+<<<<<<< HEAD
+                case "Body":
+                    hitTargets.Add(target);
+                    healthSystem.Damage(source, damage);
+=======
+                case "Environment":
+                    hitTargets.Add(target);
+>>>>>>> origin/release/4.0
+                    break;
+                case "Critical":
+                    hitTargets.Add(target);
+                    healthSystem.Damage(source, damage);
+                    break;
+                case "Weapon":
+                    break;
+                case "Shield":
+                    Interrupted(other);
+                    target.GetComponent<ShieldSystem>().RecieveDamage(shieldDamage);
+<<<<<<< HEAD
+                    break;
+                default:
+                    hitTargets.Add(target);
+                    Interrupted(other);
+                    return;
+=======
+                    break;
+                case "Body":
+                    hitTargets.Add(target);
+                    healthSystem.Damage(source, damage);
+                    break;
+>>>>>>> origin/release/4.0
+            }
+
+            OnContact();
+        }
+        else
+        {
+            //TO DO: Show VFX if damage isn't dealt;
+        }
+
     }
-        
+
     /*
      * Should be used at the end of attack animation
      * To allow hitting same target on the next attack

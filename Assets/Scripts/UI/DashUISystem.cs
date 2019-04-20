@@ -25,15 +25,13 @@ public class DashUISystem : MonoBehaviour
     
     private List<DashElementUISystem> charges = new List<DashElementUISystem>();
 
-    void Awake()
+    private void Awake()
     {
-        var i = 1;
-        while (true)
+        for(var i = 0; i < transform.childCount; ++i)
         {
-            var obj = transform.Find(System.Convert.ToString(i));
+            var obj = transform.GetChild(i);
             if (!obj) break;
             charges.Add(obj.GetComponent<DashElementUISystem>());
-            ++i;
         }
     }
 }

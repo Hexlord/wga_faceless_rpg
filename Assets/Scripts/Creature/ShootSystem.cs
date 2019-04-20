@@ -46,6 +46,8 @@ public class ShootSystem : MonoBehaviour
     [Tooltip("Fire rate in projectiles per second")]
     public float fireRate = 2.0f;
 
+    public string targetTag = "Faceless";
+
     [Header("Animation Settings")]
 
     public int animationLayer = 0;
@@ -60,12 +62,36 @@ public class ShootSystem : MonoBehaviour
 
     private GameObject projectile;
     private Vector3 shootingDirection;
-    private float fireTime = 0.0f;
-    private float fireTimer = 0.0f;
+    private float fireLastTime = 0.0f;
+    private int indexOfChosenProjectile = 0;
 
     public bool Shooting
     {
-        get { return state != ShootSystemState.None; }
+        get { return state != ShootSystemState.None || (Time.time < fireLastTime + fireRate); }
+    }
+
+    public Vector3 ShootingDirection
+    {
+        get
+        {
+            return shootingDirection;
+        }
+        set
+        {
+            shootingDirection = value.normalized;
+        }
+    }
+
+    public int ShootingProjectileIndex
+    {
+        get
+        {
+            return indexOfChosenProjectile;
+        }
+        set
+        {
+            indexOfChosenProjectile = value;
+        }
     }
 
     // Private
@@ -75,6 +101,14 @@ public class ShootSystem : MonoBehaviour
 
     // Cache
 
+    public Vector3 ShootingPointPosition
+    {
+        get
+        {
+            return ShootingPoint.position;
+        }
+    }
+
     private Animator animator;
 
     void Awake()
@@ -82,67 +116,39 @@ public class ShootSystem : MonoBehaviour
         // Cache
 
         animator = GetComponent<Animator>();
-
-        fireTime = 1.0f / fireRate;
     }
 
     private void SpawnProjectile()
     {
-        projectile = Instantiate(projectilePrefabs[0], ShootingPoint.position, ShootingPoint.rotation);
-        projectile.GetComponent<CollisionDamageProjectile>().source = gameObject;
+
+        projectile = Instantiate(projectilePrefabs[indexOfChosenProjectile], ShootingPoint.position, ShootingPoint.rotation);
+        //TO DO: Find the way to omitt next line
+        foreach (CollisionDamageProjectile p in projectile.GetComponentsInChildren<CollisionDamageProjectile>())
+        {
+            p.source = gameObject;
+            p.traverseParentTag = targetTag;
+        }
         projectile.GetComponent<Rigidbody>().AddForce(shootingDirection * projectileSpeed);
     }
 
-
-    void FixedUpdate()
+    public void EndShooting()
     {
-        var delta = Time.fixedDeltaTime;
-        fireTimer = Mathf.MoveTowards(fireTimer, fireTime, delta);
-
-        bool transition = animator.IsInTransition(animationLayer);
-
-        AnimatorClipInfo info = animator.GetCurrentAnimatorClipInfo(animationLayer)[0];
-        AnimatorStateInfo animState = animator.GetCurrentAnimatorStateInfo(animationLayer);
-        AnimationClip clip = info.clip;
-        string clipName = clip.name;
-
-        bool isDefaultClip = clipName == idleAnimation;
-        isDefaultClip = true; // TODO: remove when animations ready
-
-        if (transition) return;
-
-        switch (state)
-        {
-            case ShootSystemState.None:
-                break;
-            case ShootSystemState.Shooting:
-                if(isDefaultClip || clipName == shootRestoreAnimation)
-                {
-                    SpawnProjectile();
-                }
-
-                if (clipName == shootRestoreAnimation) state = ShootSystemState.Restoring;
-                if (isDefaultClip) state = ShootSystemState.None; // restoring already passed
-                break;
-            case ShootSystemState.Restoring:
-                if (isDefaultClip) state = ShootSystemState.None;
-                break;
-        }
+        state = ShootSystemState.None;
     }
 
-    public void Shoot(Vector3 direction)
+    public void Shoot(Vector3 direction, int projectileIndex)
     {
         Debug.Assert(!Shooting);
         shootingDirection = direction.normalized;
 
-        if (!canShoot ||
-            fireTimer < fireTime) return;
+        if (Shooting || !canShoot ||
+            Time.time < fireLastTime + fireRate) return;
 
-        fireTimer -= fireTime;
+        fireLastTime = Time.time;
 
         state = ShootSystemState.Shooting;
         animator.SetTrigger(shootAnimationTrigger);
+        indexOfChosenProjectile = projectileIndex;
     }
-
 
 }

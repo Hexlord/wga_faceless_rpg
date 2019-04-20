@@ -29,7 +29,7 @@ public class EnemyProtectedGate : MonoBehaviour
         enemyCollection = GameObject.Find("Enemies").GetComponent<ChildCollection>();
     }
 
-    void FixedUpdate()
+    void LateUpdate()
     {
         var good = true;
 

@@ -30,11 +30,9 @@ public class CollisionDamageProjectile : CollisionDamageBasic
 
     private int pierceCounter = 0;
 
-    // Cache
-
-
     public override void OnContact()
     {
+
         ++pierceCounter;
 
         if(pierceCounter >= pierceCount)

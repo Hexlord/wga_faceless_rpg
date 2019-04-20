@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
 
 /*
@@ -28,19 +27,18 @@ public class SkillBase
 
     private readonly GameObject textPrefab;
 
-    public SkillBase(Skill type, bool channeling, float cooldawn)
+    public SkillBase(Skill type, SkillAnimation animation, bool channeling, float cooldown)
     {
         this.type = type;
+        this.animation = animation;
         this.channeling = channeling;
-        this.cooldawn = cooldawn;
-        this.cooldawnTimer = 0.0f;
-        
-        textPrefab = (GameObject)Resources.Load("Prefabs/FloatingText", typeof(GameObject));
+        this.cooldown = cooldown;
+        this.cooldownTimer = 0.0f;
     }
 
     public void Update(float delta)
     {
-        cooldawnTimer -= delta;
+        cooldownTimer -= delta;
     }
     
     /*
@@ -65,10 +63,6 @@ public class SkillBase
      */
     public virtual void CastEvent(GameObject caster)
     {
-        GameObject text = UnityEngine.Object.Instantiate(textPrefab,
-            caster.transform.position + new Vector3(0, 3, 0),
-            Quaternion.identity);
-        text.GetComponent<TextMeshPro>().text = type.ToString();
     }
 
     /*
@@ -101,19 +95,26 @@ public class SkillBase
 
     public Skill Type { get { return type; } }
 
+    public SkillAnimation Animation
+    {
+        get { return animation; }
+    }
+
     public bool Channeling { get { return channeling; } }
 
-    public bool OnCooldawn {  get { return cooldawnTimer > 0; } }
+    public bool OnCooldown { get { return cooldownTimer > 0; } }
+    public float CooldownTimerNormalized { get { return cooldownTimer / cooldown; } }
 
-    protected void PutOnCooldawn()
+    protected void PutOnCooldown()
     {
-        cooldawnTimer = cooldawn;
+        cooldownTimer = cooldown;
     }
 
     private readonly Skill type;
+    private readonly SkillAnimation animation;
     private readonly bool channeling;
-    private readonly float cooldawn;
-    private float cooldawnTimer;
+    private readonly float cooldown;
+    private float cooldownTimer;
 
 
 

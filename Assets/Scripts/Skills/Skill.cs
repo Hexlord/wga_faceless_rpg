@@ -15,11 +15,18 @@ using System.Text;
 
 public enum Skill
 {
-    BlackBall,
+    BlackBall = 0,
     Hook,
     CircleStrike,
     LineStrike,
     FireBreath,
+}
+
+public enum SkillAnimation
+{
+    First,
+    Second,
+    Third
 }
 
 public static class SkillExtensions

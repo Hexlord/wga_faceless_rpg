@@ -5,13 +5,13 @@ using UnityEngine;
 
 /*
  * History:
- * 
+ *
  * Date         Author      Description
- * 
+ *
  * 15.03.2019   aknorre     Created
  * 16.03.2019   bkrylov     Allocated to Component Menu
- * 25.03.2019   bkrylov     Remade Component for better collider filtration. 
- * 
+ * 25.03.2019   bkrylov     Remade Component for better collider filtration.
+ *
  */
 [AddComponentMenu("ProjectFaceless/Creature/Body State System")]
 public class BodyStateSystem : MonoBehaviour
@@ -59,29 +59,29 @@ public class BodyStateSystem : MonoBehaviour
         sheathSystem = GetComponent<SheathSystem>();
         skillSystem = GetComponent<SkillSystem>();
 
-        bool sheathed = sheathSystem.Sheathed;
+        var sheathed = sheathSystem.Sheathed;
 
         Show(sheathed, physicalAppearance, physicalAppearanceSheathed);
         if (magicalAppearance) magicalAppearance.SetActive(false);
         if (magicalAppearanceSheathed) magicalAppearance.SetActive(false);
 
         //Consistency checks
-        if (!magicalHitbox) Debug.Log("No magical hitbox attached!");
+        if (!magicalHitbox) ;//Debug.Log("No magical hitbox attached!");
         else
         {
             if (magicalHitbox.layer != LayerMask.NameToLayer("Magical")) Debug.LogError("Magical hitbox isn't placed on proper layer");
         }
 
-        if (!magicalHitbox) Debug.Log("No physical hitbox attached!");
+        if (!physicalHitbox) ;//Debug.Log("No physical hitbox attached!");
         else
         {
-            if (magicalHitbox.layer != LayerMask.NameToLayer("Physical")) Debug.LogError("Physical hitbox isn't placed on proper layer");
+            if (physicalHitbox.layer != LayerMask.NameToLayer("Physical")) Debug.LogError("Physical hitbox isn't placed on proper layer");
         }
     }
 
     protected void FixedUpdate()
     {
-        bool sheathed = sheathSystem.Sheathed;
+        var sheathed = sheathSystem.Sheathed;
 
         if (state == BodyState.Physical)
         {
@@ -106,6 +106,20 @@ public class BodyStateSystem : MonoBehaviour
         if (skillSystem && skillSystem.IsSkillSelected && !skillSystem.Busy)
         {
             skillSystem.UnselectSkill();
+        }
+    }
+
+    public void SetStateAffectedByDamage(BodyState state, bool isAffected)
+    {
+        switch(state)
+        {
+            case BodyState.Magical:
+                magicalHitbox.SetActive(isAffected);
+                break;
+            case BodyState.Physical:
+                physicalHitbox.SetActive(isAffected);
+                break;
+            
         }
     }
 
