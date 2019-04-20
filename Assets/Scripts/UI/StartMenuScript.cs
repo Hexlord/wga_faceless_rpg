@@ -80,7 +80,7 @@ public class StartMenuScript : MonoBehaviour
 
     void Awake()
     {
-        saveSystem = GameObject.FindGameObjectWithTag("SaveSystem").GetComponent<SaveSystem>();
+        //saveSystem = GameObject.FindGameObjectWithTag("SaveSystem").GetComponent<SaveSystem>();
 
         mainMenuStart.GetComponent<Button>().onClick.AddListener(PressedStart);
         mainMenuSettings.GetComponent<Button>().onClick.AddListener(PressedSettings);

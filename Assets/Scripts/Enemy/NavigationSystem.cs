@@ -101,7 +101,10 @@ public class NavigationSystem : MonoBehaviour
         if (!AgentsRequestStatuses.ContainsKey(ID)) return Vector2.zero;
         if (AgentsRequestStatuses[ID] == RequestStatus.Completed)
         {
-            direction = AgentsToPaths[ID].Peek() - agents[ID].transform.position;
+            if (AgentsToPaths[ID].Count > 0)
+            {
+                direction = AgentsToPaths[ID].Peek() - agents[ID].transform.position;
+            }
             direction.y = 0;
             agentStoppingDistance = (AgentsToPaths[ID].Count == 1) ? agentDestinationStoppingDistance : agentWaypointStoppingDistance;
 
@@ -145,8 +148,6 @@ public class NavigationSystem : MonoBehaviour
             NavMesh.CalculatePath(infoChunk.agentStart, infoChunk.agentDestination, NavMesh.AllAreas, processingPath);
             int attempts = 0;
 
-        PathCheck:
-
             if (processingPath.status != NavMeshPathStatus.PathInvalid)
             {
                 cornersOfPath = processingPath.corners;
@@ -159,17 +160,15 @@ public class NavigationSystem : MonoBehaviour
             }
             else
             {
-                attempts++;    
-                AgentsRequestStatuses[infoChunk.agent.ID] = RequestStatus.Failed;
-                Debug.Log("Failed To process path for " + infoChunk.agent);
-                Debug.Log("Attempting to recalculare. Attempt " + attempts);
                 NavMeshHit hit, hit1;
-                NavMesh.SamplePosition(infoChunk.agentStart, out hit, offNavMeshPointSearchRadius, NavMesh.AllAreas);
-                NavMesh.SamplePosition(infoChunk.agentDestination, out hit1, offNavMeshPointSearchRadius, NavMesh.AllAreas);
-                NavMesh.CalculatePath(hit.position, hit1.position, NavMesh.AllAreas, processingPath);
-                attempts++;
-                
-                if (attempts < numberOfTries) goto PathCheck;
+                if ((NavMesh.SamplePosition(infoChunk.agentStart, out hit, offNavMeshPointSearchRadius, NavMesh.AllAreas))
+                    && (NavMesh.SamplePosition(infoChunk.agentDestination, out hit1, offNavMeshPointSearchRadius, NavMesh.AllAreas)))
+                    NavMesh.CalculatePath(hit.position, hit1.position, NavMesh.AllAreas, processingPath);
+                else
+                {
+                    Debug.Log("Failed To process path for " + infoChunk.agent);
+                    AgentsRequestStatuses[infoChunk.agent.ID] = RequestStatus.Failed;
+                }
             }
         }
         isCalculating = false;

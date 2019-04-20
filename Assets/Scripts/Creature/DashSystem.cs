@@ -59,30 +59,25 @@ public class DashSystem : MonoBehaviour
         return !isDashing && (chargesAvailable > 0);
     }
 
-    private void Update()
+    private void LateUpdate()
     {
-        //dash charge regen
-        if (!isDashing && (chargesAvailable < numberOfCharges))
+        if ((Time.time > (timeDashInit + timeForDash)) && (isDashing))
         {
-            if (Time.time > lastTimeDashedOrReload + reloadTime)
-            {
-                chargesAvailable++;
-                lastTimeDashedOrReload = Time.time;
-            }
+            StopDashing();
         }
 
-        if (Time.time < (timeDashInit + timeForDash))
+        if (!isDashing && (Time.time > lastTimeDashedOrReload + reloadTime) && (chargesAvailable < numberOfCharges))
+        {
+            chargesAvailable++;
+            lastTimeDashedOrReload = Time.time;
+        }
+    }
+
+    private void Update()
+    {
+        if (isDashing)
         {
             movement.desiredMovement = dashVector;
-            isDashing = true;
-        }
-        else
-        {
-            if (isDashing)
-            {
-                StopDashing();
-                isDashing = false;
-            }
         }
     }
 
@@ -91,6 +86,7 @@ public class DashSystem : MonoBehaviour
         if (CanDash())
         {
             chargesAvailable--;
+            isDashing = true;
             timeDashInit = Time.time;
             //Add additional conditions for setting up proper dash anim
             animator.SetBool(dashAnimationBool, true);
@@ -103,6 +99,7 @@ public class DashSystem : MonoBehaviour
     public void StopDashing()
     {
         lastTimeDashedOrReload = Time.time;
+        isDashing = false;
         animator.SetBool(dashAnimationBool, true);
         movement.ResetSpeed();
     }

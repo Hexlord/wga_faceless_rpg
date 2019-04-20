@@ -59,6 +59,8 @@ public class SheathSystem : MonoBehaviour
     [Tooltip("Unsheathed weapon object")]
     public GameObject weaponUnsheathed;
 
+    public ParticleSystem SwordVFX;
+
     public bool Busy
     {
         get
@@ -125,6 +127,7 @@ public class SheathSystem : MonoBehaviour
 
         state = SheathSystemState.Sheathing;
         animator.SetTrigger(sheatheAnimationTrigger);
+        SwordVFX.Stop();
     }
 
     public void Unsheathe()
@@ -135,6 +138,7 @@ public class SheathSystem : MonoBehaviour
 
         state = SheathSystemState.Unsheathing;
         animator.SetTrigger(unsheatheAnimationTrigger);
+        SwordVFX.Play();
     }
 
     public void FinalizeSheathing()

@@ -89,8 +89,9 @@ public class PlayerCharacterController : MonoBehaviour
         var desire = Quaternion.Euler(0.0f, camera.transform.rotation.eulerAngles.y, 0.0f)
             * movement;
         if ((bodyStateSystem.State == BodyStateSystem.BodyState.Magical) && 
-            InputManager.Down(InputAction.Defend))
+            InputManager.Pressed(InputAction.Defend))
         {
+            Debug.Log("Dashed");
             if (sheathSystem.state == SheathSystem.SheathSystemState.Unsheathed)
             {
                 dashSystem.StartDashing(new Vector2(desire.x, desire.z));

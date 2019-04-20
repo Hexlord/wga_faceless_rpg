@@ -5,9 +5,9 @@ using UnityEngine;
 
 /*
  * History:
- * 
+ *
  * Date         Author      Description
- * 
+ *
  * 15.03.2019   aknorre     Created
  * 16.03.2019   bkrylov     Allocated to Component Menu
  * 25.03.2019   bkrylov     Added dashing
