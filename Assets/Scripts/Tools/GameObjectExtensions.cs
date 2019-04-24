@@ -55,6 +55,22 @@ public static class GameObjectExtensions
 
         return result;
     }
+    public static GameObject[] Children(this GameObject gameObject, string tag, bool partialTag = true)
+    {
+        var result = new List<GameObject>();
+
+        for (var i = 0; i < gameObject.transform.childCount; ++i)
+        {
+            var go = gameObject.transform.GetChild(i).gameObject;
+            if (go.tag == tag ||
+                partialTag && go.tag.Contains(tag))
+            {
+                result.Add(go);
+            }
+        }
+
+        return result.ToArray();
+    }
 
     /*
      * Can even find inactive
