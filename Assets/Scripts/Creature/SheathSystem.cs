@@ -127,7 +127,7 @@ public class SheathSystem : MonoBehaviour
 
         state = SheathSystemState.Sheathing;
         animator.SetTrigger(sheatheAnimationTrigger);
-        SwordVFX.Stop();
+        if(SwordVFX) SwordVFX.Stop();
     }
 
     public void Unsheathe()
@@ -138,7 +138,7 @@ public class SheathSystem : MonoBehaviour
 
         state = SheathSystemState.Unsheathing;
         animator.SetTrigger(unsheatheAnimationTrigger);
-        SwordVFX.Play();
+        if (SwordVFX) SwordVFX.Play();
     }
 
     public void FinalizeSheathing()

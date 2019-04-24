@@ -157,7 +157,7 @@ public class HealthSystem : MonoBehaviour
     {
         if (uiHealthBarEnabled)
         {
-            healthPrefab = (GameObject)Resources.Load("Prefabs/UI/Creature/HealthBar", typeof(GameObject));
+            healthPrefab = (GameObject)Resources.Load("UI/HealthBar", typeof(GameObject));
             GameObject healthObject =
                 Instantiate(healthPrefab,
                     Vector3.zero,

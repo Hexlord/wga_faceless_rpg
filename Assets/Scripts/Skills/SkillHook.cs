@@ -28,7 +28,7 @@ public class SkillHook : SkillBase
     public SkillHook() :
         base(Skill.Hook, SkillAnimation.First, true, 1.0f)
     {
-        hookPrefab = (GameObject)Resources.Load("Prefabs/Skills/Hook", typeof(GameObject));
+        hookPrefab = (GameObject)Resources.Load("Skills/Hook", typeof(GameObject));
     }
 
     public override void PrepareEvent(GameObject caster)

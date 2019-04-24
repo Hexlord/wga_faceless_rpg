@@ -211,7 +211,7 @@ public class PlayerCharacterController : MonoBehaviour
 
         if (bodyStateSystem.State == BodyStateSystem.BodyState.Physical)
         {
-                attackSystem.Attack(-1, 0);
+            if(!attackSystem.Attacking) attackSystem.Attack(-1, 0);
         }
         else if (bodyStateSystem.State == BodyStateSystem.BodyState.Magical)
         {
@@ -235,7 +235,7 @@ public class PlayerCharacterController : MonoBehaviour
                 shootingDirection = camera.transform.forward;
             }
             cameraController.TriggerPlayerAutoRotation();
-            shootSystem.Shoot(shootingDirection, 0);
+            if(!shootSystem.Shooting) shootSystem.Shoot(shootingDirection, 0);
         }
     }
 

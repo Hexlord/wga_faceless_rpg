@@ -21,7 +21,7 @@ public class SkillFireBreath : SkillBase
     public SkillFireBreath() :
         base(Skill.FireBreath, SkillAnimation.First, false, 5.0f)
     {
-        firePrefab = (GameObject)Resources.Load("Prefabs/Skills/FireBreath", typeof(GameObject));
+        firePrefab = (GameObject)Resources.Load("Skills/FireBreath", typeof(GameObject));
     }
 
     public override void PrepareEvent(GameObject caster)

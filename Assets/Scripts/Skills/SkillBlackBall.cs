@@ -21,7 +21,7 @@ public class SkillBlackBall : SkillBase
     public SkillBlackBall() :
         base(Skill.BlackBall, SkillAnimation.First, false, 10.0f)
     {
-        projectilePrefab = (GameObject)Resources.Load("Prefabs/Skills/BlackBall", typeof(GameObject));
+        projectilePrefab = (GameObject)Resources.Load("Skills/BlackBall", typeof(GameObject));
     }
 
     public override void PrepareEvent(GameObject caster)
