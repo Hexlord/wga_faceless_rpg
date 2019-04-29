@@ -16,6 +16,10 @@ public class BaseAgent : MonoBehaviour
     protected CollectiveAISystem AISys;
     private Vector3 rayDirection;
 
+    [Header("AI Settings")] 
+    [Range(1.0f, 10.0f)]
+    public float AIPriority;
+    
     [Header("Speed Settings")]
     public float baseSpeed = 5.0f;
     public float walkingBackSpeed = 4.0f;
@@ -34,16 +38,18 @@ public class BaseAgent : MonoBehaviour
     [Tooltip("Trigger that toggles getting up animation")]
     public string getUpTrigger = "GetUp";
     [Tooltip("Triggers that toggle idle animations")]
-    public string[] idleActionTrigger = { "LookOverShoulder", "LookAround" };
+    public string idleActionInt = "IdleVariant";
+    public int idles = 3;
     private bool isDoingIdle = false;
     [Tooltip("Determines whether the agent is allowed to attack or not")]
     public bool allowedToAttack = false;
     protected MovementSystem movement;
-    protected int directionAnim = 0;
+    protected int animatorEnemySpotted;
     protected bool isAlerted;
     protected bool canSeeEnemy;
     protected float stoppingDistance;
     protected GameObject currentTarget;
+    protected float agentRadius;
     //protected CollectiveAISystem.AgentType type = CollectiveAISystem.AgentType.Base;
 
     public virtual CollectiveAISystem.AgentType AgentType()
@@ -56,6 +62,16 @@ public class BaseAgent : MonoBehaviour
         get { return entityID; }
     }
 
+    public float Radius
+    {
+        get { return agentRadius; }
+    }
+    
+    public float Priority
+    {
+        get { return AIPriority; }
+    }
+    
     public  bool CanSeeEnemy
     {
         get { return canSeeEnemy; }
@@ -98,12 +114,14 @@ public class BaseAgent : MonoBehaviour
     protected void Awake()
     {
         entityID = entityIDGenerator++;
+        agentRadius = GetComponent<CapsuleCollider>().radius;
     }
 
     protected virtual void Start()
     {
         movement = GetComponent<MovementSystem>();
         animator = GetComponent<Animator>();
+        animatorEnemySpotted = Animator.StringToHash(enemySpottedBool);
     }
 
     protected virtual void Update()
@@ -133,14 +151,15 @@ public class BaseAgent : MonoBehaviour
     #region Movement
     protected void UpdateMove()
     {
-        UpdateMovementDirection(movement.desiredMovement, new Vector2(transform.forward.x, transform.forward.z));
+        //UpdateMovementDirection(movement.desiredMovement, new Vector2(transform.forward.x, transform.forward.z));
         movement.Movement = navSys.AskDirection(entityID);
-        UpdateMovementAnimation();
+        //UpdateMovementAnimation();
         Vector3 lookingVector = currentTarget.transform.position - transform.position;
         lookingVector = new Vector3(lookingVector.x, 0, lookingVector.z);
         if (movement.desiredMovement != Vector2.zero || canSeeEnemy) transform.forward = (canSeeEnemy) ? lookingVector : new Vector3(movement.desiredMovement.x, 0, movement.desiredMovement.y);
     }
 
+    /*
     protected void UpdateMovementDirection(Vector2 walkingDirection, Vector2 lookingDirection)
     {
 
@@ -182,6 +201,7 @@ public class BaseAgent : MonoBehaviour
 
         animator.SetInteger(walkDirectionInt, directionAnim);
     }
+    */
     #endregion
 
     #region State Functions 
@@ -203,12 +223,14 @@ public class BaseAgent : MonoBehaviour
     {
         currentTarget = newTarget;
         isAlerted = true;
+        animator.SetFloat(animatorEnemySpotted, 1.0f);
         allowedToAttack = true;
     }
 
     public void Dismiss()
     {
         isAlerted = false;
+        animator.SetFloat(animatorEnemySpotted, 0.0f);
     }
 
     protected void ResetStun()
@@ -233,14 +255,16 @@ public class BaseAgent : MonoBehaviour
 
     public void StartDoingIdleThings()
     {
+
+        int index = Random.Range(1, idles + 1);
+        animator.SetInteger(idleActionInt, index);
         isDoingIdle = true;
-        int index = Random.Range(0, idleActionTrigger.Length);
-        animator.SetTrigger(idleActionTrigger[index]);
     }
 
     public void FinalizeIdle()
     {
         isDoingIdle = false;
+        animator.SetInteger(idleActionInt, 0);
     }
     #endregion
 }

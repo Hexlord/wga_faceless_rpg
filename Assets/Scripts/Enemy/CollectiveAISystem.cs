@@ -198,7 +198,7 @@ public class CollectiveAISystem : MonoBehaviour
     {
         if (!agentsDictionary[ID].CanAttackEnemy() && !agentsDictionary[ID].IsStunned)
         {
-            if ((Time.time > agentsLastPathCalculated[ID] + RecalculationTimer) || navSystem.hasAgentReachedDestination(ID))
+            if ((Time.time > agentsLastPathCalculated[ID] + RecalculationTimer) || navSystem.HasAgentReachedDestination(ID))
             {
                 agentsLastPathCalculated[ID] = Time.time;
                 navSystem.PlacePathRequest(agentsDictionary[ID], agentsOrders[ID].target.transform.position);
@@ -213,7 +213,7 @@ public class CollectiveAISystem : MonoBehaviour
             if (!agentsDictionary[ID].IsStunned)
                 if (Time.time > agentsLastPathCalculated[ID] + RecalculationTimer)
                 {
-                    if (navSystem.hasAgentReachedDestination(ID) /*|| !observer.ChosenObserverCanStillSeeTarget(agentsOrders[ID].target.transform)*/)
+                    if (navSystem.HasAgentReachedDestination(ID) /*|| !observer.ChosenObserverCanStillSeeTarget(agentsOrders[ID].target.transform)*/)
                     {
                         agentsLastPathCalculated[ID] = Time.time;
                         navSystem.PlacePathRequest(agentsDictionary[ID], 
@@ -236,7 +236,7 @@ public class CollectiveAISystem : MonoBehaviour
             {
                 if (Time.time > agentsLastPathCalculated[ID] + RecalculationTimer)
                 {
-                    if (navSystem.hasAgentReachedDestination(ID))
+                    if (navSystem.HasAgentReachedDestination(ID))
                     {
                         Vector3 vector = Quaternion.AngleAxis(Random.Range(0, 360), Vector3.up) * Vector3.forward * Random.Range(0, RecreationalAreaRadius);
                         agentsLastPathCalculated[ID] = Time.time;
