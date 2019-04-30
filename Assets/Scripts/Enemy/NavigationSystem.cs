@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 using System.Threading;
+using a;
 using Assets.Scripts.Tools;
 [AddComponentMenu("ProjectFaceless/Enemy/Navigation System")]
 public class NavigationSystem : MonoBehaviour
@@ -15,7 +16,7 @@ public class NavigationSystem : MonoBehaviour
     [Tooltip("Maximal range for searching navmesh point")]
     public float offNavMeshPointSearchRadius = 50.0f;
     public int numberOfTries = 3;
-
+    public float checkingDistance = 2.0f;
     enum RequestStatus
     {
         None,
@@ -26,13 +27,21 @@ public class NavigationSystem : MonoBehaviour
     
     private float agentStoppingDistance;
     private Dictionary<uint, BaseAgent> agents;
+    private List<BaseAgent> AgentProcessingPriority;
     private Dictionary<uint, Queue<Vector3>> AgentsToPaths;
     private Dictionary<uint, RequestStatus> AgentsRequestStatuses;
     private Dictionary<uint, Vector3> AgentsToDestinations;
+    private Dictionary<BaseAgent, Vector2> agentTempDictionary;
+    private Dictionary<uint, Vector2> AgentDirectionBuffer;
+
+    private MovementConflictsResolution conflictResolutionSystem;
     //Private
     Queue<PathFindingRequestInfo> pathFindingQueue;
     NavMeshPath processingPath;
     bool isCalculating;
+    
+    //Movement conflict resolution
+   
 
     public void Awake()
     {
@@ -41,9 +50,13 @@ public class NavigationSystem : MonoBehaviour
         AgentsRequestStatuses = new Dictionary<uint, RequestStatus>();
         AgentsToDestinations = new Dictionary<uint, Vector3>();
         AgentsToPaths = new Dictionary<uint, Queue<Vector3>>();
+        AgentDirectionBuffer = new Dictionary<uint, Vector2>();
         agents = new Dictionary<uint, BaseAgent>();
+        AgentProcessingPriority = new List<BaseAgent>(agents.Values.Count);
+        AgentDirectionBuffer = new Dictionary<uint, Vector2>();
+        conflictResolutionSystem = new MovementConflictsResolution(this, checkingDistance, agents.Values);
     }
-
+    
     public struct PathFindingRequestInfo
     {
         public BaseAgent agent;
@@ -62,6 +75,7 @@ public class NavigationSystem : MonoBehaviour
     private void RegisterAgent(BaseAgent agent)
     {
         agents.Add(agent.ID, agent);
+        conflictResolutionSystem.UpdateAgentList(agent);
         AgentsToPaths.Add(agent.ID, new Queue<Vector3>());
         AgentsRequestStatuses.Add(agent.ID, RequestStatus.None);
     }
@@ -97,6 +111,17 @@ public class NavigationSystem : MonoBehaviour
 
     public Vector2 AskDirection(uint ID)
     {
+        //Vector3 v = GetIntendedDirection(ID);
+        if (AgentDirectionBuffer.ContainsKey(ID))
+            return AgentDirectionBuffer[ID];
+        else
+        {
+            return Vector2.zero;
+        }
+    }
+    
+    public Vector3 GetIntendedDirection(uint ID)
+    {
         Vector3 direction = new Vector3(0, 0, 0);
         if (!AgentsRequestStatuses.ContainsKey(ID)) return Vector2.zero;
         if (AgentsRequestStatuses[ID] == RequestStatus.Completed)
@@ -110,8 +135,8 @@ public class NavigationSystem : MonoBehaviour
 
             if (direction.magnitude <= agentStoppingDistance)
             {
-                //AgentsToPaths[ID].Dequeue();
-                Debug.Log("Reached corner" + AgentsToPaths[ID].Dequeue());
+                AgentsToPaths[ID].Dequeue();
+                //Debug.Log("Reached corner" + AgentsToPaths[ID].Dequeue());
                 if (AgentsToPaths[ID].Count > 0)
                 {
                     direction = AgentsToPaths[ID].Peek() - transform.position;
@@ -124,7 +149,7 @@ public class NavigationSystem : MonoBehaviour
                 }
             }
         }
-        return new Vector2(direction.x, direction.z);
+        return new Vector3(direction.x, 0, direction.z);
     }
 
     // Update is called once per frame
@@ -135,6 +160,16 @@ public class NavigationSystem : MonoBehaviour
             ProcessRequests();
             //StartPathFinding();
         }
+    }
+
+    private void LateUpdate()
+    {
+        agentTempDictionary = conflictResolutionSystem.ResolveMovementConflicts();
+        foreach(BaseAgent agent in agentTempDictionary.Keys)
+        {
+            AgentDirectionBuffer[agent.ID] = agentTempDictionary[agent];
+        }
+        
     }
 
     private void ProcessRequests()
@@ -156,7 +191,7 @@ public class NavigationSystem : MonoBehaviour
                 AgentsToPaths[infoChunk.agent.ID] = new Queue<Vector3>(cornersOfPath);
                 AgentsToPaths[infoChunk.agent.ID].Dequeue();
                 AgentsRequestStatuses[infoChunk.agent.ID] = RequestStatus.Completed;
-                Debug.Log("Finished calculating path for " + infoChunk.agent);
+                //Debug.Log("Finished calculating path for " + infoChunk.agent);
             }
             else
             {
@@ -166,13 +201,13 @@ public class NavigationSystem : MonoBehaviour
                     NavMesh.CalculatePath(hit.position, hit1.position, NavMesh.AllAreas, processingPath);
                 else
                 {
-                    Debug.Log("Failed To process path for " + infoChunk.agent);
+                    //Debug.Log("Failed To process path for " + infoChunk.agent);
                     AgentsRequestStatuses[infoChunk.agent.ID] = RequestStatus.Failed;
                 }
             }
         }
         isCalculating = false;
-        Debug.Log("AI. All agents recieved their paths.");
+        //Debug.Log("AI. All agents recieved their paths.");
     }
 
     public Vector3 AgentDestination(uint ID)
@@ -184,7 +219,7 @@ public class NavigationSystem : MonoBehaviour
         return Vector3.zero;
     }
 
-    public bool hasAgentReachedDestination(uint ID)
+    public bool HasAgentReachedDestination(uint ID)
     {
         return (AgentsRequestStatuses.ContainsKey(ID) && (AgentsRequestStatuses[ID] == RequestStatus.None)) || (!AgentsRequestStatuses.ContainsKey(ID));
     }
