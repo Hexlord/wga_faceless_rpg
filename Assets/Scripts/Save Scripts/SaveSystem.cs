@@ -34,12 +34,16 @@ public class SaveSystem : MonoBehaviour
 
     public KeyCode loadKeyCode = KeyCode.V;
 
+    public bool isLoading { get; set; }
+    public SaveType saveType { get; set; }
+
 
     void Awake()
     {
         DontDestroyOnLoad(gameObject);
-        folderPath = System.IO.Path.Combine(Application.persistentDataPath, folderName);
-        System.IO.Directory.CreateDirectory(folderPath);
+        isLoading = false;
+        folderPath = Path.Combine(Application.persistentDataPath, folderName);
+        Directory.CreateDirectory(folderPath);
     }
 
 
@@ -60,18 +64,36 @@ public class SaveSystem : MonoBehaviour
 
     public void Save()
     {
-
+        switch (saveType)
+        {
+            case SaveType.Auto:
+                _Save(QuickSaveWriter.Create(System.IO.Path.Combine(folderPath, autoFilename)));
+                break;
+            case SaveType.Quick:
+                _Save(QuickSaveWriter.Create(System.IO.Path.Combine(folderPath, quickFilename)));
+                break;
+        }
+        
     }
 
-    public void Load(SaveType saveType)
+    public void Load()
     {
-        SceneManager.LoadScene(loadingSceneName, LoadSceneMode.Single);
-        StartCoroutine("LoadGameScene", saveType);
+        //StartCoroutine("LoadGameScene", saveType);
+        //SceneManager.LoadScene(gameSceneName);
+        switch (saveType)
+        {
+            case SaveType.Auto:
+                _Load(SceneManager.GetActiveScene().GetRootGameObjects(), QuickSaveReader.Create(Path.Combine(folderPath, autoFilename)));
+                break;
+            case SaveType.Quick:
+                _Load(SceneManager.GetActiveScene().GetRootGameObjects(), QuickSaveReader.Create(Path.Combine(folderPath, quickFilename)));
+                break;
+        }
     }
 
-    IEnumerator LoadGameScene(SaveType saveType)
+    /*IEnumerator LoadGameScene(SaveType saveType)
     {
-        AsyncOperation asyncOperation = SceneManager.LoadSceneAsync(gameSceneName);
+        AsyncOperation asyncOperation = SceneManager.LoadSceneAsync(2);
         asyncOperation.allowSceneActivation = false;
 
         Debug.Log("Pro :" + asyncOperation.progress);
@@ -89,10 +111,10 @@ public class SaveSystem : MonoBehaviour
             case SaveType.Quick:
                 _Load(gameScene.GetRootGameObjects(), QuickSaveReader.Create(System.IO.Path.Combine(folderPath, quickFilename)));
                 break;
-        }
+        } 
         asyncOperation.allowSceneActivation = true;
         yield return null;
-    }
+    }*/
 
     GameObject[] GetAllGameObjects(GameObject[] rootGameObjects)
     {

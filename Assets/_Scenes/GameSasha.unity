@@ -122,6 +122,49 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &5188427
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5188429}
+  - component: {fileID: 5188428}
+  m_Layer: 0
+  m_Name: SaveCaller
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &5188428
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5188427}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 37bb72203891db4449274c7fbdf13d4f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!4 &5188429
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5188427}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 411.22003, y: 280.27594, z: -151.42377}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 21
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &10416721 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 815056270, guid: 5aa8999f0a93ed04da26265cac008e74,
@@ -24527,18 +24570,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1094307250}
     m_Modifications:
-    - target: {fileID: 1723748395832264, guid: 72aa2807f4924be41808b0652e1a3be6, type: 3}
-      propertyPath: m_Name
-      value: Fence_1_5
-      objectReference: {fileID: 0}
-    - target: {fileID: 1723748395832264, guid: 72aa2807f4924be41808b0652e1a3be6, type: 3}
-      propertyPath: m_Layer
-      value: 9
-      objectReference: {fileID: 0}
-    - target: {fileID: 1723748395832264, guid: 72aa2807f4924be41808b0652e1a3be6, type: 3}
-      propertyPath: m_TagString
-      value: Environment
-      objectReference: {fileID: 0}
     - target: {fileID: 4458312218162336, guid: 72aa2807f4924be41808b0652e1a3be6, type: 3}
       propertyPath: m_LocalPosition.x
       value: 52.859108
@@ -24594,6 +24625,18 @@ PrefabInstance:
     - target: {fileID: 4458312218162336, guid: 72aa2807f4924be41808b0652e1a3be6, type: 3}
       propertyPath: m_LocalScale.z
       value: 3.4131346
+      objectReference: {fileID: 0}
+    - target: {fileID: 1723748395832264, guid: 72aa2807f4924be41808b0652e1a3be6, type: 3}
+      propertyPath: m_Name
+      value: Fence_1_5
+      objectReference: {fileID: 0}
+    - target: {fileID: 1723748395832264, guid: 72aa2807f4924be41808b0652e1a3be6, type: 3}
+      propertyPath: m_Layer
+      value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: 1723748395832264, guid: 72aa2807f4924be41808b0652e1a3be6, type: 3}
+      propertyPath: m_TagString
+      value: Environment
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 72aa2807f4924be41808b0652e1a3be6, type: 3}
@@ -33883,18 +33926,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1094307250}
     m_Modifications:
-    - target: {fileID: 1906656229910602, guid: 8dfd1c3242055c943a88942e00e8c78c, type: 3}
-      propertyPath: m_Name
-      value: Headstone_2_5 (2)
-      objectReference: {fileID: 0}
-    - target: {fileID: 1906656229910602, guid: 8dfd1c3242055c943a88942e00e8c78c, type: 3}
-      propertyPath: m_Layer
-      value: 9
-      objectReference: {fileID: 0}
-    - target: {fileID: 1906656229910602, guid: 8dfd1c3242055c943a88942e00e8c78c, type: 3}
-      propertyPath: m_TagString
-      value: Environment
-      objectReference: {fileID: 0}
     - target: {fileID: 4534656370318982, guid: 8dfd1c3242055c943a88942e00e8c78c, type: 3}
       propertyPath: m_LocalPosition.x
       value: 13.605278
@@ -33950,6 +33981,18 @@ PrefabInstance:
     - target: {fileID: 4534656370318982, guid: 8dfd1c3242055c943a88942e00e8c78c, type: 3}
       propertyPath: m_LocalScale.z
       value: 1.4044001
+      objectReference: {fileID: 0}
+    - target: {fileID: 1906656229910602, guid: 8dfd1c3242055c943a88942e00e8c78c, type: 3}
+      propertyPath: m_Name
+      value: Headstone_2_5 (2)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1906656229910602, guid: 8dfd1c3242055c943a88942e00e8c78c, type: 3}
+      propertyPath: m_Layer
+      value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: 1906656229910602, guid: 8dfd1c3242055c943a88942e00e8c78c, type: 3}
+      propertyPath: m_TagString
+      value: Environment
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 8dfd1c3242055c943a88942e00e8c78c, type: 3}
@@ -38556,18 +38599,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1094307250}
     m_Modifications:
-    - target: {fileID: 1723748395832264, guid: 72aa2807f4924be41808b0652e1a3be6, type: 3}
-      propertyPath: m_Name
-      value: Fence_1_5
-      objectReference: {fileID: 0}
-    - target: {fileID: 1723748395832264, guid: 72aa2807f4924be41808b0652e1a3be6, type: 3}
-      propertyPath: m_Layer
-      value: 9
-      objectReference: {fileID: 0}
-    - target: {fileID: 1723748395832264, guid: 72aa2807f4924be41808b0652e1a3be6, type: 3}
-      propertyPath: m_TagString
-      value: Environment
-      objectReference: {fileID: 0}
     - target: {fileID: 4458312218162336, guid: 72aa2807f4924be41808b0652e1a3be6, type: 3}
       propertyPath: m_LocalPosition.x
       value: -40.22
@@ -38623,6 +38654,18 @@ PrefabInstance:
     - target: {fileID: 4458312218162336, guid: 72aa2807f4924be41808b0652e1a3be6, type: 3}
       propertyPath: m_LocalScale.z
       value: 2.7307
+      objectReference: {fileID: 0}
+    - target: {fileID: 1723748395832264, guid: 72aa2807f4924be41808b0652e1a3be6, type: 3}
+      propertyPath: m_Name
+      value: Fence_1_5
+      objectReference: {fileID: 0}
+    - target: {fileID: 1723748395832264, guid: 72aa2807f4924be41808b0652e1a3be6, type: 3}
+      propertyPath: m_Layer
+      value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: 1723748395832264, guid: 72aa2807f4924be41808b0652e1a3be6, type: 3}
+      propertyPath: m_TagString
+      value: Environment
       objectReference: {fileID: 0}
     - target: {fileID: 65162840717711840, guid: 72aa2807f4924be41808b0652e1a3be6,
         type: 3}
@@ -42072,18 +42115,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1094307250}
     m_Modifications:
-    - target: {fileID: 1723748395832264, guid: 72aa2807f4924be41808b0652e1a3be6, type: 3}
-      propertyPath: m_Name
-      value: Fence_1_5
-      objectReference: {fileID: 0}
-    - target: {fileID: 1723748395832264, guid: 72aa2807f4924be41808b0652e1a3be6, type: 3}
-      propertyPath: m_Layer
-      value: 9
-      objectReference: {fileID: 0}
-    - target: {fileID: 1723748395832264, guid: 72aa2807f4924be41808b0652e1a3be6, type: 3}
-      propertyPath: m_TagString
-      value: Environment
-      objectReference: {fileID: 0}
     - target: {fileID: 4458312218162336, guid: 72aa2807f4924be41808b0652e1a3be6, type: 3}
       propertyPath: m_LocalPosition.x
       value: 4.989109
@@ -42139,6 +42170,18 @@ PrefabInstance:
     - target: {fileID: 4458312218162336, guid: 72aa2807f4924be41808b0652e1a3be6, type: 3}
       propertyPath: m_LocalScale.z
       value: 4.745833
+      objectReference: {fileID: 0}
+    - target: {fileID: 1723748395832264, guid: 72aa2807f4924be41808b0652e1a3be6, type: 3}
+      propertyPath: m_Name
+      value: Fence_1_5
+      objectReference: {fileID: 0}
+    - target: {fileID: 1723748395832264, guid: 72aa2807f4924be41808b0652e1a3be6, type: 3}
+      propertyPath: m_Layer
+      value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: 1723748395832264, guid: 72aa2807f4924be41808b0652e1a3be6, type: 3}
+      propertyPath: m_TagString
+      value: Environment
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 72aa2807f4924be41808b0652e1a3be6, type: 3}
@@ -42525,18 +42568,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1094307250}
     m_Modifications:
-    - target: {fileID: 1906656229910602, guid: 8dfd1c3242055c943a88942e00e8c78c, type: 3}
-      propertyPath: m_Name
-      value: Headstone_2_5
-      objectReference: {fileID: 0}
-    - target: {fileID: 1906656229910602, guid: 8dfd1c3242055c943a88942e00e8c78c, type: 3}
-      propertyPath: m_Layer
-      value: 9
-      objectReference: {fileID: 0}
-    - target: {fileID: 1906656229910602, guid: 8dfd1c3242055c943a88942e00e8c78c, type: 3}
-      propertyPath: m_TagString
-      value: Environment
-      objectReference: {fileID: 0}
     - target: {fileID: 4534656370318982, guid: 8dfd1c3242055c943a88942e00e8c78c, type: 3}
       propertyPath: m_LocalPosition.x
       value: -97.44
@@ -42592,6 +42623,18 @@ PrefabInstance:
     - target: {fileID: 4534656370318982, guid: 8dfd1c3242055c943a88942e00e8c78c, type: 3}
       propertyPath: m_LocalScale.z
       value: 2.2946
+      objectReference: {fileID: 0}
+    - target: {fileID: 1906656229910602, guid: 8dfd1c3242055c943a88942e00e8c78c, type: 3}
+      propertyPath: m_Name
+      value: Headstone_2_5
+      objectReference: {fileID: 0}
+    - target: {fileID: 1906656229910602, guid: 8dfd1c3242055c943a88942e00e8c78c, type: 3}
+      propertyPath: m_Layer
+      value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: 1906656229910602, guid: 8dfd1c3242055c943a88942e00e8c78c, type: 3}
+      propertyPath: m_TagString
+      value: Environment
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 8dfd1c3242055c943a88942e00e8c78c, type: 3}
@@ -43056,18 +43099,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1094307250}
     m_Modifications:
-    - target: {fileID: 1906656229910602, guid: 8dfd1c3242055c943a88942e00e8c78c, type: 3}
-      propertyPath: m_Name
-      value: Headstone_2_5 (1)
-      objectReference: {fileID: 0}
-    - target: {fileID: 1906656229910602, guid: 8dfd1c3242055c943a88942e00e8c78c, type: 3}
-      propertyPath: m_Layer
-      value: 9
-      objectReference: {fileID: 0}
-    - target: {fileID: 1906656229910602, guid: 8dfd1c3242055c943a88942e00e8c78c, type: 3}
-      propertyPath: m_TagString
-      value: Environment
-      objectReference: {fileID: 0}
     - target: {fileID: 4534656370318982, guid: 8dfd1c3242055c943a88942e00e8c78c, type: 3}
       propertyPath: m_LocalPosition.x
       value: 15.04911
@@ -43124,6 +43155,18 @@ PrefabInstance:
       propertyPath: m_LocalScale.z
       value: 1.4044005
       objectReference: {fileID: 0}
+    - target: {fileID: 1906656229910602, guid: 8dfd1c3242055c943a88942e00e8c78c, type: 3}
+      propertyPath: m_Name
+      value: Headstone_2_5 (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1906656229910602, guid: 8dfd1c3242055c943a88942e00e8c78c, type: 3}
+      propertyPath: m_Layer
+      value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: 1906656229910602, guid: 8dfd1c3242055c943a88942e00e8c78c, type: 3}
+      propertyPath: m_TagString
+      value: Environment
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 8dfd1c3242055c943a88942e00e8c78c, type: 3}
 --- !u!1001 &1902711779
@@ -43133,18 +43176,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1094307250}
     m_Modifications:
-    - target: {fileID: 1723748395832264, guid: 72aa2807f4924be41808b0652e1a3be6, type: 3}
-      propertyPath: m_Name
-      value: Fence_1_5
-      objectReference: {fileID: 0}
-    - target: {fileID: 1723748395832264, guid: 72aa2807f4924be41808b0652e1a3be6, type: 3}
-      propertyPath: m_Layer
-      value: 9
-      objectReference: {fileID: 0}
-    - target: {fileID: 1723748395832264, guid: 72aa2807f4924be41808b0652e1a3be6, type: 3}
-      propertyPath: m_TagString
-      value: Environment
-      objectReference: {fileID: 0}
     - target: {fileID: 4458312218162336, guid: 72aa2807f4924be41808b0652e1a3be6, type: 3}
       propertyPath: m_LocalPosition.x
       value: 10.43911
@@ -43200,6 +43231,18 @@ PrefabInstance:
     - target: {fileID: 4458312218162336, guid: 72aa2807f4924be41808b0652e1a3be6, type: 3}
       propertyPath: m_LocalScale.z
       value: 1.8132
+      objectReference: {fileID: 0}
+    - target: {fileID: 1723748395832264, guid: 72aa2807f4924be41808b0652e1a3be6, type: 3}
+      propertyPath: m_Name
+      value: Fence_1_5
+      objectReference: {fileID: 0}
+    - target: {fileID: 1723748395832264, guid: 72aa2807f4924be41808b0652e1a3be6, type: 3}
+      propertyPath: m_Layer
+      value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: 1723748395832264, guid: 72aa2807f4924be41808b0652e1a3be6, type: 3}
+      propertyPath: m_TagString
+      value: Environment
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 72aa2807f4924be41808b0652e1a3be6, type: 3}
@@ -50025,16 +50068,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 373185947260771455}
     m_Modifications:
-    - target: {fileID: 4628039842772738512, guid: 168dbf65d26fceb439ce8a40c47d910a,
-        type: 3}
-      propertyPath: m_Name
-      value: RangeEnemyBasic Squard 2 (1)
-      objectReference: {fileID: 0}
-    - target: {fileID: 4628039842772738512, guid: 168dbf65d26fceb439ce8a40c47d910a,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 2667227862629441149, guid: 168dbf65d26fceb439ce8a40c47d910a,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -50089,6 +50122,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4628039842772738512, guid: 168dbf65d26fceb439ce8a40c47d910a,
+        type: 3}
+      propertyPath: m_Name
+      value: RangeEnemyBasic Squard 2 (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 4628039842772738512, guid: 168dbf65d26fceb439ce8a40c47d910a,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4806010208796187863, guid: 168dbf65d26fceb439ce8a40c47d910a,
         type: 3}
@@ -50585,6 +50628,7 @@ MonoBehaviour:
   agentDestinationStoppingDistance: 1.5
   offNavMeshPointSearchRadius: 50
   numberOfTries: 3
+  checkingDistance: 2
 --- !u!114 &373185947260771450
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -51007,31 +51051,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 373185947260771455}
     m_Modifications:
-    - target: {fileID: 4628039842772738512, guid: 168dbf65d26fceb439ce8a40c47d910a,
-        type: 3}
-      propertyPath: m_Name
-      value: RangeEnemyBasic Squard 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 4628039842772738512, guid: 168dbf65d26fceb439ce8a40c47d910a,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2169033389271462883, guid: 168dbf65d26fceb439ce8a40c47d910a,
-        type: 3}
-      propertyPath: baseSpeed
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 2169033389271462883, guid: 168dbf65d26fceb439ce8a40c47d910a,
-        type: 3}
-      propertyPath: walkingBackSpeed
-      value: 4
-      objectReference: {fileID: 0}
-    - target: {fileID: 2169033389271462883, guid: 168dbf65d26fceb439ce8a40c47d910a,
-        type: 3}
-      propertyPath: sprintingSpeed
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 2667227862629441149, guid: 168dbf65d26fceb439ce8a40c47d910a,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -51087,9 +51106,34 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4628039842772738512, guid: 168dbf65d26fceb439ce8a40c47d910a,
+        type: 3}
+      propertyPath: m_Name
+      value: RangeEnemyBasic Squard 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 4628039842772738512, guid: 168dbf65d26fceb439ce8a40c47d910a,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4806010208796187863, guid: 168dbf65d26fceb439ce8a40c47d910a,
         type: 3}
       propertyPath: rotationStabilization
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2169033389271462883, guid: 168dbf65d26fceb439ce8a40c47d910a,
+        type: 3}
+      propertyPath: baseSpeed
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 2169033389271462883, guid: 168dbf65d26fceb439ce8a40c47d910a,
+        type: 3}
+      propertyPath: walkingBackSpeed
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 2169033389271462883, guid: 168dbf65d26fceb439ce8a40c47d910a,
+        type: 3}
+      propertyPath: sprintingSpeed
       value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []

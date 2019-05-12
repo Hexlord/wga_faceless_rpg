@@ -129,11 +129,17 @@ public class StartMenuScript : MonoBehaviour
 
     void PressedAutoLoad()
     {
+        saveSystem.isLoading = true;
+        saveSystem.saveType = SaveType.Auto;
+        SceneManager.LoadScene("Intro", LoadSceneMode.Single);
         Debug.Log("Auto");
     }
 
     void PressedQuickLoad()
     {
+        saveSystem.isLoading = true;
+        saveSystem.saveType = SaveType.Quick;
+        SceneManager.LoadScene("Intro", LoadSceneMode.Single);
         Debug.Log("Quick");
     }
 
