@@ -34,37 +34,14 @@ namespace a
         public void UpdateAgentList(BaseAgent agent)
         {
             AgentProcessingPriority.Add(agent);
-            AgentProcessingPriority.Sort(ComparePriority);
+            AgentProcessingPriority.Sort(BaseAgent.ComparePriority);
         }
         
-        private static int ComparePriority(BaseAgent x, BaseAgent y)
-        {
-            if (x == null)
-            {
-                if (y == null)
-                    return 0;
-                else
-                    return -1;
-            }
-            else
-            {
-                if (y == null)
-                    return 1;
-                else
-                {
-                    if (x.Priority > y.Priority)
-                        return 1;
-                    else if (x.Priority == y.Priority)
-                        return 0;
-                    else
-                        return -1;
-                }
-            }
-        }
+        
 
         private void CheckConflicts()
         {
-            AgentProcessingPriority.Sort(ComparePriority);
+            AgentProcessingPriority.Sort(BaseAgent.ComparePriority);
             checkingAngle = 0.0f;
             for (int i = 0; i < AgentProcessingPriority.Count; i++)
             {

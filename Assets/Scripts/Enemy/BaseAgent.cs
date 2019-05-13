@@ -146,62 +146,25 @@ public class BaseAgent : MonoBehaviour
         animator.SetTrigger(knockbackTrigger);
         animator.SetTrigger(getUpTrigger);
     }
+
+    public void WalkToPlayer()
+    {
+        
+    }
+    
     #endregion
 
     #region Movement
     protected void UpdateMove()
     {
-        //UpdateMovementDirection(movement.desiredMovement, new Vector2(transform.forward.x, transform.forward.z));
         movement.Movement = navSys.AskDirection(entityID);
-        //UpdateMovementAnimation();
         Vector3 lookingVector = currentTarget.transform.position - transform.position;
         lookingVector = new Vector3(lookingVector.x, 0, lookingVector.z);
-        if (movement.desiredMovement != Vector2.zero || canSeeEnemy) transform.forward = (canSeeEnemy) ? lookingVector : new Vector3(movement.desiredMovement.x, 0, movement.desiredMovement.y);
+        if (movement.desiredMovement != Vector2.zero || canSeeEnemy) 
+            transform.forward = (canSeeEnemy) ? 
+                lookingVector : 
+                new Vector3(movement.desiredMovement.x, 0, movement.desiredMovement.y);
     }
-
-    /*
-    protected void UpdateMovementDirection(Vector2 walkingDirection, Vector2 lookingDirection)
-    {
-
-        if (walkingDirection.magnitude < epsilonWalking)
-        {
-            directionAnim = 0;
-            movement.SetSpeed((isAlerted) ? sprintingSpeed : baseSpeed);
-            return;
-        }
-
-        float angle = Vector2.SignedAngle(lookingDirection, walkingDirection);
-
-        if (Mathf.Abs(angle) < 30)
-        {
-            directionAnim = 1;
-        }
-        if ((Mathf.Abs(angle) >= 30) && (Mathf.Abs(angle) < 150))
-        {
-            movement.SetSpeed(baseSpeed);
-            if (Mathf.Sign(angle) == -1)
-            {
-                directionAnim = 3;
-            }
-            else
-            {
-                directionAnim = 2;
-            }
-        }
-        if (Mathf.Abs(angle) >= 150)
-        {
-            movement.SetSpeed(walkingBackSpeed);
-            directionAnim = 4;
-        }
-    }
-
-    private void UpdateMovementAnimation()
-    {
-        if (animator.GetBool(enemySpottedBool) != isAlerted) animator.SetBool(enemySpottedBool, isAlerted);
-
-        animator.SetInteger(walkDirectionInt, directionAnim);
-    }
-    */
     #endregion
 
     #region State Functions 
@@ -267,4 +230,29 @@ public class BaseAgent : MonoBehaviour
         animator.SetInteger(idleActionInt, 0);
     }
     #endregion
+    
+    public static int ComparePriority(BaseAgent x, BaseAgent y)
+    {
+        if (x == null)
+        {
+            if (y == null)
+                return 0;
+            else
+                return -1;
+        }
+        else
+        {
+            if (y == null)
+                return 1;
+            else
+            {
+                if (x.Priority > y.Priority)
+                    return 1;
+                else if (x.Priority == y.Priority)
+                    return 0;
+                else
+                    return -1;
+            }
+        }
+    }
 }
