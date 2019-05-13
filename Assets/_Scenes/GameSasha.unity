@@ -3567,7 +3567,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh340102
+  m_Name: pb_Mesh41906
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -25734,12 +25734,12 @@ PrefabInstance:
     - target: {fileID: 1195353017950330275, guid: 2506a0cf8cbd8fb4da325cc66ae70516,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -105
+      value: -375
       objectReference: {fileID: 0}
     - target: {fileID: 1195353019051836486, guid: 2506a0cf8cbd8fb4da325cc66ae70516,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -81
+      value: -351
       objectReference: {fileID: 0}
     - target: {fileID: 1195353018203770331, guid: 2506a0cf8cbd8fb4da325cc66ae70516,
         type: 3}
@@ -31782,7 +31782,7 @@ PrefabInstance:
     - target: {fileID: 5314097334704033723, guid: 596fdfc67fb4359458b83aa22ccf3e13,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 5.77
+      value: 4.842
       objectReference: {fileID: 0}
     - target: {fileID: 5314097334704033723, guid: 596fdfc67fb4359458b83aa22ccf3e13,
         type: 3}
@@ -31874,6 +31874,16 @@ PrefabInstance:
     - target: {fileID: 7484056357403912380, guid: 596fdfc67fb4359458b83aa22ccf3e13,
         type: 3}
       propertyPath: uiHealthBarEnabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7484056357403912372, guid: 596fdfc67fb4359458b83aa22ccf3e13,
+        type: 3}
+      propertyPath: baseMovementSpeed
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 3243813976333260423, guid: 596fdfc67fb4359458b83aa22ccf3e13,
+        type: 3}
+      propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
@@ -33719,7 +33729,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh335752
+  m_Name: pb_Mesh41170
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -50585,6 +50595,7 @@ MonoBehaviour:
   agentDestinationStoppingDistance: 1.5
   offNavMeshPointSearchRadius: 50
   numberOfTries: 3
+  checkingDistance: 2
 --- !u!114 &373185947260771450
 MonoBehaviour:
   m_ObjectHideFlags: 0
