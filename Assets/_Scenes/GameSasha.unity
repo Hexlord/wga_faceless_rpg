@@ -25734,12 +25734,22 @@ PrefabInstance:
     - target: {fileID: 1195353017950330275, guid: 2506a0cf8cbd8fb4da325cc66ae70516,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -105
+      value: -375.8
+      objectReference: {fileID: 0}
+    - target: {fileID: 1195353017950330275, guid: 2506a0cf8cbd8fb4da325cc66ae70516,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: -4
       objectReference: {fileID: 0}
     - target: {fileID: 1195353019051836486, guid: 2506a0cf8cbd8fb4da325cc66ae70516,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -81
+      value: -351.8
+      objectReference: {fileID: 0}
+    - target: {fileID: 1195353019051836486, guid: 2506a0cf8cbd8fb4da325cc66ae70516,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: -5
       objectReference: {fileID: 0}
     - target: {fileID: 1195353018203770331, guid: 2506a0cf8cbd8fb4da325cc66ae70516,
         type: 3}
@@ -50585,6 +50595,7 @@ MonoBehaviour:
   agentDestinationStoppingDistance: 1.5
   offNavMeshPointSearchRadius: 50
   numberOfTries: 3
+  checkingDistance: 2
 --- !u!114 &373185947260771450
 MonoBehaviour:
   m_ObjectHideFlags: 0
