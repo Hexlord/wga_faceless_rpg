@@ -559,8 +559,7 @@ public class PlayerCameraController : MonoBehaviour
 
         transitionDeltaYaw = MathfExtensions.NormalizeAngle(otherCamera.Yaw - transitionStartYaw);
         transitionDeltaPitch = MathfExtensions.NormalizeAngle(otherCamera.Pitch - transitionStartPitch);
-
-
+        
         cameraTransition = instant
             ? 1.0f
             : 0.0f;

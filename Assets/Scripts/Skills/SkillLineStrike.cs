@@ -28,7 +28,7 @@ public class SkillLineStrike : SkillBase
     private readonly GameObject effectPrefab;
 
     public SkillLineStrike() :
-        base(Skill.LineStrike, SkillAnimation.Second, false, 10.0f)
+        base(Skill.LineStrike, SkillAnimation.LineStrike, false, 10.0f)
     {
         effectPrefab = (GameObject)Resources.Load("Prefabs/Skills/CircleStrike", typeof(GameObject));
     }

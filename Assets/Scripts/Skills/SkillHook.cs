@@ -26,7 +26,7 @@ public class SkillHook : SkillBase
     public static float targetDistance = 0.5f;
 
     public SkillHook() :
-        base(Skill.Hook, SkillAnimation.First, true, 1.0f)
+        base(Skill.Hook, SkillAnimation.Hook, true, 1.0f)
     {
         hookPrefab = (GameObject)Resources.Load("Prefabs/Skills/Hook", typeof(GameObject));
     }

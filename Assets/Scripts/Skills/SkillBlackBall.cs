@@ -19,7 +19,7 @@ public class SkillBlackBall : SkillBase
     private readonly GameObject projectilePrefab;
 
     public SkillBlackBall() :
-        base(Skill.BlackBall, SkillAnimation.First, false, 10.0f)
+        base(Skill.BlackBall, SkillAnimation.BlackHole, false, 10.0f)
     {
         projectilePrefab = (GameObject)Resources.Load("Prefabs/Skills/BlackBall", typeof(GameObject));
     }

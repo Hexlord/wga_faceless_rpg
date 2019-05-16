@@ -22,7 +22,7 @@ public class SkillCircleStrike : SkillBase
     private const float AOE = 5.0f;
 
     public SkillCircleStrike() :
-        base(Skill.CircleStrike, SkillAnimation.First, false, 10.0f)
+        base(Skill.CircleStrike, SkillAnimation.CircleStrike, false, 10.0f)
     {
         effectPrefab = (GameObject)Resources.Load("Prefabs/Skills/CircleStrike", typeof(GameObject));
     }

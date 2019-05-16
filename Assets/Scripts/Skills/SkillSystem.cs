@@ -240,7 +240,8 @@ public class SkillSystem : MonoBehaviour
         Debug.Assert(IsSkillSelected);
 
         activeSkill.PrepareEvent(gameObject);
-        animator.SetTrigger(CreatureAnimationBehaviour.GetSkillTriggerHash(activeSkill.Animation));
+        animator.SetTrigger(CreatureAnimationBehaviour.skillTriggerHash);
+        animator.SetFloat(CreatureAnimationBehaviour.currentSkillFloatHash, Convert.ToSingle(activeSkill.Animation));
 
         animator.ResetTrigger(CreatureAnimationBehaviour.interruptTriggerHash);
         interrupt = false;

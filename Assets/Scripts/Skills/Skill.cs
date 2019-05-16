@@ -24,9 +24,12 @@ public enum Skill
 
 public enum SkillAnimation
 {
-    First,
-    Second,
-    Third
+    Hook = 1,
+    LineStrike = 2,
+    CircleStrike = 3,
+    Heal = 4,
+    BlackHole = 5,
+    FireBreath = 6
 }
 
 public static class SkillExtensions
