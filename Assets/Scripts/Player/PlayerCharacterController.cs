@@ -102,7 +102,8 @@ public class PlayerCharacterController : MonoBehaviour
             movementSystem.Movement = new Vector2(desire.x, desire.z);
         }
 
-
+        movementSystem.Sprint = sheathSystem.Sheathed && InputManager.Down(InputAction.Sprint);
+        
         if (movementSystem.Moving)
         {
             cameraController.TriggerPlayerAutoRotation();

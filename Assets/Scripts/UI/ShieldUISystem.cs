@@ -10,7 +10,7 @@ using UnityEngine;
  * 15.03.2019   aknorre     Created
  * 
  */
-public class DashUISystem : MonoBehaviour
+public class ShieldUISystem : MonoBehaviour
 {
     public int Charges
     {
@@ -23,7 +23,7 @@ public class DashUISystem : MonoBehaviour
         }
     }
     
-    private List<DashElementUISystem> charges = new List<DashElementUISystem>();
+    private List<ShieldElementUISystem> charges = new List<ShieldElementUISystem>();
 
     private void Awake()
     {
@@ -31,7 +31,7 @@ public class DashUISystem : MonoBehaviour
         {
             var obj = transform.GetChild(i);
             if (!obj) break;
-            charges.Add(obj.GetComponent<DashElementUISystem>());
+            charges.Add(obj.GetComponent<ShieldElementUISystem>());
         }
     }
 }

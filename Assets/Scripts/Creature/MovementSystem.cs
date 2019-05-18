@@ -57,6 +57,9 @@ public class MovementSystem : MonoBehaviour
     [Range(0.001f, 10.0f)]
     public float airwalkFadeTime = 1.0f;
 
+    public bool canSprint = true;
+    public float sprintMovementSpeedMultiplier = 1.6f;
+
     [Header("Animation Settings")]
     [Tooltip("Smoothing factor for transitions")]
     public float animationDamping = 0.15f;
@@ -68,7 +71,8 @@ public class MovementSystem : MonoBehaviour
 
     private readonly int animatorHorizontal = Animator.StringToHash("Horizontal");
     private readonly int animatorVertical = Animator.StringToHash("Vertical");
-
+    private readonly int animatorFall = Animator.StringToHash("Fall");
+    private readonly int animatorSprint = Animator.StringToHash("Sprint");
     private float currentMovementSpeed;
 
     private float busyFactor;
@@ -100,12 +104,14 @@ public class MovementSystem : MonoBehaviour
         }
     }
 
+    public bool Sprint { get; set; }
+
     // Private
 
     [Header("Debug")]
     public Vector2 desiredMovement = Vector2.zero;
     public Vector2 desiredMovementBodySpace = Vector2.zero;
-
+    
     // Cache
 
     private Animator animator;
@@ -118,6 +124,7 @@ public class MovementSystem : MonoBehaviour
     protected void Awake()
     {
         // Private
+        Sprint = false;
 
         currentMovementSpeed = baseMovementSpeed;
         ResistForces = true;
@@ -168,8 +175,15 @@ public class MovementSystem : MonoBehaviour
             }
         }
 
+        animator.SetFloat(animatorFall, 1.0f - landFactor);
+
         currentVelocity = (new Vector2(body.velocity.x, body.velocity.z));
         targetVelocity = desiredMovement * currentMovementSpeed * busyFactor;
+        if (Sprint)
+        {
+            targetVelocity *=
+                1.0f + (sprintMovementSpeedMultiplier - 1.0f) * Mathf.Max(0.0f, desiredMovementBodySpace.y);
+        }
         if (!ResistForces)
         {
             targetVelocity += currentVelocity;
@@ -197,6 +211,7 @@ public class MovementSystem : MonoBehaviour
 
         if (animator) animator.SetFloat(animatorHorizontal, desiredMovementBodySpace.x, animationDamping, delta);
         if (animator) animator.SetFloat(animatorVertical, desiredMovementBodySpace.y, animationDamping, delta);
+        if (animator) animator.SetFloat(animatorSprint, Sprint ? 1.0f : 0.0f, animationDamping, delta);
 
         if (canMove)
         {

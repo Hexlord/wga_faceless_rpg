@@ -46,6 +46,7 @@ public class PlayerBattleUISystem : MonoBehaviour
     private GameObject JewelBlue;
 
     private DashUISystem dashUiSystem;
+    private ShieldUISystem shieldUiSystem;
 
     private Image Health;
     private Image Concentration;
@@ -75,6 +76,7 @@ public class PlayerBattleUISystem : MonoBehaviour
         JewelBlue = Raven.FindPrecise("JewelBlue").gameObject;
 
         dashUiSystem = battleUI.transform.Find("DashPanel").GetComponent<DashUISystem>();
+        shieldUiSystem = battleUI.transform.Find("ShieldPanel").GetComponent<ShieldUISystem>();
 
         var statusPanel = battleUI.transform.Find("StatusPanel");
         var status = statusPanel.Find("Status");
@@ -103,7 +105,10 @@ public class PlayerBattleUISystem : MonoBehaviour
         JewelRed.SetActive(physical);
         JewelBlue.SetActive(magical);
 
-        dashUiSystem.DashCharges = dashSystem.ChargesAvailabe;
+        dashUiSystem.Charges = dashSystem.ChargesAvailabe;
+        shieldUiSystem.Charges = shieldSystem.GetFullShieldCharges();
+
+        Debug.Log("Current charges: " + shieldSystem.GetFullShieldCharges());
 
         Health.fillAmount = healthSystem.Health / healthSystem.healthMaximum;
         Concentration.fillAmount = concentrationSystem.Concentration / concentrationSystem.concentrationMaximum;
