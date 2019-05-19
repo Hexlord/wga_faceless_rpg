@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 
 [AddComponentMenu("ProjectFaceless/Enemy/BaseAgent")]
 public class BaseAgent : MonoBehaviour
@@ -13,13 +14,15 @@ public class BaseAgent : MonoBehaviour
     protected float stunDuration = 0.0f;
     protected float stunStart = 0.0f;
     protected NavigationSystem navSys;
-    protected CollectiveAISystem AISys;
+    protected HTNplanner AISys;
     private Vector3 rayDirection;
 
     [Header("AI Settings")] 
     [Range(1.0f, 10.0f)]
     public float AIPriority;
-    
+
+    public float waitTime = 1.0f;
+    public float roamRadius = 5.0f;
     [Header("Speed Settings")]
     public float baseSpeed = 5.0f;
     public float walkingBackSpeed = 4.0f;
@@ -50,6 +53,11 @@ public class BaseAgent : MonoBehaviour
     protected float stoppingDistance;
     protected GameObject currentTarget;
     protected float agentRadius;
+    protected float waitTimer;
+
+    
+    public delegate Task taskCreation();
+    protected Dictionary<string, taskCreation> AgentTaskDictionary;
     //protected CollectiveAISystem.AgentType type = CollectiveAISystem.AgentType.Base;
 
     public virtual CollectiveAISystem.AgentType AgentType()
@@ -92,7 +100,7 @@ public class BaseAgent : MonoBehaviour
         get { return isDoingIdle; }
     }
 
-    public void SetControllingSystems(CollectiveAISystem ai, NavigationSystem nav)
+    public void SetControllingSystems(HTNplanner ai, NavigationSystem nav)
     {
         if (!systemsSet)
         {
@@ -113,8 +121,11 @@ public class BaseAgent : MonoBehaviour
     // Start is called before the first frame update
     protected void Awake()
     {
+        movement = GetComponent<MovementSystem>();
+        animator = GetComponent<Animator>();
         entityID = entityIDGenerator++;
         agentRadius = GetComponent<CapsuleCollider>().radius;
+        SetDictionary();
     }
 
     protected virtual void Start()
@@ -126,10 +137,12 @@ public class BaseAgent : MonoBehaviour
 
     protected virtual void Update()
     {
-        if (!isStunned && !isDoingIdle)
+        if (!isStunned && !isDoingIdle && waitTimer <= 0)
         {
             UpdateMove();
         }
+
+        if (waitTimer > 0) waitTimer -= Time.deltaTime;
         ResetStun();
     }
 
@@ -147,25 +160,56 @@ public class BaseAgent : MonoBehaviour
         animator.SetTrigger(getUpTrigger);
     }
 
-    public void WalkToPlayer()
+    public void StartWalkingToPlayer()
     {
-        
+        navSys.PlacePathRequest(this, currentTarget.transform.position);
+    }
+    
+    public void StartWalkingToRandomPoint()
+    {
+        Vector3 vector = Quaternion.AngleAxis(Random.Range(0, 360), Vector3.up) * 
+                         Vector3.forward * Random.Range(0, roamRadius);
+        NavMeshHit hit;
+        NavMesh.Raycast(this.transform.position, 
+            vector, 
+            out hit, 
+            new NavMeshQueryFilter());
+        navSys.PlacePathRequest(this, hit.position);
+    }
+
+    public void SetWaitTimerForNSeconds(float N)
+    {
+        waitTimer = N;
+    }
+
+    public void SetWaitForOneSec()
+    {
+        SetWaitTimerForNSeconds(1f);
+    }
+    
+    private void StartDoingIdle()
+    {
+        int index = Random.Range(1, idles + 1);
+        animator.SetInteger(idleActionInt, index);
+        isDoingIdle = true;
+    }
+    
+    public Task SetMeTask(string TaskName)
+    {
+        return AgentTaskDictionary[TaskName].Invoke();
     }
     
     #endregion
-
-    #region Movement
     protected void UpdateMove()
     {
         movement.Movement = navSys.AskDirection(entityID);
         Vector3 lookingVector = currentTarget.transform.position - transform.position;
         lookingVector = new Vector3(lookingVector.x, 0, lookingVector.z);
-        if (movement.desiredMovement != Vector2.zero || canSeeEnemy) 
-            transform.forward = (canSeeEnemy) ? 
+        if (movement.desiredMovement != Vector2.zero || isAlerted) 
+            transform.forward = (isAlerted) ? 
                 lookingVector : 
                 new Vector3(movement.desiredMovement.x, 0, movement.desiredMovement.y);
     }
-    #endregion
 
     #region State Functions 
     public void SawSomething(GameObject something)
@@ -216,14 +260,6 @@ public class BaseAgent : MonoBehaviour
         currentTarget = go;
     }
 
-    public void StartDoingIdleThings()
-    {
-
-        int index = Random.Range(1, idles + 1);
-        animator.SetInteger(idleActionInt, index);
-        isDoingIdle = true;
-    }
-
     public void FinalizeIdle()
     {
         isDoingIdle = false;
@@ -255,4 +291,125 @@ public class BaseAgent : MonoBehaviour
             }
         }
     }
+    
+    #region general Tasks
+
+    protected virtual void SetDictionary()
+    {
+        AgentTaskDictionary = new Dictionary<string, taskCreation>();
+        AgentTaskDictionary.Add("WalkTowardsRandomPoint", WalkTowardsRandomPoint);
+        AgentTaskDictionary.Add("DoRandomIdle", DoRandomIdle);
+        AgentTaskDictionary.Add("WaitForOneSecond", WaitForOneSecond);
+        AgentTaskDictionary.Add("RoamAround", RoamAround);
+    }
+    SimpleTask WalkTowardsRandomPoint()
+    {
+        Task.Condition[] preConditions = {() => movement.canMove};
+        Task.Condition[] integrityRules =
+        {
+            () => !canSeeEnemy,
+            () => !IsStunned
+        };
+
+        Task.Condition[] finishCondition =
+        {
+            () => navSys.HasAgentReachedDestination(ID)
+        };
+
+        SimpleTask.TaskAction action = StartWalkingToRandomPoint;
+        
+        var task = new SimpleTask(
+            this.name + "WalkTowardsRandomPoint",
+            AISys,
+            preConditions, 
+            integrityRules,
+            finishCondition,
+            action);
+        return task;
+    }
+    
+    SimpleTask DoRandomIdle()
+    {
+        Task.Condition[] preConditions = {() => idles > 0};
+        Task.Condition[] integrityRules =
+        {
+            () => !canSeeEnemy,
+            () => !IsStunned
+        };
+
+        Task.Condition[] finishCondition =
+        {
+            () => !isDoingIdle
+        };
+
+        SimpleTask.TaskAction action = StartDoingIdle;
+        
+        var task = new SimpleTask(
+            this.name + "DoRandomIdle",
+            AISys,
+            preConditions, 
+            integrityRules,
+            finishCondition,
+            action);
+        return task;
+    }
+
+    SimpleTask WaitForOneSecond()
+    {
+        Task.Condition[] preConditions = {() => true};
+        Task.Condition[] integrityRules =
+        {
+            () => !canSeeEnemy,
+            () => !IsStunned
+        };
+
+        Task.Condition[] finishCondition =
+        {
+            () => waitTimer <= 0
+        };
+
+        SimpleTask.TaskAction action = SetWaitForOneSec;
+        
+        var task = new SimpleTask(
+            this.name + "WaitForOneSecond",
+            AISys,
+            preConditions, 
+            integrityRules,
+            finishCondition,
+            action);
+        return task;
+    }
+
+    ComplexTask RoamAround()
+    {
+        Task.Condition[] preConditions = {() => true };
+        Task.Condition[] integrityRules =
+        {
+            () => true
+        };
+
+
+        ComplexTask.DecompositionMethod method = DecomposeRoamAround;
+        
+        var task = new ComplexTask(
+            this.name + "RoamAround",
+            AISys,
+            preConditions, 
+            integrityRules,
+            method);
+        return task;
+    }
+
+    Task[] DecomposeRoamAround()
+    {
+        var tasks = new Task[3];
+        tasks[0] = WalkTowardsRandomPoint();
+        tasks[1] = DoRandomIdle();
+        tasks[2] = SetMeTask("RoamAround");
+        return tasks;
+    }
+    
+    #endregion
+    
+    
 }

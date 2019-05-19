@@ -14,12 +14,17 @@ public class SimpleTask:Task
     readonly TaskAction taskAction;
     readonly protected Condition[] endingConditions;
 
+    public override TaskType Type
+    {
+        get { return TaskType.Simple; }
+    }
     
-    public SimpleTask(string name, 
-        Func<bool>[] conditions, 
-        Func<bool>[] rules, 
-        Func<bool>[] finish, 
-        TaskAction action) : base (name, conditions, rules)
+    public SimpleTask(string name,
+        HTNplanner coroutineRunner,
+        Condition[] conditions, 
+        Condition[] rules, 
+        Condition[] finish, 
+        TaskAction action) : base (name, coroutineRunner, conditions, rules)
     {
         taskAction = action;
         endingConditions = new Condition[finish.Length];
@@ -33,8 +38,7 @@ public class SimpleTask:Task
 
     public override void StartExecution()
     {
-        var coroutine = TaskExecution();
-        StartCoroutine(coroutine);
+        base.StartExecution();
     }
     
     protected override IEnumerator TaskExecution()
@@ -59,7 +63,6 @@ public class SimpleTask:Task
             if (CheckEndTask())
             {
                 this.SetStatus(TaskStatus.Complete);
-                yield break;
             }
 
             yield return null;

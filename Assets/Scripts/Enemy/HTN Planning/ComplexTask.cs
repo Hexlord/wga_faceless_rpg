@@ -12,12 +12,18 @@ public class ComplexTask: Task
 
     private Plan TaskExecutionPlan;
     
-    
+    public override TaskType Type
+    {
+        get { return TaskType.Complex; }
+    }
     
     readonly protected DecompositionMethod Decompose;
     
-    public ComplexTask(string name, Func<bool>[] conditions, Func<bool>[] rules, DecompositionMethod decompose) :
-        base(name, conditions, rules)
+    public ComplexTask(string name,
+        HTNplanner coroutineRunner,
+        Condition[] conditions, 
+        Condition[] rules, 
+        DecompositionMethod decompose) : base(name, coroutineRunner, conditions, rules)
     {
         Decompose = decompose;
     }
@@ -31,6 +37,7 @@ public class ComplexTask: Task
     {
         SetStatus(TaskStatus.InProgress);
         TaskExecutionPlan = new Plan(this, this.Name);
+        base.StartExecution();
     }
 
     protected override IEnumerator TaskExecution()
@@ -51,13 +58,12 @@ public class ComplexTask: Task
             }
 
             TaskExecutionPlan.PlanIterate();
+            
             if (TaskExecutionPlan.Status == Plan.PlanStatus.Complete)
             {
                 this.SetStatus(TaskStatus.Complete);
-                yield break;
             }
+            yield return null;
         }
-
-        yield return null;
     }
 }

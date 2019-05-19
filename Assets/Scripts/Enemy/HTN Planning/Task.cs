@@ -7,25 +7,27 @@ using Unity.Collections;
 using UnityEditor;
 using UnityEngine;
 
-public class Task : MonoBehaviour
+public class Task
 {
     private string taskName;
     
     private TaskStatus taskStatus;
     
-    protected delegate bool Condition(); 
+    public delegate bool Condition(); 
     
     protected readonly Condition[] preConditionsList;
     protected readonly Condition[] integrityRules;
+    protected readonly HTNplanner taskCouroutineStarter;
 
-
-    public Task(string name, Func<bool>[] conditions, Func<bool>[] rules)
+    public Task(string name, HTNplanner coroutineRunner, Condition[] conditions, Condition[] rules)
     {
         taskName = name;
+        taskCouroutineStarter = coroutineRunner;
         preConditionsList = new Condition[conditions.Length];
         integrityRules = new Condition[rules.Length];
         conditions.CopyTo(preConditionsList, 0);
         rules.CopyTo(integrityRules, 0);
+        taskStatus = TaskStatus.Planned;
     }
     
     public enum TaskType 
@@ -55,7 +57,7 @@ public class Task : MonoBehaviour
     
     public virtual TaskStatus Status
     {
-        get { return TaskStatus.None; }
+        get { return taskStatus; }
     }
 
     
@@ -63,7 +65,6 @@ public class Task : MonoBehaviour
     {
         taskStatus = val;
     }
-
     
     
     #region Checks
@@ -84,13 +85,14 @@ public class Task : MonoBehaviour
     {
         return BasicCheck(preConditionsList);
     }
-    
-    #endregion
-    
+
     protected bool CheckTaskIntegrity()
     {
         return BasicCheck(integrityRules);
     }
+
+    #endregion
+
 
     protected virtual IEnumerator TaskExecution()
     {
@@ -99,6 +101,7 @@ public class Task : MonoBehaviour
 
     public virtual void StartExecution()
     {
+        taskCouroutineStarter.StartRunningCoroutine(TaskExecution());
     }
 
     public virtual Task[] DecomposeTask()

@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 #region Exceptions
@@ -64,22 +63,20 @@ public class Plan
                 break;
             case Task.TaskStatus.Failure:
                 planStatus = PlanStatus.Failure;
-                RestartPlan();
                 break;
             case Task.TaskStatus.None:
                 throw new NoneTaskStatusException();
         }
     }
-
-
-    public void RestartPlan()
-    {
-        
-    }
     
     public static void TransferControlToTask(Plan p, Task t)
     {
         p.rootTask = t;
+    }
+
+    public static bool PlanSatusNotFailure(Plan p)
+    {
+        return p.Status != PlanStatus.Failure;
     }
     
 }

@@ -72,7 +72,7 @@ public class CollectiveAISystem : MonoBehaviour
         //observer = GetComponent<Observer>();
         foreach(BaseAgent agent in agents)
         {
-            agent.SetControllingSystems(this, navSystem);
+            //agent.SetControllingSystems(this, navSystem);
             agentsDictionary.Add(agent.ID, agent);
             agentsTypes.Add(agent.ID, agent.AgentType());
             agentsOrders.Add(agent.ID, new Order(OrderType.RoamAround, ClosestRecreationalArea(agent.transform.position)));
@@ -246,7 +246,7 @@ public class CollectiveAISystem : MonoBehaviour
             }
             if (index == 0)
             {
-                agentsDictionary[ID].StartDoingIdleThings();
+                //agentsDictionary[ID].StartDoingIdleThings();
             }
         }
     }
