@@ -22,6 +22,15 @@ public class PlayerSkillsUISystem : MonoBehaviour
 
     [Tooltip("SkillsUI object")]
     public GameObject skillsUI;
+    
+    public Text physicalPointCount;
+    public Text magicalPointCount;
+
+    public GameObject acceptOn;
+    public GameObject acceptOff;
+    public GameObject cancelOn;
+    public GameObject cancelOff;
+
 
     // Private
 
@@ -32,15 +41,11 @@ public class PlayerSkillsUISystem : MonoBehaviour
     private PlayerCharacterController playerCharacterController;
     private PlayerCameraController playerCameraController;
 
+
     private bool open = false;
 
     protected void Start()
     {
-        if (!skillsUI)
-        {
-            skillsUI = GameObject.Find("UI").FindPrecise("Canvas").transform.Find("SkillsUI").gameObject;
-        }
-
         player = GameObject.Find("Player");
         playerHealthSystem = player.GetComponent<HealthSystem>();
         playerCharacterController = player.GetComponent<PlayerCharacterController>();
@@ -78,6 +83,11 @@ public class PlayerSkillsUISystem : MonoBehaviour
         {
             if (open) OnClose();
             else OnOpen();
+        }
+
+        if (open)
+        {
+
         }
 
     }

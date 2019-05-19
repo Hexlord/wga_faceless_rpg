@@ -20,6 +20,11 @@ public enum Skill
     CircleStrike,
     LineStrike,
     FireBreath,
+    Meteor,
+    IceWall,
+    SkillSpecial1,
+    SkillSpecial2,
+    ShiftStrike,
     Heal,
 }
 
@@ -46,17 +51,27 @@ public static class SkillExtensions
         switch (skill)
         {
             case Skill.BlackBall:
-                return "Black Ball";
+                return "BlackBall";
             case Skill.CircleStrike:
-                return "Circle Strike";
+                return "CircleStrike";
             case Skill.LineStrike:
-                return "Line Strike";
+                return "LineStrike";
             case Skill.Hook:
                 return "Hook";
             case Skill.FireBreath:
-                return "Fire Breath";
+                return "FireBreath";
             case Skill.Heal:
                 return "Heal";
+            case Skill.Meteor:
+                return "Meteor";
+            case Skill.IceWall:
+                return "IceWall";
+            case Skill.SkillSpecial1:
+                return "SkillSpecial1";
+            case Skill.SkillSpecial2:
+                return "SkillSpecial2";
+            case Skill.ShiftStrike:
+                return "ShiftStrike";
             default:
                 throw new ArgumentOutOfRangeException("skill", skill, null);
         }
@@ -78,6 +93,16 @@ public static class SkillExtensions
                 return new SkillFireBreath();
             case Skill.Heal:
                 return new SkillHeal();
+            case Skill.Meteor:
+                throw new ArgumentOutOfRangeException("skill", skill, null);
+            case Skill.IceWall:
+                throw new ArgumentOutOfRangeException("skill", skill, null);
+            case Skill.SkillSpecial1:
+                throw new ArgumentOutOfRangeException("skill", skill, null);
+            case Skill.SkillSpecial2:
+                throw new ArgumentOutOfRangeException("skill", skill, null);
+            case Skill.ShiftStrike:
+                throw new ArgumentOutOfRangeException("skill", skill, null);
             default:
                 throw new ArgumentOutOfRangeException("skill", skill, null);
         }
