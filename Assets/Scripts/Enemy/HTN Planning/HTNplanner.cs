@@ -12,7 +12,7 @@ public class HTNplanner : MonoBehaviour
     private BodyStateSystem statesOfTarget;
     private NavigationSystem navSystem;
     private Dictionary<uint, BaseAgent> AgentIdDictionary = new Dictionary<uint, BaseAgent>();
-    private Dictionary<uint, ComplexTask> IdToTask;
+    private Dictionary<uint, Task> IdToTask;
     
     public enum AgentType
     {
@@ -40,7 +40,7 @@ public class HTNplanner : MonoBehaviour
     {
         navSystem = GetComponent<NavigationSystem>();
         AgentIdDictionary = new Dictionary<uint, BaseAgent>();
-        IdToTask = new Dictionary<uint, ComplexTask>();
+        IdToTask = new Dictionary<uint, Task>();
     }
 
 
@@ -56,10 +56,14 @@ public class HTNplanner : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        foreach (var t in IdToTask.Values)
+        {
+            if (t.Status == Task.TaskStatus.Planned)
+                t.StartExecution();
+        }
     }
 
-    public void AssignTask(BaseAgent a, ComplexTask task)
+    public void AssignTask(BaseAgent a, Task task)
     {
         if (IdToTask.ContainsKey(a.ID))
         {
@@ -87,7 +91,7 @@ public class HTNplanner : MonoBehaviour
         }
     }
     
-    Transform ClosestNest(Vector3 agentPosition)
+    public Transform ClosestNest(Vector3 agentPosition)
     {
         float maxDistance = 1000.0f;
         int index = 0;

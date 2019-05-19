@@ -32,6 +32,7 @@ public class Plan
     {
         this.planName = planName;
         var tasks = root.DecomposeTask();
+        rootTask = root;
         nextTask = new Queue<Task>(tasks);
         currentTask = nextTask.Dequeue();
         planStatus = PlanStatus.InProgress;

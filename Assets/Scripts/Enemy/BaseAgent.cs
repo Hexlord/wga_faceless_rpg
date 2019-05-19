@@ -43,6 +43,9 @@ public class BaseAgent : MonoBehaviour
     [Tooltip("Triggers that toggle idle animations")]
     public string idleActionInt = "IdleVariant";
     public int idles = 3;
+    [Tooltip("Trigger that toggles getting up animation")]
+    public string howlTrigger = "Howl";
+    
     private bool isDoingIdle = false;
     [Tooltip("Determines whether the agent is allowed to attack or not")]
     public bool allowedToAttack = false;
@@ -133,6 +136,7 @@ public class BaseAgent : MonoBehaviour
         movement = GetComponent<MovementSystem>();
         animator = GetComponent<Animator>();
         animatorEnemySpotted = Animator.StringToHash(enemySpottedBool);
+        
     }
 
     protected virtual void Update()
@@ -171,9 +175,9 @@ public class BaseAgent : MonoBehaviour
                          Vector3.forward * Random.Range(0, roamRadius);
         NavMeshHit hit;
         NavMesh.Raycast(this.transform.position, 
-            vector, 
-            out hit, 
-            new NavMeshQueryFilter());
+            AISys.ClosestNest(this.transform.position).position + vector, 
+            out hit,
+            NavMesh.AllAreas);
         navSys.PlacePathRequest(this, hit.position);
     }
 
@@ -187,23 +191,32 @@ public class BaseAgent : MonoBehaviour
         SetWaitTimerForNSeconds(1f);
     }
     
-    private void StartDoingIdle()
+    public void StartDoingIdle()
     {
         int index = Random.Range(1, idles + 1);
         animator.SetInteger(idleActionInt, index);
         isDoingIdle = true;
     }
-    
-    public Task SetMeTask(string TaskName)
+
+    public void StartHowling()
     {
-        return AgentTaskDictionary[TaskName].Invoke();
+        
+    }
+    
+    public void SetMeTask(string TaskName)
+    {
+        AISys.AssignTask(this, (ComplexTask)AgentTaskDictionary[TaskName].Invoke());
     }
     
     #endregion
     protected void UpdateMove()
     {
         movement.Movement = navSys.AskDirection(entityID);
-        Vector3 lookingVector = currentTarget.transform.position - transform.position;
+        Vector3 lookingVector = new Vector3();
+        if (currentTarget != null)
+        {
+            lookingVector = currentTarget.transform.position - transform.position;
+        }
         lookingVector = new Vector3(lookingVector.x, 0, lookingVector.z);
         if (movement.desiredMovement != Vector2.zero || isAlerted) 
             transform.forward = (isAlerted) ? 
@@ -292,7 +305,7 @@ public class BaseAgent : MonoBehaviour
         }
     }
     
-    #region general Tasks
+    #region Tasks
 
     protected virtual void SetDictionary()
     {
@@ -302,7 +315,7 @@ public class BaseAgent : MonoBehaviour
         AgentTaskDictionary.Add("WaitForOneSecond", WaitForOneSecond);
         AgentTaskDictionary.Add("RoamAround", RoamAround);
     }
-    SimpleTask WalkTowardsRandomPoint()
+    protected SimpleTask WalkTowardsRandomPoint()
     {
         Task.Condition[] preConditions = {() => movement.canMove};
         Task.Condition[] integrityRules =
@@ -328,7 +341,7 @@ public class BaseAgent : MonoBehaviour
         return task;
     }
     
-    SimpleTask DoRandomIdle()
+    protected SimpleTask DoRandomIdle()
     {
         Task.Condition[] preConditions = {() => idles > 0};
         Task.Condition[] integrityRules =
@@ -354,7 +367,7 @@ public class BaseAgent : MonoBehaviour
         return task;
     }
 
-    SimpleTask WaitForOneSecond()
+    protected SimpleTask WaitForOneSecond()
     {
         Task.Condition[] preConditions = {() => true};
         Task.Condition[] integrityRules =
@@ -380,7 +393,32 @@ public class BaseAgent : MonoBehaviour
         return task;
     }
 
-    ComplexTask RoamAround()
+    protected SimpleTask SetTask(string name)
+    {
+        Task.Condition[] preConditions = {() => true};
+        Task.Condition[] integrityRules =
+        {
+            () => true
+        };
+
+        Task.Condition[] finishCondition =
+        {
+            () => true
+        };
+
+        SimpleTask.TaskAction action = () => SetMeTask(name);
+        
+        var task = new SimpleTask(
+            this.name + "SetTask " + name,
+            AISys,
+            preConditions, 
+            integrityRules,
+            finishCondition,
+            action);
+        return task;
+    }
+    
+    protected ComplexTask RoamAround()
     {
         Task.Condition[] preConditions = {() => true };
         Task.Condition[] integrityRules =
@@ -399,13 +437,13 @@ public class BaseAgent : MonoBehaviour
             method);
         return task;
     }
-
-    Task[] DecomposeRoamAround()
+   
+    protected virtual Task[] DecomposeRoamAround()
     {
         var tasks = new Task[3];
         tasks[0] = WalkTowardsRandomPoint();
         tasks[1] = DoRandomIdle();
-        tasks[2] = SetMeTask("RoamAround");
+        tasks[2] = SetTask("RoamAround");
         return tasks;
     }
     
