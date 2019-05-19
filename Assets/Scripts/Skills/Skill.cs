@@ -20,6 +20,7 @@ public enum Skill
     CircleStrike,
     LineStrike,
     FireBreath,
+    Heal,
 }
 
 public enum SkillAnimation
@@ -27,9 +28,15 @@ public enum SkillAnimation
     Hook = 1,
     LineStrike = 2,
     CircleStrike = 3,
-    Heal = 4,
-    BlackHole = 5,
-    FireBreath = 6
+    ShiftLeft = 4,
+    ShiftRight = 5,
+    BlackHole = 6,
+    FireBreath = 7,
+    Meteor=8,
+    IceWall=9,
+    Special=10,
+    Heal=11,
+    Dash=12
 }
 
 public static class SkillExtensions
@@ -48,6 +55,8 @@ public static class SkillExtensions
                 return "Hook";
             case Skill.FireBreath:
                 return "Fire Breath";
+            case Skill.Heal:
+                return "Heal";
             default:
                 throw new ArgumentOutOfRangeException("skill", skill, null);
         }
@@ -67,6 +76,8 @@ public static class SkillExtensions
                 return new SkillHook();
             case Skill.FireBreath:
                 return new SkillFireBreath();
+            case Skill.Heal:
+                return new SkillHeal();
             default:
                 throw new ArgumentOutOfRangeException("skill", skill, null);
         }

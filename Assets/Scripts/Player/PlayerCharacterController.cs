@@ -17,7 +17,7 @@ using UnityEngine.UI;
 [AddComponentMenu("ProjectFaceless/Player/Character Controller")]
 public class PlayerCharacterController : MonoBehaviour
 {
-    
+
     // Public
     [Header("Basic Settings")]
 
@@ -45,6 +45,7 @@ public class PlayerCharacterController : MonoBehaviour
     private MovementSystem movementSystem;
     private new Camera camera;
     private PlayerCameraController cameraController;
+    private PlayerSkillBook skillBook;
     private SkillSystem skillSystem;
     private AttackSystem attackSystem;
     private ShootSystem shootSystem;
@@ -70,6 +71,7 @@ public class PlayerCharacterController : MonoBehaviour
         dashSystem = GetComponent<DashSystem>();
         shieldSystem = GetComponent<ShieldSystem>();
         bodyStateSystem = GetComponent<BodyStateSystem>();
+        skillBook = GetComponent<PlayerSkillBook>();
         cameraController = GetComponent<PlayerCameraController>();
         aimSystem = GetComponent<AimSystem>();
         //Main camera can be accessed via Camera.main. Why do you use such an unorthodox and heavy method?
@@ -88,7 +90,7 @@ public class PlayerCharacterController : MonoBehaviour
 
         var desire = Quaternion.Euler(0.0f, camera.transform.rotation.eulerAngles.y, 0.0f)
             * movement;
-        if ((bodyStateSystem.State == BodyStateSystem.BodyState.Magical) && 
+        if ((bodyStateSystem.State == BodyStateSystem.BodyState.Magical) &&
             InputManager.Pressed(InputAction.Defend))
         {
             Debug.Log("Dashed");
@@ -103,7 +105,7 @@ public class PlayerCharacterController : MonoBehaviour
         }
 
         movementSystem.Sprint = sheathSystem.Sheathed && InputManager.Down(InputAction.Sprint);
-        
+
         if (movementSystem.Moving)
         {
             cameraController.TriggerPlayerAutoRotation();
@@ -135,43 +137,36 @@ public class PlayerCharacterController : MonoBehaviour
         }
     }
 
-    private int GetSkillSelection()
-    {
-        var magicalOffset = bodyStateSystem.State == BodyStateSystem.BodyState.Magical ? 2 : 0;
-
-        var key = -1;
-        if (InputManager.Pressed(InputAction.Skill_1))
-        {
-            key = 0;
-        }
-        else if (InputManager.Pressed(InputAction.Skill_2))
-        {
-            key = 1;
-        }
-
-        if (key >= 0)
-        {
-            key += magicalOffset;
-            if (skillSystem.Skills.Count <= key) key = -1;
-        }
-       
-        return key;
-    }
-
     private void UpdateSkills()
     {
-        var selectedSkill = GetSkillSelection();
-
-        if (selectedSkill >= 0 &&
-            !skillSystem.Busy)
+        if (!skillSystem.Busy)
         {
-            if (skillSystem.SelectedSkill == selectedSkill)
+            if (InputManager.Down(InputAction.Heal))
             {
-                skillSystem.UnselectSkill();
+                skillSystem.SelectSkill(Skill.Heal);
+                skillSystem.Cast();
             }
             else
             {
-                skillSystem.SelectSkill(selectedSkill);
+                var slot = -1;
+                if (InputManager.Pressed(InputAction.Skill_1))
+                {
+                    slot = 0;
+                }
+                else if (InputManager.Pressed(InputAction.Skill_2))
+                {
+                    slot = 1;
+                }
+
+                if (slot != -1) skillBook.Select(bodyStateSystem.State, slot);
+            }
+        }
+
+        if (skillSystem.Channeling && skillSystem.SelectedSkill.Type == Skill.Heal)
+        {
+            if (!InputManager.Down(InputAction.Heal))
+            {
+                skillSystem.Interrupt();
             }
         }
     }
@@ -212,7 +207,7 @@ public class PlayerCharacterController : MonoBehaviour
 
         if (bodyStateSystem.State == BodyStateSystem.BodyState.Physical)
         {
-                attackSystem.Attack(-1, 0);
+            attackSystem.Attack(-1, 0);
         }
         else if (bodyStateSystem.State == BodyStateSystem.BodyState.Magical)
         {
@@ -261,12 +256,12 @@ public class PlayerCharacterController : MonoBehaviour
             }
 
             Attack();
-            
+
             wantToAttack = false;
         }
         else
         {
-            if (skillSystem.Channeling) skillSystem.Interrupt();
+            if (skillSystem.Channeling && skillSystem.SelectedSkill.Type != Skill.Heal) skillSystem.Interrupt();
         }
 
     }

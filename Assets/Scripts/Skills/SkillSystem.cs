@@ -99,9 +99,13 @@ public class SkillSystem : MonoBehaviour
         get { return activeSkill != null; }
     }
 
-    public int SelectedSkill
+    public int SelectedSkillNumber
     {
         get { return activeSkillNumber; }
+    }
+    public SkillBase SelectedSkill
+    {
+        get { return activeSkillNumber == -1 ? null : skills[activeSkillNumber]; }
     }
 
     // Private
@@ -191,6 +195,41 @@ public class SkillSystem : MonoBehaviour
         }
     }
 
+    public bool HasSkill(Skill skill)
+    {
+        foreach(var skillIt in skills)
+        {
+            if (skillIt.Type == skill) return true;
+        }
+
+        return false;
+    }
+
+    public void Learn(Skill skill)
+    {
+        Debug.Assert(!HasSkill(skill));
+
+        skills.Add(skill.Instantiate());
+        skillTypes.Add(skill);
+    }
+
+    public void SelectSkill(Skill skill)
+    {
+        Debug.Assert(!Busy);
+
+        for (var i = 0; i < skills.Count; ++i)
+        {
+            if (skills[i].Type == skill)
+            {
+                SelectSkill(i);
+                return;
+            }
+        }
+
+        Debug.LogError("Skill " + skill.ToString() + " not found!");
+        Debug.Assert(false);
+    }
+
     public void SelectSkill(string skillName)
     {
         Debug.Assert(!Busy);
@@ -223,6 +262,19 @@ public class SkillSystem : MonoBehaviour
         activeSkill = skill;
         activeSkillNumber = skillNumber;
 
+    }
+
+    public float GetCooldownNormalized(Skill skill)
+    {
+        for (var i = 0; i < skills.Count; ++i)
+        {
+            if (skills[i].Type == skill)
+            {
+                return skills[i].CooldownTimerNormalized;
+            }
+        }
+
+        return 0.0f;
     }
 
     public void UnselectSkill()

@@ -28,6 +28,7 @@ public class PlayerBattleUISystem : MonoBehaviour
     private HealthSystem healthSystem;
     private ConcentrationSystem concentrationSystem;
     private SkillSystem skillSystem;
+    private PlayerSkillBook skillBook;
     private DashSystem dashSystem;
     private ShieldSystem shieldSystem;
     private SheathSystem sheathSystem;
@@ -63,6 +64,7 @@ public class PlayerBattleUISystem : MonoBehaviour
         healthSystem = GetComponent<HealthSystem>();
         concentrationSystem = GetComponent<ConcentrationSystem>();
         skillSystem = GetComponent<SkillSystem>();
+        skillBook = GetComponent<PlayerSkillBook>();
         sheathSystem = GetComponent<SheathSystem>();
         dashSystem = GetComponent<DashSystem>();
         shieldSystem = GetComponent<ShieldSystem>();
@@ -114,17 +116,16 @@ public class PlayerBattleUISystem : MonoBehaviour
         Concentration.fillAmount = concentrationSystem.Concentration / concentrationSystem.concentrationMaximum;
         XP.fillAmount = xpSystem.LevelCompletion;
 
-        var offset = 0;
-        if (magical) offset += 2;
-
-        slot1.Slot = skillSystem.SkillTypes[offset];
-        slot2.Slot = skillSystem.SkillTypes[offset + 1];
+        var skill1 = skillBook.GetSkill(bodyStateSystem.State, 0);
+        var skill2 = skillBook.GetSkill(bodyStateSystem.State, 1);
+        slot1.Slot = skill1;
+        slot2.Slot = skill2;
         slot1.Active = !sheathSystem.Sheathed;
         slot2.Active = !sheathSystem.Sheathed;
-        slot1.CooldownNormalized = skillSystem.Skills[offset].CooldownTimerNormalized;
-        slot2.CooldownNormalized = skillSystem.Skills[offset + 1].CooldownTimerNormalized;
-        slot1.Selected = skillSystem.SelectedSkill == offset;
-        slot2.Selected = skillSystem.SelectedSkill == offset + 1;
+        if(skill1.HasValue) slot1.CooldownNormalized = skillSystem.GetCooldownNormalized(skill1.Value);
+        if(skill2.HasValue) slot2.CooldownNormalized = skillSystem.GetCooldownNormalized(skill2.Value);
+        slot1.Selected = skill1.HasValue && (skillSystem.SelectedSkill.Type == skill1);
+        slot2.Selected = skill2.HasValue && (skillSystem.SelectedSkill.Type == skill2);
 
 
         slotUtility1.Slot = magical ? SkillUtility.Shoot : SkillUtility.Attack;
