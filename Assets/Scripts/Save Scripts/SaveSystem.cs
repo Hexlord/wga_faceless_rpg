@@ -135,7 +135,11 @@ public class SaveSystem : MonoBehaviour
         Debug.Log("Save");
 
         GameObject[] gameObjects = GetSaveableGameObjects(FindObjectsOfType<GameObject>());
-
+        var keys = saver.GetAllKeys();
+        foreach (string key in saver.GetAllKeys())
+        {
+            saver.Delete(key);
+        }
         foreach (GameObject gameObject in gameObjects)
         {
             if (TrySerializeGameObject(gameObject, saver) == false)
@@ -143,21 +147,16 @@ public class SaveSystem : MonoBehaviour
                 return false;
             }
         }
-        if (saver.TryCommit() == true)
+        bool done = saver.TryCommit();
+        Debug.Log(done);
+        foreach (GameObject gameObject in gameObjects)
         {
-            foreach (GameObject gameObject in gameObjects)
+            foreach (ISaveable saveable in gameObject.GetComponents<ISaveable>())
             {
-                foreach (ISaveable saveable in gameObject.GetComponents<ISaveable>())
-                {
-                    saveable.OnSave();
-                }
+                saveable.OnSave();
             }
-            return true;
         }
-        else
-        {
-            return false;
-        }
+        return true;
     }
 
     bool TrySerializeGameObject(GameObject gameObject, QuickSaveWriter saver)
@@ -176,14 +175,17 @@ public class SaveSystem : MonoBehaviour
     }
 
     bool TrySerializeComponent(Component component, QuickSaveWriter saver)
-    {
+    {   
         FieldInfo[] fields = component.GetType().GetFields(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);
         foreach (FieldInfo fieldInfo in fields)
         {
-            Saveable[] attribute = fieldInfo.GetCustomAttributes(typeof(Saveable), true) as Saveable[];
-            string fullFieldName = GetFullFieldName(component, fieldInfo.Name);
-            saver.Write(fullFieldName, TypeHelper.ReplaceIfUnityType(fieldInfo.FieldType, fieldInfo.GetValue(component)));
-
+            //Saveable[] attribute = fieldInfo.GetCustomAttributes(typeof(Saveable), true) as Saveable[];
+            if (Attribute.IsDefined(fieldInfo, typeof(Saveable)))
+            {
+                string fullFieldName = GetFullFieldName(component, fieldInfo.Name);
+                var tmp = TypeHelper.ReplaceIfUnityType(fieldInfo.FieldType, fieldInfo.GetValue(component));
+                saver.Write(fullFieldName, tmp);
+            }
         }
         return true;
     }
@@ -234,8 +236,8 @@ public class SaveSystem : MonoBehaviour
         FieldInfo[] fields = component.GetType().GetFields(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);
         foreach (FieldInfo fieldInfo in fields)
         {
-            Saveable[] attribute = fieldInfo.GetCustomAttributes(typeof(Saveable), true) as Saveable[];
-            if (attribute.Length != 0)
+            //Saveable[] attribute = fieldInfo.GetCustomAttributes(typeof(Saveable), true) as Saveable[];
+            if (Attribute.IsDefined(fieldInfo, typeof(Saveable)))
             {
                 string fullFieldName = GetFullFieldName(component, fieldInfo.Name);
                 object result;
@@ -292,7 +294,7 @@ public class SaveSystem : MonoBehaviour
         Component[] components = gameObject.GetComponents<Component>();
         foreach (Component component in components)
         {
-            if(IsComponentSaveble(component) == true)
+            if(component != null && IsComponentSaveble(component) == true)
             {
                 return true;
             }
@@ -302,15 +304,18 @@ public class SaveSystem : MonoBehaviour
 
     bool IsComponentSaveble(Component component)
     {
-        FieldInfo[] fields = component.GetType().GetFields(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance); string componentKey = component.name + "." + component.GetType().FullName;
+        
+        FieldInfo[] fields = component.GetType().GetFields(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);
+        string componentKey = component.name + "." + component.GetType().FullName;
         foreach (FieldInfo fieldInfo in fields)
         {
-            Saveable[] attribute = fieldInfo.GetCustomAttributes(typeof(Saveable), true) as Saveable[];
-            if (attribute.Length != 0)
+            //Saveable[] attribute = fieldInfo.GetCustomAttributes(typeof(Saveable), true) as Saveable[];
+            if (Attribute.IsDefined(fieldInfo, typeof(Saveable)))
             {
                 return true;
             }
         }
+        
         return false;
     }
 }

@@ -14,7 +14,8 @@ public class PortalSystem : MonoBehaviour
     int portalCount;
     void Start()
     {
-        saveSystem = GameObject.Find("SaveSystem").GetComponent<SaveSystem>();
+        GameObject ss = GameObject.Find("SaveSystem");
+        saveSystem = ss.GetComponent<SaveSystem>();
         portalCount = portals.Count;
     }
 

@@ -51,6 +51,7 @@ public class SkillSystem : MonoBehaviour
 
 
     [Tooltip("Skills known by this character")]
+    [Saveable]
     public Skill[] startSkills;
 
     public bool Busy
