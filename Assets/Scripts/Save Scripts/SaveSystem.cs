@@ -194,8 +194,8 @@ public class SaveSystem : MonoBehaviour
     bool _Load(GameObject [] rootGameObjects, QuickSaveReader loader)
     {
         Debug.Log("Load");
-
-        GameObject[] gameObjects = GetAllGameObjects(rootGameObjects);
+        GameObject[] allGameObjects = GetAllGameObjects(rootGameObjects);
+        GameObject[] gameObjects = GetSaveableGameObjects(allGameObjects).Union(GetSaveableGameObjects(rootGameObjects)).ToArray();
 
         foreach (GameObject gameObject in gameObjects)
         {
@@ -205,7 +205,7 @@ public class SaveSystem : MonoBehaviour
             }
         }
 
-        foreach (GameObject gameObject in gameObjects)
+        foreach (GameObject gameObject in rootGameObjects)
         {
             foreach (ISaveable saveable in gameObject.GetComponents<ISaveable>())
             {
@@ -251,19 +251,6 @@ public class SaveSystem : MonoBehaviour
                 }
             }
         }
-
-        try
-        {
-            ISaveable saveableComponent = component as ISaveable;
-            saveableComponent.OnLoad();
-        }
-        catch(Exception e)
-        {
-            Debug.Log("failed call onLoad, probably " + GetFieldPrefix(component) + " does not implement ISaveable. Exact Reason: " + e.Message);
-            return false;
-        }
-
-
         return true;
     }
 

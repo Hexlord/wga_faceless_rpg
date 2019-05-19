@@ -10,6 +10,7 @@ using UnityEngine.SceneManagement;
  * Date         Author      Description
  * 
  * 17.04.2019   mbukhalov   Created
+ * 19.05.2019   mbukhalov   Added active portals saving
  * 
  */
 
