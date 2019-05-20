@@ -2,8 +2,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
-public class SkillLearn : MonoBehaviour
+public class SkillLearn : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IDragHandler, IEndDragHandler, IPointerClickHandler
 {
     public Skill skill;
 
@@ -16,8 +17,16 @@ public class SkillLearn : MonoBehaviour
 
     private GameObject oldState = null;
 
+    public bool Clicked = false;
+    public bool Drag = false;
+    public Vector3? DropPosition = null;
+
+    private Vector3 startPosition;
+
+    private State currentState = State.Off;
     public State CurrentState
     {
+        get { return currentState; }
         set
         {
             if (oldState != null) oldState.SetActive(false);
@@ -38,10 +47,12 @@ public class SkillLearn : MonoBehaviour
             }
 
             if (oldState != null) oldState.SetActive(true);
+
+            currentState = value;
         }
     }
 
-    public bool Glow
+    public bool Hover
     {
         set
         {
@@ -56,15 +67,52 @@ public class SkillLearn : MonoBehaviour
     // Start is called before the first frame update
     private void Awake()
     {
+        startPosition = transform.position;
+
         black = transform.FindPrecise("SkillsBorderBlack").gameObject;
         white = transform.FindPrecise("SkillsBorderWhite").gameObject;
 
-        Glow = false;
+        Hover = false;
+        Drag = false;
     }
 
     // Update is called once per frame
     private void Update()
     {
         
+    }
+
+    public void OnPointerEnter(PointerEventData eventData)
+    {
+        Hover = true;
+    }
+
+    public void OnPointerExit(PointerEventData eventData)
+    {
+        Hover = false;
+    }
+
+    public void OnDrag(PointerEventData eventData)
+    {
+        if (CurrentState == State.Off)
+        {
+            return;
+        }
+        transform.position = Input.mousePosition;
+        Drag = true;
+    }
+
+    public void OnEndDrag(PointerEventData eventData)
+    {
+        if (!Drag) return;
+
+        DropPosition = transform.position;
+        transform.position = startPosition;
+        Drag = false;
+    }
+
+    public void OnPointerClick(PointerEventData eventData)
+    {
+        Clicked = true;
     }
 }

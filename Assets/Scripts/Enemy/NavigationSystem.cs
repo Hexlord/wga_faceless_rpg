@@ -1,11 +1,11 @@
-﻿using System;
+﻿using a;
+using Assets.Scripts.Tools;
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
 using UnityEngine;
 using UnityEngine.AI;
-using System.Threading;
-using a;
-using Assets.Scripts.Tools;
 [AddComponentMenu("ProjectFaceless/Enemy/Navigation System")]
 public class NavigationSystem : MonoBehaviour
 {
@@ -24,7 +24,7 @@ public class NavigationSystem : MonoBehaviour
         Completed,
         Failed,
     }
-    
+
     private float agentStoppingDistance;
     private Dictionary<uint, BaseAgent> agents;
     private List<BaseAgent> AgentProcessingPriority;
@@ -39,9 +39,9 @@ public class NavigationSystem : MonoBehaviour
     Queue<PathFindingRequestInfo> pathFindingQueue;
     NavMeshPath processingPath;
     bool isCalculating;
-    
+
     //Movement conflict resolution
-   
+
 
     public void Awake()
     {
@@ -56,7 +56,7 @@ public class NavigationSystem : MonoBehaviour
         AgentDirectionBuffer = new Dictionary<uint, Vector2>();
         conflictResolutionSystem = new MovementConflictsResolution(this, checkingDistance, agents.Values);
     }
-    
+
     public struct PathFindingRequestInfo
     {
         public BaseAgent agent;
@@ -77,12 +77,12 @@ public class NavigationSystem : MonoBehaviour
         agents.Add(agent.ID, agent);
         conflictResolutionSystem.UpdateAgentList(agent);
         AgentsToPaths.Add(agent.ID, new Queue<Vector3>());
-        if(!AgentsRequestStatuses.ContainsKey(agent.ID))
+        if (!AgentsRequestStatuses.ContainsKey(agent.ID))
         {
             AgentsRequestStatuses.Add(agent.ID, RequestStatus.None);
         }
     }
-    
+
     public void ClearRequest(uint ID)
     {
         AgentsRequestStatuses[ID] = RequestStatus.None;
@@ -122,7 +122,7 @@ public class NavigationSystem : MonoBehaviour
             return Vector2.zero;
         }
     }
-    
+
     public Vector3 GetIntendedDirection(uint ID)
     {
         Vector3 direction = new Vector3(0, 0, 0);
@@ -138,17 +138,24 @@ public class NavigationSystem : MonoBehaviour
 
             if (direction.magnitude <= agentStoppingDistance)
             {
-                AgentsToPaths[ID].Dequeue();
-                //Debug.Log("Reached corner" + AgentsToPaths[ID].Dequeue());
-                if (AgentsToPaths[ID].Count > 0)
+                try
                 {
-                    direction = AgentsToPaths[ID].Peek() - transform.position;
-                    direction.y = 0;
+                    AgentsToPaths[ID].Dequeue();
+                    //Debug.Log("Reached corner" + AgentsToPaths[ID].Dequeue());
+                    if (AgentsToPaths[ID].Count > 0)
+                    {
+                        direction = AgentsToPaths[ID].Peek() - transform.position;
+                        direction.y = 0;
+                    }
+                    else
+                    {
+                        direction = Vector3.zero;
+                        AgentsRequestStatuses[ID] = RequestStatus.None;
+                    }
                 }
-                else
+                catch (InvalidOperationException e)
                 {
-                    direction = Vector3.zero;
-                    AgentsRequestStatuses[ID] = RequestStatus.None;
+                    return Vector3.zero; // WORKAROUND
                 }
             }
         }
@@ -168,11 +175,11 @@ public class NavigationSystem : MonoBehaviour
     private void LateUpdate()
     {
         agentTempDictionary = conflictResolutionSystem.ResolveMovementConflicts();
-        foreach(BaseAgent agent in agentTempDictionary.Keys)
+        foreach (BaseAgent agent in agentTempDictionary.Keys)
         {
             AgentDirectionBuffer[agent.ID] = agentTempDictionary[agent];
         }
-        
+
     }
 
     private void ProcessRequests()

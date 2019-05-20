@@ -1,7 +1,9 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using Random = UnityEngine.Random;
 
 /*
  * History:
@@ -76,6 +78,7 @@ public class HealthSystem : MonoBehaviour
     // Cache
 
     private GameObject healthPrefab;
+    private EffectSystem effectSystem;
     private Animator animator;
     private Image healthBar;
 
@@ -86,6 +89,25 @@ public class HealthSystem : MonoBehaviour
 
     public void Damage(GameObject source, float amount)
     {
+        if (effectSystem)
+        {
+            foreach (var effect in effectSystem.Effects)
+            {
+                switch (effect.Type)
+                {
+                    case Effect.Burn:
+                        break;
+                    case Effect.Freeze:
+                        break;
+                    case Effect.Special1Invulnerable:
+                        Debug.Log("Invulnerable target ignores damage");
+                        return;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+            }
+        }
+
         Health -= amount;
         Debug.Log(this.gameObject.name + ": " + health + " HP");
         OnDamage(source, amount);
@@ -181,6 +203,7 @@ public class HealthSystem : MonoBehaviour
         Health = healthMaximum;
 
         animator = GetComponent<Animator>();
+        effectSystem = GetComponent<EffectSystem>();
     }
 
     protected void FixedUpdate()

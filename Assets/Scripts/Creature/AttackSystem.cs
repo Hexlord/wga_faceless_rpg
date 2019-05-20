@@ -81,7 +81,7 @@ public class AttackSystem : MonoBehaviour
     {
         activeWeaponIndex = weaponIndex;
         weapons[activeWeaponIndex].DealsDamage = true;
-        //Debug.Assert(!Attacking);
+        Debug.Assert(!Attacking);
 
         if (!canAttack) return;
 

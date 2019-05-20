@@ -18,10 +18,10 @@ public class SkillHeal : SkillBase
     private readonly GameObject hookPrefab;
 
     [Tooltip("Cost per health point")]
-    public float concentrationPerHealthPoint = 1.0f;
+    public float concentrationPerHealthPoint = 0.1f;
 
     [Tooltip("Health point per second regeneration speed")]
-    public float regenSpeed = 10.0f;
+    public float regenSpeed = 30.0f;
 
     private HealthSystem casterHealthSystem;
     private ConcentrationSystem casterConcentrationSystem;
@@ -32,12 +32,14 @@ public class SkillHeal : SkillBase
         hookPrefab = (GameObject)Resources.Load("Prefabs/Skills/Hook", typeof(GameObject));
     }
 
-    public override void PrepareEvent(GameObject caster)
+    public override bool PrepareEvent(GameObject caster)
     {
         base.PrepareEvent(caster);
 
         casterHealthSystem = caster.GetComponent<HealthSystem>();
         casterConcentrationSystem = caster.GetComponent<ConcentrationSystem>();
+
+        return true;
     }
 
     public override void StartUpdate(GameObject caster, float delta, float time, float length)

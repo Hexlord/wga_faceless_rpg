@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using UnityEngine;
@@ -120,6 +121,7 @@ public class MovementSystem : MonoBehaviour
     private TouchCondition legsTouchCondition;
     private SkillSystem skillSystem;
     private AttackSystem attackSystem;
+    private EffectSystem effectSystem;
 
     protected void Awake()
     {
@@ -136,6 +138,7 @@ public class MovementSystem : MonoBehaviour
         sheathSystem = GetComponent<SheathSystem>();
         skillSystem = GetComponent<SkillSystem>();
         attackSystem = GetComponent<AttackSystem>();
+        effectSystem = GetComponent<EffectSystem>();
 
         var legs = transform.Find("LegsCollider");
         if (legs)
@@ -177,8 +180,31 @@ public class MovementSystem : MonoBehaviour
 
         animator.SetFloat(animatorFall, 1.0f - landFactor);
 
+        var effectFactor = 1.0f;
+        if (effectSystem)
+        {
+            foreach (var effect in effectSystem.Effects)
+            {
+                switch (effect.Type)
+                {
+                    case Effect.Burn:
+                        break;
+                    case Effect.Freeze:
+                        effectFactor *= 0.5f;
+                        break;
+                    case Effect.Special1Invulnerable:
+                        break;
+                    case Effect.Special1Speed:
+                        effectFactor *= 2.0f;
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+            }
+        }
+
         currentVelocity = (new Vector2(body.velocity.x, body.velocity.z));
-        targetVelocity = desiredMovement * currentMovementSpeed * busyFactor;
+        targetVelocity = desiredMovement * currentMovementSpeed * busyFactor * effectFactor;
         if (Sprint)
         {
             targetVelocity *=
@@ -192,7 +218,7 @@ public class MovementSystem : MonoBehaviour
         appliedVelocity = Vector2.MoveTowards(
             Vector2.zero,
             targetVelocity - currentVelocity,
-            currentMovementSpeed * delta * landFactor / accelerationTime);
+            currentMovementSpeed * delta * landFactor / accelerationTime * effectFactor);
 
         body.AddForce(appliedVelocity.x, -gravity, appliedVelocity.y, ForceMode.VelocityChange);
     }

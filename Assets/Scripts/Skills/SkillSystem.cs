@@ -291,7 +291,11 @@ public class SkillSystem : MonoBehaviour
         Debug.Assert(!Busy);
         Debug.Assert(IsSkillSelected);
 
-        activeSkill.PrepareEvent(gameObject);
+        if (!activeSkill.PrepareEvent(gameObject))
+        {
+            UnselectSkill();
+            return;
+        }
         animator.SetTrigger(CreatureAnimationBehaviour.skillTriggerHash);
         animator.SetFloat(CreatureAnimationBehaviour.currentSkillFloatHash, Convert.ToSingle(activeSkill.Animation));
 
@@ -309,7 +313,7 @@ public class SkillSystem : MonoBehaviour
         switch (state)
         {
             case SkillSystemState.Preparing:
-                activeSkill.PrepareEvent(gameObject);
+                // activeSkill.PrepareEvent(gameObject);
                 SwitchState(activeSkill.Channeling ? SkillSystemState.ChannelStart : SkillSystemState.SkillStart);
                 animator.SetBool(CreatureAnimationBehaviour.channelingBooleanHash, activeSkill.Channeling);
                 break;

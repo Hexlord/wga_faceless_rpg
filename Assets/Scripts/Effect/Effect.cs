@@ -16,6 +16,9 @@ using System.Text;
 public enum Effect
 {
     Burn,
+    Freeze,
+    Special1Invulnerable,
+    Special1Speed,
 }
 
 public static class EffectExtensions
@@ -26,6 +29,12 @@ public static class EffectExtensions
         {
             case Effect.Burn:
                 return "Burning";
+             case Effect.Freeze:
+                return "Freezing";
+            case Effect.Special1Invulnerable:
+                return "Invulnerable";
+            case Effect.Special1Speed:
+                return "Increased movement speed";
             default:
                 throw new ArgumentOutOfRangeException("effect", effect, null);
         }
@@ -37,6 +46,12 @@ public static class EffectExtensions
         {
             case Effect.Burn:
                 return new EffectBurn();
+            case Effect.Freeze:
+                return new EffectFreeze();
+            case Effect.Special1Invulnerable:
+                return new EffectInvulnerable();
+            case Effect.Special1Speed:
+                return new EffectFast();
             default:
                 throw new ArgumentOutOfRangeException("effect", effect, null);
         }

@@ -2,20 +2,25 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
-public class SkillSelection : MonoBehaviour
+public class SkillSelection : MonoBehaviour, IDragHandler, IEndDragHandler
 {
-    public enum Type
-    {
-        Physical,
-        Magical,
-        Special
-    }
 
-    public Type type = Type.Physical;
+    public SkillType type = SkillType.Physical;
+    public int slotNumber = 0;
 
     private Skill? selectedSkill = null;
     private GameObject lastSelected = null;
+
+    public bool Drag = false;
+    public Vector3? DropPosition = null;
+
+    private Vector3 startPosition;
+    public Vector3 StartPosition
+    {
+        get { return startPosition; }
+    }
 
     public Skill? SelectedSkill
     {
@@ -57,11 +62,26 @@ public class SkillSelection : MonoBehaviour
         white = transform.FindPrecise("SkillsBorderWhite").gameObject;
 
         Glow = false;
+
+        startPosition = transform.position;
     }
 
-    // Update is called once per frame
-    private void Update()
+    public void OnDrag(PointerEventData eventData)
     {
-        
+        if (SelectedSkill == null)
+        {
+            return;
+        }
+
+        transform.position = Input.mousePosition;
+        Drag = true;
+    }
+
+    public void OnEndDrag(PointerEventData eventData)
+    {
+        DropPosition = transform.position;
+
+        transform.position = startPosition;
+        Drag = false;
     }
 }

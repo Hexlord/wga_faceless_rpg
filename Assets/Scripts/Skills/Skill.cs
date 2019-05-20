@@ -13,6 +13,15 @@ using System.Text;
  * 
  */
 
+public enum SkillType
+{
+    Other,
+    Physical,
+    Magical,
+    Special
+}
+
+
 public enum Skill
 {
     BlackBall = 0,
@@ -77,6 +86,37 @@ public static class SkillExtensions
         }
     }
 
+    public static SkillType SkillType(this Skill skill)
+    {
+        switch (skill)
+        {
+            case Skill.BlackBall:
+                return global::SkillType.Magical;
+            case Skill.CircleStrike:
+                return global::SkillType.Physical;
+            case Skill.LineStrike:
+                return global::SkillType.Physical;
+            case Skill.Hook:
+                return global::SkillType.Physical;
+            case Skill.FireBreath:
+                return global::SkillType.Magical;
+            case Skill.Heal:
+                return global::SkillType.Other;
+            case Skill.Meteor:
+                return global::SkillType.Magical;
+            case Skill.IceWall:
+                return global::SkillType.Magical;
+            case Skill.SkillSpecial1:
+                return global::SkillType.Special;
+            case Skill.SkillSpecial2:
+                return global::SkillType.Special;
+            case Skill.ShiftStrike:
+                return global::SkillType.Physical;
+            default:
+                throw new ArgumentOutOfRangeException("skill", skill, null);
+        }
+    }
+
     public static SkillBase Instantiate(this Skill skill)
     {
         switch (skill)
@@ -94,15 +134,15 @@ public static class SkillExtensions
             case Skill.Heal:
                 return new SkillHeal();
             case Skill.Meteor:
-                throw new ArgumentOutOfRangeException("skill", skill, null);
+                return new SkillMeteor();
             case Skill.IceWall:
-                throw new ArgumentOutOfRangeException("skill", skill, null);
+                return new SkillIceWall();
             case Skill.SkillSpecial1:
-                throw new ArgumentOutOfRangeException("skill", skill, null);
+                return new SkillSpecial1();
             case Skill.SkillSpecial2:
-                throw new ArgumentOutOfRangeException("skill", skill, null);
+                return new SkillSpecial2();
             case Skill.ShiftStrike:
-                throw new ArgumentOutOfRangeException("skill", skill, null);
+                return new SkillShiftStrike();
             default:
                 throw new ArgumentOutOfRangeException("skill", skill, null);
         }

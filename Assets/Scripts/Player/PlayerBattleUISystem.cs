@@ -37,6 +37,7 @@ public class PlayerBattleUISystem : MonoBehaviour
 
     private SkillsUISystem slot1;
     private SkillsUISystem slot2;
+    private SkillsUISystem slotSpecial;
     private SkillsUtilityUISystem slotUtility1;
     private SkillsUtilityUISystem slotUtility2;
 
@@ -56,11 +57,6 @@ public class PlayerBattleUISystem : MonoBehaviour
 
     protected void Awake()
     {
-        if (!battleUI)
-        {
-            battleUI = GameObject.Find("UI").FindPrecise("Canvas").FindPrecise("BattleUI").gameObject;
-        }
-
         healthSystem = GetComponent<HealthSystem>();
         concentrationSystem = GetComponent<ConcentrationSystem>();
         skillSystem = GetComponent<SkillSystem>();
@@ -89,6 +85,7 @@ public class PlayerBattleUISystem : MonoBehaviour
 
         slot1 = skillsPanel.FindPrecise("Slot1").GetComponent<SkillsUISystem>();
         slot2 = skillsPanel.FindPrecise("Slot2").GetComponent<SkillsUISystem>();
+        slotSpecial = skillsPanel.FindPrecise("SpecialSkillSlot").GetComponent<SkillsUISystem>();
         slotUtility1 = skillsPanel.FindPrecise("SlotUtility1").GetComponent<SkillsUtilityUISystem>();
         slotUtility2 = skillsPanel.FindPrecise("SlotUtility2").GetComponent<SkillsUtilityUISystem>();
 
@@ -116,18 +113,23 @@ public class PlayerBattleUISystem : MonoBehaviour
         Concentration.fillAmount = concentrationSystem.Concentration / concentrationSystem.concentrationMaximum;
         XP.fillAmount = xpSystem.LevelCompletion;
 
-        var skill1 = skillBook.GetSkill(bodyStateSystem.State, 0);
-        var skill2 = skillBook.GetSkill(bodyStateSystem.State, 1);
+        var type = physical ? SkillType.Physical : SkillType.Magical;
+        var skill1 = skillBook.GetSkill(type, 0);
+        var skill2 = skillBook.GetSkill(type, 1);
+        var skillSpecial = skillBook.GetSkill(SkillType.Special, 0);
         slot1.Slot = skill1;
         slot2.Slot = skill2;
+        slotSpecial.Slot = skillSpecial;
         slot1.Active = !sheathSystem.Sheathed;
         slot2.Active = !sheathSystem.Sheathed;
-        if(skill1.HasValue) slot1.CooldownNormalized = skillSystem.GetCooldownNormalized(skill1.Value);
-        if(skill2.HasValue) slot2.CooldownNormalized = skillSystem.GetCooldownNormalized(skill2.Value);
-        slot1.Selected = skill1.HasValue && (skillSystem.SelectedSkill.Type == skill1);
-        slot2.Selected = skill2.HasValue && (skillSystem.SelectedSkill.Type == skill2);
-
-
+        slotSpecial.Active = !sheathSystem.Sheathed;
+        if (skill1.HasValue) slot1.CooldownNormalized = skillSystem.GetCooldownNormalized(skill1.Value);
+        if (skill2.HasValue) slot2.CooldownNormalized = skillSystem.GetCooldownNormalized(skill2.Value);
+        if (skillSpecial.HasValue) slotSpecial.CooldownNormalized = skillSystem.GetCooldownNormalized(skillSpecial.Value);
+        slot1.Selected = skill1.HasValue && skillSystem.SelectedSkill != null && (skillSystem.SelectedSkill.Type == skill1);
+        slot2.Selected = skill2.HasValue && skillSystem.SelectedSkill != null && (skillSystem.SelectedSkill.Type == skill2);
+        slotSpecial.Selected = skillSpecial.HasValue && skillSystem.SelectedSkill != null && (skillSystem.SelectedSkill.Type == skillSpecial);
+        
         slotUtility1.Slot = magical ? SkillUtility.Shoot : SkillUtility.Attack;
         slotUtility2.Slot = magical ? SkillUtility.Dash : SkillUtility.Shield;
         slotUtility1.Active = !sheathSystem.Sheathed;

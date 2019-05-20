@@ -43,9 +43,11 @@ public class SkillBase
     
     /*
      * Called before casting starts
+     * Returning false prevents the cast
      */
-    public virtual void PrepareEvent(GameObject caster)
+    public virtual bool PrepareEvent(GameObject caster)
     {
+        return true;
     }
 
     /*

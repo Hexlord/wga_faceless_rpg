@@ -39,18 +39,21 @@ public class MeleeAgent : BaseAgent
                     attackSys.canAttack &&
                         (attackStartTime + attackCooldown < Time.time))
             {
-                switch (AISys.GetTicket(ID))
+                if (!attackSys.Attacking)
                 {
-                    case CollectiveAISystem.AttackTikets.MeleeMagical:
-                        attackSys.Attack(1, 1);
-                        attackStartTime = Time.time;
-                        break;
-                    case CollectiveAISystem.AttackTikets.MeleePhysical:
-                        attackSys.Attack(0, 0);
-                        attackStartTime = Time.time;
-                        break;
-                    case CollectiveAISystem.AttackTikets.None:
-                        break;
+                    switch (AISys.GetTicket(ID))
+                    {
+                        case CollectiveAISystem.AttackTikets.MeleeMagical:
+                            attackSys.Attack(1, 1);
+                            attackStartTime = Time.time;
+                            break;
+                        case CollectiveAISystem.AttackTikets.MeleePhysical:
+                            attackSys.Attack(0, 0);
+                            attackStartTime = Time.time;
+                            break;
+                        case CollectiveAISystem.AttackTikets.None:
+                            break;
+                    }
                 }
             }
         }

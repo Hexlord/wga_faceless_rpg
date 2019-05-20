@@ -24,11 +24,11 @@ public class SkillBlackBall : SkillBase
         projectilePrefab = (GameObject)Resources.Load("Prefabs/Skills/BlackBall", typeof(GameObject));
     }
 
-    public override void PrepareEvent(GameObject caster)
+    public override bool PrepareEvent(GameObject caster)
     {
         base.PrepareEvent(caster);
-        Debug.Log("Preparing blackball, setting cooldawn");
         PutOnCooldown();
+        return true;
     }
 
     public override void StartUpdate(GameObject caster, float delta, float time, float length)

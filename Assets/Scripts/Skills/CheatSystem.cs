@@ -15,8 +15,13 @@ public class CheatSystem : MonoBehaviour
     {
         if (InputManager.Pressed(InputAction.Cheat))
         {
-            GameObject.Find("Player").transform.position =
+            var player = GameObject.Find("Player");
+
+            player.transform.position =
                 GameObject.Find("IslandSpawn").transform.position;
+            player.GetComponent<XpSystem>().MaskPoints += 3;
+            player.GetComponent<XpSystem>().SwordPoints += 3;
+            player.GetComponent<PlayerSkillBook>().Learn(Skill.SkillSpecial1);
         }
     }
 }

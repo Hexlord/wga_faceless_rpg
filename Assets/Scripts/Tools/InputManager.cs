@@ -24,6 +24,7 @@ public enum InputAction
     Heal,
     SkillMenu,
     Use,
+    Special,
     Skill_1,
     Skill_2,
     Skill_3,
@@ -87,6 +88,8 @@ public static class InputManager
                 return "F1";
             case InputAction.Cheat:
                 return "Cheat";
+            case InputAction.Special:
+                return "T";
             default:
                 throw new ArgumentOutOfRangeException("action", action, null);
         }

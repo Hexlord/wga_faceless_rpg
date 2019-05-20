@@ -1486,10 +1486,13 @@ GameObject:
   - component: {fileID: 7484056357403912380}
   - component: {fileID: 7484056357403912382}
   - component: {fileID: 7484056357403912384}
-  - component: {fileID: 1268358755}
   - component: {fileID: 1268358756}
   - component: {fileID: 1268358773}
   - component: {fileID: 1268358774}
+  - component: {fileID: 1268358753}
+  - component: {fileID: 1268358754}
+  - component: {fileID: 5487205248026773662}
+  - component: {fileID: 1268358755}
   m_Layer: 14
   m_Name: Player
   m_TagString: Player
@@ -1704,13 +1707,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   canMove: 1
   movementDesireThreshold: 0.2
-  baseMovementSpeed: 7
-  accelerationTime: 0.3
+  baseMovementSpeed: 3.2
+  accelerationTime: 0.15
   busyMultiplier: 0.6
   rotationStabilization: 1
   gravityMax: 20
   gravityFadeTime: 1
   airwalkFadeTime: 1
+  canSprint: 1
+  sprintMovementSpeedMultiplier: 3
   animationDamping: 0.15
   desiredMovement: {x: 0, y: 0}
   desiredMovementBodySpace: {x: 0, y: 0}
@@ -1746,7 +1751,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   canCast: 1
-  startSkills: 01000000030000000400000000000000
+  startSkills: 000000000100000002000000030000000400000005000000060000000700000008000000090000000a000000
   state: 0
   interrupt: 0
   stop: 0
@@ -1783,7 +1788,7 @@ MonoBehaviour:
   shield: {fileID: 3243813976333260423}
   maxShieldHP: 400
   shieldHPRegen: 50
-  shieldHPPerCharge: 100
+  chargeCount: 5
   defenseStanceAnimation: Defend
   defenseStanceAnimationBool: DefendBool
 --- !u!114 &7484056357403912378
@@ -1813,7 +1818,7 @@ MonoBehaviour:
   healthMaximum: 1000
   xpReward: 10
   uiAnchorOffset: {x: 0, y: 3, z: 0}
-  uiHealthBarEnabled: 1
+  uiHealthBarEnabled: 0
   worldSpaceHealthBar: {fileID: 0}
   DeathVariants: 0
   DeathTrigger: 
@@ -1852,19 +1857,6 @@ MonoBehaviour:
   weapons:
   - {fileID: 7252389518703515371}
   state: 0
---- !u!114 &1268358755
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5314097334704264091}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 53a80e7bd0bf70649a659bd685f17670, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  skillsUI: {fileID: 0}
 --- !u!114 &1268358756
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1915,6 +1907,70 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   deathUI: {fileID: 0}
+--- !u!114 &1268358753
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5314097334704264091}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 07c7020de29a136468adc459de7eb8c2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1268358754
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5314097334704264091}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c574debf7cb6caa45a16f33a78357911, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  physicalSlotCount: 2
+  magicalSlotCount: 2
+  specialSlotCount: 1
+--- !u!114 &5487205248026773662
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5314097334704264091}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4103791cc9d0b9d48b6ca7f631665666, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  startEffects: 
+--- !u!114 &1268358755
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5314097334704264091}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 53a80e7bd0bf70649a659bd685f17670, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  dragDistanceUpperBound: 50
+  unbindDragDistanceLowerBound: 60
+  skillsUI: {fileID: 0}
+  physicalPointCount: {fileID: 0}
+  magicalPointCount: {fileID: 0}
+  acceptOn: {fileID: 0}
+  acceptOff: {fileID: 0}
+  cancelOn: {fileID: 0}
+  cancelOff: {fileID: 0}
+  quit: {fileID: 0}
+  skillsNode: {fileID: 0}
+  selectionsNode: {fileID: 0}
 --- !u!1 &5314097334704264093
 GameObject:
   m_ObjectHideFlags: 0
@@ -3381,6 +3437,16 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 4472416737911977895}
     m_Modifications:
+    - target: {fileID: 5388156072598406187, guid: bbf1fd3dfdeda3a4883ca803eac10ad2,
+        type: 3}
+      propertyPath: m_Name
+      value: trail_sword
+      objectReference: {fileID: 0}
+    - target: {fileID: 5388156072598406190, guid: bbf1fd3dfdeda3a4883ca803eac10ad2,
+        type: 3}
+      propertyPath: playOnAwake
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5388156072598406188, guid: bbf1fd3dfdeda3a4883ca803eac10ad2,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -3451,27 +3517,17 @@ PrefabInstance:
       propertyPath: m_LocalScale.z
       value: 1.0152171
       objectReference: {fileID: 0}
-    - target: {fileID: 5388156072598406187, guid: bbf1fd3dfdeda3a4883ca803eac10ad2,
-        type: 3}
-      propertyPath: m_Name
-      value: trail_sword
-      objectReference: {fileID: 0}
-    - target: {fileID: 5388156072598406190, guid: bbf1fd3dfdeda3a4883ca803eac10ad2,
-        type: 3}
-      propertyPath: playOnAwake
-      value: 0
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: bbf1fd3dfdeda3a4883ca803eac10ad2, type: 3}
---- !u!198 &4422874620800992275 stripped
-ParticleSystem:
-  m_CorrespondingSourceObject: {fileID: 5388156072598406190, guid: bbf1fd3dfdeda3a4883ca803eac10ad2,
-    type: 3}
-  m_PrefabInstance: {fileID: 8622043006213062717}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &4422874620800992273 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 5388156072598406188, guid: bbf1fd3dfdeda3a4883ca803eac10ad2,
+    type: 3}
+  m_PrefabInstance: {fileID: 8622043006213062717}
+  m_PrefabAsset: {fileID: 0}
+--- !u!198 &4422874620800992275 stripped
+ParticleSystem:
+  m_CorrespondingSourceObject: {fileID: 5388156072598406190, guid: bbf1fd3dfdeda3a4883ca803eac10ad2,
     type: 3}
   m_PrefabInstance: {fileID: 8622043006213062717}
   m_PrefabAsset: {fileID: 0}

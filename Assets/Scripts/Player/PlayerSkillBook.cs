@@ -1,5 +1,7 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Security.Policy;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -19,6 +21,7 @@ public class PlayerSkillBook : MonoBehaviour
     [Header("Basic Settings")]
     public int physicalSlotCount = 2;
     public int magicalSlotCount = 2;
+    public int specialSlotCount = 1;
 
     // Cache
     private SkillSystem skillSystem;
@@ -26,15 +29,15 @@ public class PlayerSkillBook : MonoBehaviour
     // Private
     private Skill?[] physicalSlots;
     private Skill?[] magicalSlots;
+    private Skill?[] specialSlots;
 
     private readonly IList<Skill> learnedSkills = new List<Skill>();
 
-    public Skill? GetSkill(BodyStateSystem.BodyState state, int slot)
+    public Skill? GetSkill(SkillType type, int slot)
     {
-        var list = state == BodyStateSystem.BodyState.Physical
-            ? physicalSlots
-            : magicalSlots;
+        var list = GetList(type);
 
+        Debug.Assert(slot >= 0 && list.Length > slot);
         return list[slot];
     }
 
@@ -49,30 +52,51 @@ public class PlayerSkillBook : MonoBehaviour
         learnedSkills.Add(skill);
     }
 
-    public void Bind(BodyStateSystem.BodyState state, int slot, Skill? skill)
+    private Skill?[] GetList(SkillType type)
+    {
+        switch (type)
+        {
+            case SkillType.Other:
+                throw new ArgumentOutOfRangeException("type", type, null);
+            case SkillType.Physical:
+                return physicalSlots;
+            case SkillType.Magical:
+                return magicalSlots;
+            case SkillType.Special:
+                return specialSlots;
+            default:
+                throw new ArgumentOutOfRangeException("type", type, null);
+        }
+    }
+
+    public bool IsBound(SkillType type, int slot)
+    {
+        var list = GetList(type);
+
+        Debug.Assert(slot >= 0 && list.Length > slot);
+        return list[slot] != null;
+    }
+
+    public void Bind(SkillType type, int slot, Skill? skill)
     {
         if(skill.HasValue) Debug.Assert(HasSkill(skill.Value));
 
-        var list = state == BodyStateSystem.BodyState.Physical
-            ? physicalSlots
-            : magicalSlots;
-
+        var list = GetList(type);
+        
         Debug.Assert(slot >= 0 && list.Length > slot);
         list[slot] = skill;
     }
 
-    public void Select(BodyStateSystem.BodyState state, int slot)
+    public void Select(SkillType type, int slot)
     {
-        var list = state == BodyStateSystem.BodyState.Physical
-            ? physicalSlots
-            : magicalSlots;
+        var list = GetList(type);
 
         Debug.Assert(slot >= 0 && list.Length > slot);
 
         var value = list[slot];
         if (value != null)
         {
-            if (skillSystem.Skills[skillSystem.SelectedSkillNumber].Type == value.Value) skillSystem.UnselectSkill();
+            if (skillSystem.SelectedSkillNumber != -1 && skillSystem.Skills[skillSystem.SelectedSkillNumber].Type == value.Value) skillSystem.UnselectSkill();
             else skillSystem.SelectSkill(value.Value);
         }
     }
@@ -81,6 +105,7 @@ public class PlayerSkillBook : MonoBehaviour
     {
         physicalSlots = new Skill?[physicalSlotCount];
         magicalSlots = new Skill?[magicalSlotCount];
+        specialSlots = new Skill?[specialSlotCount];
 
         skillSystem = GetComponent<SkillSystem>();
     }

@@ -139,6 +139,10 @@ public class PlayerCharacterController : MonoBehaviour
 
     private void UpdateSkills()
     {
+        var type = bodyStateSystem.State == BodyStateSystem.BodyState.Physical
+            ? SkillType.Physical
+            : SkillType.Magical;
+
         if (!skillSystem.Busy)
         {
             if (InputManager.Down(InputAction.Heal))
@@ -146,19 +150,19 @@ public class PlayerCharacterController : MonoBehaviour
                 skillSystem.SelectSkill(Skill.Heal);
                 skillSystem.Cast();
             }
-            else
+            else if (InputManager.Pressed(InputAction.Special) &&
+                     skillBook.IsBound(SkillType.Special, 0))
             {
-                var slot = -1;
-                if (InputManager.Pressed(InputAction.Skill_1))
-                {
-                    slot = 0;
-                }
-                else if (InputManager.Pressed(InputAction.Skill_2))
-                {
-                    slot = 1;
-                }
-
-                if (slot != -1) skillBook.Select(bodyStateSystem.State, slot);
+                skillBook.Select(SkillType.Special, 0);
+                skillSystem.Cast();
+            }
+            else if (InputManager.Pressed(InputAction.Skill_1))
+            {
+                skillBook.Select(type, 0);
+            }
+            else if (InputManager.Pressed(InputAction.Skill_2))
+            {
+                skillBook.Select(type, 1);
             }
         }
 
@@ -207,7 +211,10 @@ public class PlayerCharacterController : MonoBehaviour
 
         if (bodyStateSystem.State == BodyStateSystem.BodyState.Physical)
         {
-            attackSystem.Attack(-1, 0);
+            if (!attackSystem.Attacking)
+            {
+                attackSystem.Attack(-1, 0);
+            }
         }
         else if (bodyStateSystem.State == BodyStateSystem.BodyState.Magical)
         {
@@ -231,7 +238,10 @@ public class PlayerCharacterController : MonoBehaviour
                 shootingDirection = camera.transform.forward;
             }
             cameraController.TriggerPlayerAutoRotation();
-            shootSystem.Shoot(shootingDirection, 0);
+            if (!shootSystem.Shooting)
+            {
+                shootSystem.Shoot(shootingDirection, 0);
+            }
         }
     }
 

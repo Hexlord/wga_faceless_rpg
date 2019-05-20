@@ -83,20 +83,19 @@ public class SkillsUISystem : MonoBehaviour
 
         var slots = (Skill[]) Enum.GetValues(typeof(Skill));
 
-        var i = 0;
-        foreach (var slot in slots)
+        for(var i = 0; i != slots.Length; ++i)
         {
-            var node = transform.FindPrecise(slot.ToString());
+            var slot = slots[i];
+
+            var node = transform.FindPrecise(slot.ToString(), false);
             if (node)
             {
                 var go = node.gameObject;
-                var activeNode = transform.FindPrecise(slot.ToString() + "Active").gameObject;
+                var activeNode = transform.FindPrecise(slot.ToString() + "Active", false).gameObject;
 
                 slotNodes[i] = go;
                 slotActiveNodes[i] = activeNode;
             }
-
-            ++i;
         }
 
         border = transform.FindPrecise("SkillBorderWhite").gameObject;
