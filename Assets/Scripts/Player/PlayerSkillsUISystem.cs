@@ -38,6 +38,8 @@ public class PlayerSkillsUISystem : MonoBehaviour
     public GameObject skillsNode;
     public GameObject selectionsNode;
 
+    public GameObject maskDecalsNode;
+
     // Private
 
     // Cache
@@ -52,6 +54,7 @@ public class PlayerSkillsUISystem : MonoBehaviour
 
     private List<KeyValuePair<Skill, SkillLearn>> slots = new List<KeyValuePair<Skill, SkillLearn>>();
     private List<SkillSelection> selections = new List<SkillSelection>();
+    private List<GameObject> maskDecals = new List<GameObject>();
     
     private SkillType? dragSkillType = null;
     private bool open = false;
@@ -76,6 +79,11 @@ public class PlayerSkillsUISystem : MonoBehaviour
         {
             var component = child.GetComponent<SkillSelection>();
             selections.Add(component);
+        }
+
+        foreach (var child in maskDecalsNode.Children())
+        {
+            maskDecals.Add(child);
         }
 
         quit.onClick.AddListener(OnClose);
@@ -113,6 +121,11 @@ public class PlayerSkillsUISystem : MonoBehaviour
         {
             if (open) OnClose();
             else OnOpen();
+        }
+
+        for (var i = 0; i < maskDecals.Count; ++i)
+        {
+            maskDecals[i].SetActive(i < skillBook.MagicalSkillsLearned);
         }
 
         if (open && InputManager.Released(InputAction.Escape))

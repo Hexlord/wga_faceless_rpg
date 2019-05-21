@@ -82,17 +82,17 @@ public class StartMenuScript : MonoBehaviour
     {
         //saveSystem = GameObject.FindGameObjectWithTag("SaveSystem").GetComponent<SaveSystem>();
 
-        mainMenuStart.GetComponent<Button>().onClick.AddListener(PressedStart);
-        mainMenuSettings.GetComponent<Button>().onClick.AddListener(PressedSettings);
-        mainMenuSave.GetComponent<Button>().onClick.AddListener(PressedSave);
-        mainMenuLoad.GetComponent<Button>().onClick.AddListener(PressedLoad);
-        mainMenuExit.GetComponent<Button>().onClick.AddListener(PressedExit);
+        mainMenuStart.GetComponent<Button>().onClick.AddListener(() => { Invoke("PressedStart", 0.4f); });
+        mainMenuSettings.GetComponent<Button>().onClick.AddListener(() => { Invoke("PressedSettings", 0.4f);});
+        mainMenuSave.GetComponent<Button>().onClick.AddListener(() => { Invoke("PressedSave", 0.4f); });
+        mainMenuLoad.GetComponent<Button>().onClick.AddListener(() => { Invoke("PressedLoad", 0.4f); });
+        mainMenuExit.GetComponent<Button>().onClick.AddListener(() => { Invoke("PressedExit", 0.4f); });
 
-        settingsMenuBack.GetComponent<Button>().onClick.AddListener(PressedBack);
-        saveMenuBack.GetComponent<Button>().onClick.AddListener(PressedBack);
-        loadMenuBack.GetComponent<Button>().onClick.AddListener(PressedBack);
-        loadMenuAutoLoad.GetComponent<Button>().onClick.AddListener(PressedAutoLoad);
-        loadMenuQuickLoad.GetComponent<Button>().onClick.AddListener(PressedQuickLoad);
+        settingsMenuBack.GetComponent<Button>().onClick.AddListener(() => { Invoke("PressedBack", 0.4f); });
+        saveMenuBack.GetComponent<Button>().onClick.AddListener(() => { Invoke("PressedBack", 0.4f); });
+        loadMenuBack.GetComponent<Button>().onClick.AddListener(() => { Invoke("PressedBack", 0.4f); });
+        loadMenuAutoLoad.GetComponent<Button>().onClick.AddListener(() => { Invoke("PressedAutoLoad", 0.4f); });
+        loadMenuQuickLoad.GetComponent<Button>().onClick.AddListener(() => { Invoke("PressedQuickLoad", 0.4f); });
 
         mainMenuBackground.SetActive(true);
         otherMenuBackground.SetActive(false);

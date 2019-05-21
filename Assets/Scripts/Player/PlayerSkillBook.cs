@@ -33,6 +33,19 @@ public class PlayerSkillBook : MonoBehaviour
 
     private readonly IList<Skill> learnedSkills = new List<Skill>();
 
+    public int MagicalSkillsLearned
+    {
+        get
+        {
+            var result = 0;
+            foreach (var skill in learnedSkills)
+            {
+                if (skill.SkillType() == SkillType.Magical) ++result;
+            }
+
+            return result;
+        }
+    }
     public Skill? GetSkill(SkillType type, int slot)
     {
         var list = GetList(type);
