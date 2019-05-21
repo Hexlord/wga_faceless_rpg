@@ -150,7 +150,8 @@ public class PlayerCharacterController : MonoBehaviour
                 skillSystem.SelectSkill(Skill.Heal);
                 skillSystem.Cast();
             }
-            else if (InputManager.Pressed(InputAction.Special) &&
+            else if (!sheathSystem.Sheathed &&
+                InputManager.Pressed(InputAction.Special) &&
                      skillBook.IsBound(SkillType.Special, 0))
             {
                 skillBook.Select(SkillType.Special, 0);

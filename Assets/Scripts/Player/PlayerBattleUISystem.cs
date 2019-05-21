@@ -122,7 +122,7 @@ public class PlayerBattleUISystem : MonoBehaviour
         slotSpecial.Slot = skillSpecial;
         slot1.Active = !sheathSystem.Sheathed;
         slot2.Active = !sheathSystem.Sheathed;
-        slotSpecial.Active = !sheathSystem.Sheathed;
+        slotSpecial.Active = !sheathSystem.Sheathed && (!skillSpecial.HasValue || concentrationSystem.Concentration >= skillSystem.ConcentrationCost(skillSpecial.Value));
         if (skill1.HasValue) slot1.CooldownNormalized = skillSystem.GetCooldownNormalized(skill1.Value);
         if (skill2.HasValue) slot2.CooldownNormalized = skillSystem.GetCooldownNormalized(skill2.Value);
         if (skillSpecial.HasValue) slotSpecial.CooldownNormalized = skillSystem.GetCooldownNormalized(skillSpecial.Value);

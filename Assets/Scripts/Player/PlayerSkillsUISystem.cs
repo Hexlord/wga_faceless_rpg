@@ -170,8 +170,6 @@ public class PlayerSkillsUISystem : MonoBehaviour
                 }
                 else
                 {
-                    slot.Value.CurrentState = SkillLearn.State.On;
-
                     foreach (var selection in selections)
                     {
                         selection.Glow = selection.type == dragSkillType;
@@ -207,6 +205,21 @@ public class PlayerSkillsUISystem : MonoBehaviour
                             skillBook.Bind(closest.type, closest.slotNumber, slot.Key);
                         }
                     }
+
+                    var selected = false;
+                    foreach (var selection in selections)
+                    {
+                        if (selection.SelectedSkill.HasValue &&
+                            selection.SelectedSkill.Value == slot.Key)
+                        {
+                            selected = true;
+                            break;
+                        }
+                    }
+
+                    slot.Value.CurrentState = selected
+                        ? SkillLearn.State.Selected
+                        : SkillLearn.State.On;
                 }
             }
 

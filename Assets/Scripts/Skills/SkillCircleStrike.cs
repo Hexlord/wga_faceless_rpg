@@ -14,9 +14,7 @@ using UnityEngine;
  
 public class SkillCircleStrike : SkillBase
 {
-
-    private readonly GameObject effectPrefab;
-
+    
     private const float Strength = 40000.0f;
     private const float Damage = 30.0f;
     private const float AOE = 5.0f;
@@ -24,7 +22,6 @@ public class SkillCircleStrike : SkillBase
     public SkillCircleStrike() :
         base(Skill.CircleStrike, SkillAnimation.CircleStrike, false, 10.0f)
     {
-        effectPrefab = (GameObject)Resources.Load("Prefabs/Skills/CircleStrike", typeof(GameObject));
     }
     
     public override bool PrepareEvent(GameObject caster)
@@ -54,9 +51,6 @@ public class SkillCircleStrike : SkillBase
         attractor.source = caster;
         var lifespan = dummy.AddComponent<Lifespan>();
         lifespan.lifespan = 0.0f;
-
-        var effect = UnityEngine.Object.Instantiate(effectPrefab, caster.transform.position, Quaternion.identity);
-        effect.transform.localScale = new Vector3(2, 2, 2);
     }
 
     public override void EndUpdate(GameObject caster, float delta, float time, float length)

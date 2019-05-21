@@ -24,6 +24,11 @@ public class SkillHook : SkillBase
     public static float power = 50.0f;
     public static float powerToBoss = 500.0f;
     public static float targetDistance = 0.5f;
+    public override bool CanMove
+    {
+        get { return true; }
+    }
+
 
     public SkillHook() :
         base(Skill.Hook, SkillAnimation.Hook, true, 1.0f)

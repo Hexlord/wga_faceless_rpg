@@ -41,7 +41,11 @@ public class MovementSystem : MonoBehaviour
 
     [Tooltip("Speed multiplier when attacking or casting")]
     [Range(0.0f, 1.0f)]
-    public float busyMultiplier = 0.6f;
+    public float attackingMultiplier = 0.6f;
+
+    [Tooltip("Speed multiplier when attacking or casting")]
+    [Range(0.0f, 1.0f)]
+    public float castingMultiplier = 0.0f;
 
     [Tooltip("Body rotation stabilization")]
     public bool rotationStabilization = true;
@@ -162,8 +166,8 @@ public class MovementSystem : MonoBehaviour
     private void MoveBody(float delta)
     {
         busyFactor = 1.0f;
-        if (skillSystem && skillSystem.Busy) busyFactor = busyMultiplier;
-        if (attackSystem && attackSystem.Attacking) busyFactor = busyMultiplier;
+        if (skillSystem && skillSystem.Busy && !skillSystem.SelectedSkill.CanMove) busyFactor *= castingMultiplier;
+        if (attackSystem && attackSystem.Attacking) busyFactor = attackingMultiplier;
 
         landFactor = 1.0f;
         gravity = 0.0f;
@@ -188,6 +192,7 @@ public class MovementSystem : MonoBehaviour
                 switch (effect.Type)
                 {
                     case Effect.Burn:
+                        effectFactor *= 0.9f;
                         break;
                     case Effect.Freeze:
                         effectFactor *= 0.5f;
@@ -221,6 +226,10 @@ public class MovementSystem : MonoBehaviour
             currentMovementSpeed * delta * landFactor / accelerationTime * effectFactor);
 
         body.AddForce(appliedVelocity.x, -gravity, appliedVelocity.y, ForceMode.VelocityChange);
+        
+        if (animator) animator.SetFloat(animatorHorizontal, desiredMovementBodySpace.x * busyFactor * effectFactor * landFactor, animationDamping, delta);
+        if (animator) animator.SetFloat(animatorVertical, desiredMovementBodySpace.y * busyFactor * effectFactor * landFactor, animationDamping, delta);
+        if (animator) animator.SetFloat(animatorSprint, Sprint ? 1.0f : 0.0f, animationDamping, delta);
     }
 
     private void RotateBody(float delta)
@@ -234,10 +243,6 @@ public class MovementSystem : MonoBehaviour
     protected void FixedUpdate()
     {
         var delta = Time.fixedDeltaTime;
-
-        if (animator) animator.SetFloat(animatorHorizontal, desiredMovementBodySpace.x, animationDamping, delta);
-        if (animator) animator.SetFloat(animatorVertical, desiredMovementBodySpace.y, animationDamping, delta);
-        if (animator) animator.SetFloat(animatorSprint, Sprint ? 1.0f : 0.0f, animationDamping, delta);
 
         if (canMove)
         {

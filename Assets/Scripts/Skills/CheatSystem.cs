@@ -21,6 +21,8 @@ public class CheatSystem : MonoBehaviour
                 GameObject.Find("IslandSpawn").transform.position;
             player.GetComponent<XpSystem>().MaskPoints += 3;
             player.GetComponent<XpSystem>().SwordPoints += 3;
+            player.GetComponent<ConcentrationSystem>().Concentration = 90.0f;
+            player.GetComponent<HealthSystem>().Heal(player, 99999.0f);
             player.GetComponent<PlayerSkillBook>().Learn(Skill.SkillSpecial1);
         }
     }

@@ -15,7 +15,12 @@ using Object = UnityEngine.Object;
 
 public class SkillSpecial2 : SkillBase
 {
-    public static float concentrationCost = 10.0f;
+    public static float concentrationCost = 99.9f;
+
+    public override float ConcentrationCost
+    {
+        get { return concentrationCost; }
+    }
 
     private EffectSystem casterEffectSystem;
     private ConcentrationSystem casterConcentrationSystem;

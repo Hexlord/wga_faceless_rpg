@@ -18,10 +18,10 @@ public class SkillHeal : SkillBase
     private readonly GameObject hookPrefab;
 
     [Tooltip("Cost per health point")]
-    public float concentrationPerHealthPoint = 0.1f;
+    public float concentrationPerHealthPoint = 0.15f;
 
     [Tooltip("Health point per second regeneration speed")]
-    public float regenSpeed = 30.0f;
+    public float regenSpeed = 150.0f;
 
     private HealthSystem casterHealthSystem;
     private ConcentrationSystem casterConcentrationSystem;
@@ -56,7 +56,7 @@ public class SkillHeal : SkillBase
 
     public override void ChannelUpdate(GameObject caster, float delta, float time, float length)
     {
-        var maxRestore = casterHealthSystem.healthMaximum - casterHealthSystem.Health;
+        var maxRestore = (casterHealthSystem.healthMaximum - casterHealthSystem.Health);
         maxRestore = Mathf.Min(maxRestore, regenSpeed * delta);
         var maxCost = concentrationPerHealthPoint * maxRestore;
 

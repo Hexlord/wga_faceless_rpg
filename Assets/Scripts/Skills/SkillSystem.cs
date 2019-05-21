@@ -197,12 +197,21 @@ public class SkillSystem : MonoBehaviour
 
     public bool HasSkill(Skill skill)
     {
-        foreach(var skillIt in skills)
+        foreach (var skillIt in skills)
         {
             if (skillIt.Type == skill) return true;
         }
 
         return false;
+    }
+    public float ConcentrationCost(Skill skill)
+    {
+        foreach (var skillIt in skills)
+        {
+            if (skillIt.Type == skill) return skillIt.ConcentrationCost;
+        }
+
+        return 0.0f;
     }
 
     public void Learn(Skill skill)
