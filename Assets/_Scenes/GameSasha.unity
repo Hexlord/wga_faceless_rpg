@@ -13457,7 +13457,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &758608890
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -25085,7 +25085,7 @@ PrefabInstance:
     - target: {fileID: 1195353019314798645, guid: 2506a0cf8cbd8fb4da325cc66ae70516,
         type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1195353019314798646, guid: 2506a0cf8cbd8fb4da325cc66ae70516,
         type: 3}
@@ -25212,10 +25212,32 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 2526137412873425085, guid: 2506a0cf8cbd8fb4da325cc66ae70516,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7733057296244803902, guid: 2506a0cf8cbd8fb4da325cc66ae70516,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 271638053, guid: 2506a0cf8cbd8fb4da325cc66ae70516, type: 3}
     - {fileID: 146465182, guid: 2506a0cf8cbd8fb4da325cc66ae70516, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 2506a0cf8cbd8fb4da325cc66ae70516, type: 3}
+--- !u!1 &1139217442 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8055723533645799767, guid: 2506a0cf8cbd8fb4da325cc66ae70516,
+    type: 3}
+  m_PrefabInstance: {fileID: 1139217441}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &1139217443 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1195353019007784272, guid: 2506a0cf8cbd8fb4da325cc66ae70516,
+    type: 3}
+  m_PrefabInstance: {fileID: 1139217441}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1140457495
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -31180,6 +31202,16 @@ PrefabInstance:
       propertyPath: cameraThirdPersonAim
       value: 
       objectReference: {fileID: 1297224943}
+    - target: {fileID: 95272781734392696, guid: 596fdfc67fb4359458b83aa22ccf3e13,
+        type: 3}
+      propertyPath: aimDefault
+      value: 
+      objectReference: {fileID: 1139217443}
+    - target: {fileID: 95272781734392696, guid: 596fdfc67fb4359458b83aa22ccf3e13,
+        type: 3}
+      propertyPath: aimZoom
+      value: 
+      objectReference: {fileID: 1139217442}
     - target: {fileID: 1268358756, guid: 596fdfc67fb4359458b83aa22ccf3e13, type: 3}
       propertyPath: battleUI
       value: 

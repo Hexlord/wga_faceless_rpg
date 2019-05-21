@@ -97,6 +97,15 @@ public class ShieldSystem : MonoBehaviour
         }
     }
 
+    public void RestoreShieldHP(float amount)
+    {
+        Debug.Assert(amount >= 0.0f);
+        if (shieldHP < 0) shieldHP = 0;
+
+        if (shieldHP < maxShieldHP) shieldHP += amount;
+        if (shieldHP > maxShieldHP) shieldHP = maxShieldHP;
+    }
+
     public void RegenerateShieldHP(float deltaTime)
     {
         if (shieldHP < 0) shieldHP = 0;

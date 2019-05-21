@@ -20,22 +20,12 @@ public class DeathUISystem : MonoBehaviour
     // Start is called before the first frame update
     void Awake()
     {
-        GameObject.Find("ToMainMenuButton").GetComponent<Button>().onClick.AddListener(ToMainMenu);
-        GameObject.Find("RestartButton").GetComponent<Button>().onClick.AddListener(Restart);
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
+        var buttonsDeath = transform.FindPrecise("Background", false).FindPrecise("ButtonsDeath");
+        buttonsDeath.FindPrecise("ToMainMenuButton").GetComponent<Button>().onClick.AddListener(ToMainMenu);
     }
 
     void ToMainMenu()
     {
         SceneManager.LoadScene("MainMenu", LoadSceneMode.Single);
-    }
-    void Restart()
-    {
-        SceneManager.LoadScene("GameSasha", LoadSceneMode.Single);
     }
 }

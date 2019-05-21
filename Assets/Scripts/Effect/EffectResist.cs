@@ -4,12 +4,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-public class EffectInvulnerable : EffectBase
+public class EffectResist : EffectBase
 {
     private readonly GameObject effectPrefab;
     private GameObject effect;
 
-    public EffectInvulnerable() :
+    public EffectResist() :
         base(Effect.Special1Invulnerable, 7.5f)
     {
         effectPrefab = (GameObject)Resources.Load("Prefabs/Skills/InvulnerableEffect", typeof(GameObject));
@@ -28,23 +28,11 @@ public class EffectInvulnerable : EffectBase
         effect = UnityEngine.Object.Instantiate(effectPrefab,
             target.transform.position, Quaternion.identity, 
             target.transform);
-
-        var body = target.GetComponent<Rigidbody>();
-        if (body)
-        {
-            body.mass *= 3.0f;
-        }
     }
 
     public override void OnPurge(GameObject source)
     {
         base.OnPurge(source);
-
-        var body = target.GetComponent<Rigidbody>();
-        if (body)
-        {
-            body.mass /= 3.0f;
-        }
 
         if (effect)
         {

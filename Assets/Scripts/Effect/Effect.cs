@@ -19,6 +19,7 @@ public enum Effect
     Freeze,
     Special1Invulnerable,
     Special1Speed,
+    Special2Resist,
 }
 
 public static class EffectExtensions
@@ -35,6 +36,8 @@ public static class EffectExtensions
                 return "Invulnerable";
             case Effect.Special1Speed:
                 return "Increased movement speed";
+            case Effect.Special2Resist:
+                return "Resist damage";
             default:
                 throw new ArgumentOutOfRangeException("effect", effect, null);
         }
@@ -52,6 +55,8 @@ public static class EffectExtensions
                 return new EffectInvulnerable();
             case Effect.Special1Speed:
                 return new EffectFast();
+            case Effect.Special2Resist:
+                return new EffectResist();
             default:
                 throw new ArgumentOutOfRangeException("effect", effect, null);
         }

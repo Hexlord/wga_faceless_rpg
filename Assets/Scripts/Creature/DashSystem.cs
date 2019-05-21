@@ -45,6 +45,11 @@ public class DashSystem : MonoBehaviour
         get { return chargesAvailable; }
     }
 
+    public void RestoreCharges(int count)
+    {
+        chargesAvailable = Mathf.Min(chargesAvailable + count, numberOfCharges);
+    }
+
     private void Start()
     {
         speed = dashDistance / timeForDash;

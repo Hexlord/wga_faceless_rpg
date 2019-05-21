@@ -44,6 +44,8 @@ public class PlayerBattleUISystem : MonoBehaviour
     // Cache
 
     private GameObject Raven;
+    private GameObject RavenSpecialNotReady;
+    private GameObject RavenSpecialReady;
     private GameObject JewelRed;
     private GameObject JewelBlue;
 
@@ -70,6 +72,8 @@ public class PlayerBattleUISystem : MonoBehaviour
         var skillsPanel = battleUI.transform.Find("SkillsPanel");
 
         Raven = skillsPanel.Find("Raven").gameObject;
+        RavenSpecialNotReady = Raven.FindPrecise("Head1").gameObject;
+        RavenSpecialReady = Raven.FindPrecise("Head2Colored").gameObject;
         JewelRed = Raven.FindPrecise("JewelRed").gameObject;
         JewelBlue = Raven.FindPrecise("JewelBlue").gameObject;
 
@@ -122,7 +126,14 @@ public class PlayerBattleUISystem : MonoBehaviour
         slotSpecial.Slot = skillSpecial;
         slot1.Active = !sheathSystem.Sheathed;
         slot2.Active = !sheathSystem.Sheathed;
-        slotSpecial.Active = !sheathSystem.Sheathed && (!skillSpecial.HasValue || concentrationSystem.Concentration >= skillSystem.ConcentrationCost(skillSpecial.Value));
+        var specialReady = !sheathSystem.Sheathed && skillSpecial.HasValue &&
+                                                      concentrationSystem.Concentration >=
+                                                      skillSystem.ConcentrationCost(skillSpecial.Value);
+        slotSpecial.Active = specialReady;
+
+        RavenSpecialNotReady.SetActive(!specialReady);
+        RavenSpecialReady.SetActive(specialReady);
+
         if (skill1.HasValue) slot1.CooldownNormalized = skillSystem.GetCooldownNormalized(skill1.Value);
         if (skill2.HasValue) slot2.CooldownNormalized = skillSystem.GetCooldownNormalized(skill2.Value);
         if (skillSpecial.HasValue) slotSpecial.CooldownNormalized = skillSystem.GetCooldownNormalized(skillSpecial.Value);

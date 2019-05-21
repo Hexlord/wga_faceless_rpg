@@ -89,6 +89,7 @@ public class HealthSystem : MonoBehaviour
 
     public void Damage(GameObject source, float amount)
     {
+        var effectFactor = 1.0f;
         if (effectSystem)
         {
             foreach (var effect in effectSystem.Effects)
@@ -101,13 +102,21 @@ public class HealthSystem : MonoBehaviour
                         break;
                     case Effect.Special1Invulnerable:
                         Debug.Log("Invulnerable target ignores damage");
-                        return;
+                        effectFactor *= 0.0f;
+                        break;
+                    case Effect.Special1Speed:
+                        break;
+                    case Effect.Special2Resist:
+                        effectFactor *= 0.5f;
+                        break;
                     default:
                         throw new ArgumentOutOfRangeException();
                 }
             }
         }
 
+        amount *= effectFactor;
+        
         Health -= amount;
         Debug.Log(this.gameObject.name + ": " + health + " HP");
         OnDamage(source, amount);

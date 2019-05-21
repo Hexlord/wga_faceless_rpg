@@ -89,6 +89,8 @@ public class PlayerSkillsUISystem : MonoBehaviour
         characterController.Freeze = true;
         cameraController.Freeze = true;
 
+        Time.timeScale = 0;
+
         open = true;
     }
 
@@ -99,6 +101,8 @@ public class PlayerSkillsUISystem : MonoBehaviour
         skillsUI.SetActive(false);
         characterController.Freeze = false;
         cameraController.Freeze = false;
+
+        Time.timeScale = 1;
 
         open = false;
     }

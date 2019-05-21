@@ -27,6 +27,9 @@ public class PlayerCharacterController : MonoBehaviour
     [Tooltip("Camera for aiming")]
     public ConstrainedCamera cameraThirdPersonAim;
 
+    public GameObject aimDefault;
+    public GameObject aimZoom;
+
     public bool Freeze
     {
         get { return freeze; }
@@ -189,6 +192,9 @@ public class PlayerCharacterController : MonoBehaviour
             ? cameraThirdPersonAim
             : cameraThirdPerson,
             preserveRotation: true);
+
+        aimDefault.SetActive(!aiming);
+        aimZoom.SetActive(aiming);
     }
 
     private void UpdateSheathe()

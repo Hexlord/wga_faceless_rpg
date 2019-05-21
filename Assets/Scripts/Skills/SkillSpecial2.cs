@@ -57,8 +57,10 @@ public class SkillSpecial2 : SkillBase
     {
         base.CastEvent(caster);
 
-        casterEffectSystem.Apply(Effect.Special1Invulnerable, caster);
-        casterEffectSystem.Apply(Effect.Special1Speed, caster);
+        caster.GetComponent<ShieldSystem>().RestoreShieldHP(99999.0f);
+        caster.GetComponent<DashSystem>().RestoreCharges(999);
+
+        casterEffectSystem.Apply(Effect.Special2Resist, caster);
     }
 
     public override void EndUpdate(GameObject caster, float delta, float time, float length)
