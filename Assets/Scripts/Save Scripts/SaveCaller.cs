@@ -13,6 +13,7 @@ public class SaveCaller : MonoBehaviour
         {
             saveSystem.Load();
         }
+        saveSystem.isLoading = false;
     }
 
     // Update is called once per frame

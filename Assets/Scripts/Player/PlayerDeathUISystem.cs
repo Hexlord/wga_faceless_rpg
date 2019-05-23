@@ -10,6 +10,7 @@ using UnityEngine.UI;
  * 
  * 15.03.2019   aknorre     Created
  * 16.03.2019   bkrylov     Allocated to Component Menu
+ * 23.05.2019   mbukhalov   Added load button listener
  */
 [AddComponentMenu("ProjectFaceless/Player/PlayerDeathUISystem")]
 public class PlayerDeathUISystem : MonoBehaviour
