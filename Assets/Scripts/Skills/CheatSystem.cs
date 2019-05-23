@@ -21,11 +21,28 @@ public class CheatSystem : MonoBehaviour
             var player = GameObject.Find("Player");
 
 
-            var target = (current == 0)
-                ? GameObject.Find("IslandSpawn")
-                : GameObject.Find("HubSpawn");
+            GameObject target = null;
+            if (current == 0)
+            {
+                target = GameObject.Find("IslandSpawn");
+            }
+            else if (current == 1)
+            {
 
-            current = (current + 1) % 2;
+                target = GameObject.Find("HubSpawn");
+            }
+            else if (current == 2)
+            {
+
+                target = GameObject.Find("ShipSpawn");
+            }
+            else
+            {
+
+                target = GameObject.Find("ArenaSpawn");
+            }
+
+            current = (current + 1) % 4;
 
 
             player.transform.position =
@@ -36,8 +53,7 @@ public class CheatSystem : MonoBehaviour
                 player.GetComponent<XpSystem>().MaskPoints += 3;
                 player.GetComponent<XpSystem>().SwordPoints += 3;
                 player.GetComponent<ConcentrationSystem>().Concentration = 90.0f;
-                player.GetComponent<HealthSystem>().Heal(player, 99999.0f);
-                player.GetComponent<PlayerSkillBook>().Learn(Skill.SkillSpecial1);
+                //player.GetComponent<HealthSystem>().Heal(player, 99999.0f);
 
                 first = false;
             }

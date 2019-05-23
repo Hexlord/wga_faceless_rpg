@@ -21,12 +21,15 @@ public class HealthSystem : MonoBehaviour
 
     // Public
 
-    public static float deathVerticalThreshold = -20.0f;
+    public static float deathVerticalThreshold = -50.0f;
 
     [Header("Basic Settings")]
-    [Tooltip("The amount of health the object has")]
+    [Tooltip("The amount of maximum health the object has")]
     [Range(0.0f, 10000.0f, order = 2)]
     public float healthMaximum = 100.0f;
+    [Tooltip("The amount of health the object has")]
+    [Range(0.0f, 10000.0f, order = 2)]
+    public float healthStart = 100.0f;
 
 
     [Tooltip("The amount of xp this object grants to killer")]
@@ -209,7 +212,7 @@ public class HealthSystem : MonoBehaviour
             }
         }
 
-        Health = healthMaximum;
+        Health = healthStart;
 
         animator = GetComponent<Animator>();
         effectSystem = GetComponent<EffectSystem>();

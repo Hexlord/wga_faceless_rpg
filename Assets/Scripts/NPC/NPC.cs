@@ -20,7 +20,11 @@ public class NPC : MonoBehaviour
     {
         None,
         EndDialog,
-        Death
+        Death,
+        IntroductionPhase1,
+        IntroductionPhase2,
+        Special1,
+        Special2
     }
 
     [Serializable]
@@ -202,6 +206,23 @@ public class NPC : MonoBehaviour
             case DialogAction.Death:
                 if (inDialog) OnDialogEnd();
                 player.GetComponent<HealthSystem>().Kill(gameObject);
+                break;
+            case DialogAction.IntroductionPhase1:
+                player.GetComponent<SheathSystem>().canUnsheathe = true;
+                player.GetComponent<AttackSystem>().canAttack = true;
+                if (inDialog) OnDialogEnd();
+                break;
+            case DialogAction.IntroductionPhase2:
+                player.GetComponent<PlayerCharacterController>().CanChangeBodyState = true;
+                if (inDialog) OnDialogEnd();
+                break;
+            case DialogAction.Special1:
+                player.GetComponent<PlayerSkillBook>().Learn(Skill.SkillSpecial1);
+                if (inDialog) OnDialogEnd();
+                break;
+            case DialogAction.Special2:
+                player.GetComponent<PlayerSkillBook>().Learn(Skill.SkillSpecial2);
+                if (inDialog) OnDialogEnd();
                 break;
             default:
                 throw new ArgumentOutOfRangeException("action", action, null);

@@ -43,6 +43,8 @@ public class PlayerCharacterController : MonoBehaviour
         }
     }
 
+    public bool CanChangeBodyState { get; set; }
+
     // Cache
 
     private MovementSystem movementSystem;
@@ -66,6 +68,8 @@ public class PlayerCharacterController : MonoBehaviour
 
     protected void Start()
     {
+        CanChangeBodyState = false;
+
         movementSystem = GetComponent<MovementSystem>();
         skillSystem = GetComponent<SkillSystem>();
         attackSystem = GetComponent<AttackSystem>();
@@ -285,7 +289,7 @@ public class PlayerCharacterController : MonoBehaviour
 
     private void UpdateBodyState()
     {
-        if (InputManager.Released(InputAction.ChangeBodyState))
+        if (InputManager.Released(InputAction.ChangeBodyState) && CanChangeBodyState)
         {
             bodyStateSystem.ChangeState(
                 bodyStateSystem.State == BodyStateSystem.BodyState.Magical
