@@ -11,6 +11,7 @@ using UnityEngine.UI;
  * 
  * 10.03.2019   aknorre     Created
  * 16.03.2019   bkrylov     Allocated to Component Menu
+ * 19.05.2019   mbukhalov   Added stage offset saving
  * 
  */
 [AddComponentMenu("ProjectFaceless/NPC/NPC")]
@@ -84,7 +85,7 @@ public class NPC : MonoBehaviour
     private PlayerCameraController playerCameraController;
 
     private ConstrainedCamera dialogStartCamera;
-
+    [Saveable]
     private int currentStageOffset;
     private bool inRange = false;
     private bool inDialog = false;

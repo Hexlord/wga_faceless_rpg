@@ -34,12 +34,16 @@ public class SaveSystem : MonoBehaviour
 
     public KeyCode loadKeyCode = KeyCode.V;
 
+    public bool isLoading { get; set; }
+    public SaveType saveType { get; set; }
+
 
     void Awake()
     {
         DontDestroyOnLoad(gameObject);
-        folderPath = System.IO.Path.Combine(Application.persistentDataPath, folderName);
-        System.IO.Directory.CreateDirectory(folderPath);
+        isLoading = false;
+        folderPath = Path.Combine(Application.persistentDataPath, folderName);
+        Directory.CreateDirectory(folderPath);
     }
 
 
@@ -60,18 +64,36 @@ public class SaveSystem : MonoBehaviour
 
     public void Save()
     {
-
+        switch (saveType)
+        {
+            case SaveType.Auto:
+                _Save(QuickSaveWriter.Create(System.IO.Path.Combine(folderPath, autoFilename)));
+                break;
+            case SaveType.Quick:
+                _Save(QuickSaveWriter.Create(System.IO.Path.Combine(folderPath, quickFilename)));
+                break;
+        }
+        
     }
 
-    public void Load(SaveType saveType)
+    public void Load()
     {
-        SceneManager.LoadScene(loadingSceneName, LoadSceneMode.Single);
-        StartCoroutine("LoadGameScene", saveType);
+        //StartCoroutine("LoadGameScene", saveType);
+        //SceneManager.LoadScene(gameSceneName);
+        switch (saveType)
+        {
+            case SaveType.Auto:
+                _Load(SceneManager.GetActiveScene().GetRootGameObjects(), QuickSaveReader.Create(Path.Combine(folderPath, autoFilename)));
+                break;
+            case SaveType.Quick:
+                _Load(SceneManager.GetActiveScene().GetRootGameObjects(), QuickSaveReader.Create(Path.Combine(folderPath, quickFilename)));
+                break;
+        }
     }
 
-    IEnumerator LoadGameScene(SaveType saveType)
+    /*IEnumerator LoadGameScene(SaveType saveType)
     {
-        AsyncOperation asyncOperation = SceneManager.LoadSceneAsync(gameSceneName);
+        AsyncOperation asyncOperation = SceneManager.LoadSceneAsync(2);
         asyncOperation.allowSceneActivation = false;
 
         Debug.Log("Pro :" + asyncOperation.progress);
@@ -89,10 +111,10 @@ public class SaveSystem : MonoBehaviour
             case SaveType.Quick:
                 _Load(gameScene.GetRootGameObjects(), QuickSaveReader.Create(System.IO.Path.Combine(folderPath, quickFilename)));
                 break;
-        }
+        } 
         asyncOperation.allowSceneActivation = true;
         yield return null;
-    }
+    }*/
 
     GameObject[] GetAllGameObjects(GameObject[] rootGameObjects)
     {
@@ -113,7 +135,11 @@ public class SaveSystem : MonoBehaviour
         Debug.Log("Save");
 
         GameObject[] gameObjects = GetSaveableGameObjects(FindObjectsOfType<GameObject>());
-
+        var keys = saver.GetAllKeys();
+        foreach (string key in saver.GetAllKeys())
+        {
+            saver.Delete(key);
+        }
         foreach (GameObject gameObject in gameObjects)
         {
             if (TrySerializeGameObject(gameObject, saver) == false)
@@ -121,21 +147,16 @@ public class SaveSystem : MonoBehaviour
                 return false;
             }
         }
-        if (saver.TryCommit() == true)
+        bool done = saver.TryCommit();
+        Debug.Log(done);
+        foreach (GameObject gameObject in gameObjects)
         {
-            foreach (GameObject gameObject in gameObjects)
+            foreach (ISaveable saveable in gameObject.GetComponents<ISaveable>())
             {
-                foreach (ISaveable saveable in gameObject.GetComponents<ISaveable>())
-                {
-                    saveable.OnSave();
-                }
+                saveable.OnSave();
             }
-            return true;
         }
-        else
-        {
-            return false;
-        }
+        return true;
     }
 
     bool TrySerializeGameObject(GameObject gameObject, QuickSaveWriter saver)
@@ -154,14 +175,17 @@ public class SaveSystem : MonoBehaviour
     }
 
     bool TrySerializeComponent(Component component, QuickSaveWriter saver)
-    {
+    {   
         FieldInfo[] fields = component.GetType().GetFields(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);
         foreach (FieldInfo fieldInfo in fields)
         {
-            Saveable[] attribute = fieldInfo.GetCustomAttributes(typeof(Saveable), true) as Saveable[];
-            string fullFieldName = GetFullFieldName(component, fieldInfo.Name);
-            saver.Write(fullFieldName, TypeHelper.ReplaceIfUnityType(fieldInfo.FieldType, fieldInfo.GetValue(component)));
-
+            //Saveable[] attribute = fieldInfo.GetCustomAttributes(typeof(Saveable), true) as Saveable[];
+            if (Attribute.IsDefined(fieldInfo, typeof(Saveable)))
+            {
+                string fullFieldName = GetFullFieldName(component, fieldInfo.Name);
+                var tmp = TypeHelper.ReplaceIfUnityType(fieldInfo.FieldType, fieldInfo.GetValue(component));
+                saver.Write(fullFieldName, tmp);
+            }
         }
         return true;
     }
@@ -170,8 +194,8 @@ public class SaveSystem : MonoBehaviour
     bool _Load(GameObject [] rootGameObjects, QuickSaveReader loader)
     {
         Debug.Log("Load");
-
-        GameObject[] gameObjects = GetAllGameObjects(rootGameObjects);
+        GameObject[] allGameObjects = GetAllGameObjects(rootGameObjects);
+        GameObject[] gameObjects = GetSaveableGameObjects(allGameObjects).Union(GetSaveableGameObjects(rootGameObjects)).ToArray();
 
         foreach (GameObject gameObject in gameObjects)
         {
@@ -181,7 +205,7 @@ public class SaveSystem : MonoBehaviour
             }
         }
 
-        foreach (GameObject gameObject in gameObjects)
+        foreach (GameObject gameObject in rootGameObjects)
         {
             foreach (ISaveable saveable in gameObject.GetComponents<ISaveable>())
             {
@@ -212,8 +236,8 @@ public class SaveSystem : MonoBehaviour
         FieldInfo[] fields = component.GetType().GetFields(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);
         foreach (FieldInfo fieldInfo in fields)
         {
-            Saveable[] attribute = fieldInfo.GetCustomAttributes(typeof(Saveable), true) as Saveable[];
-            if (attribute.Length != 0)
+            //Saveable[] attribute = fieldInfo.GetCustomAttributes(typeof(Saveable), true) as Saveable[];
+            if (Attribute.IsDefined(fieldInfo, typeof(Saveable)))
             {
                 string fullFieldName = GetFullFieldName(component, fieldInfo.Name);
                 object result;
@@ -227,19 +251,6 @@ public class SaveSystem : MonoBehaviour
                 }
             }
         }
-
-        try
-        {
-            ISaveable saveableComponent = component as ISaveable;
-            saveableComponent.OnLoad();
-        }
-        catch(Exception e)
-        {
-            Debug.Log("failed call onLoad, probably " + GetFieldPrefix(component) + " does not implement ISaveable. Exact Reason: " + e.Message);
-            return false;
-        }
-
-
         return true;
     }
 
@@ -270,7 +281,7 @@ public class SaveSystem : MonoBehaviour
         Component[] components = gameObject.GetComponents<Component>();
         foreach (Component component in components)
         {
-            if(IsComponentSaveble(component) == true)
+            if(component != null && IsComponentSaveble(component) == true)
             {
                 return true;
             }
@@ -280,15 +291,18 @@ public class SaveSystem : MonoBehaviour
 
     bool IsComponentSaveble(Component component)
     {
-        FieldInfo[] fields = component.GetType().GetFields(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance); string componentKey = component.name + "." + component.GetType().FullName;
+        
+        FieldInfo[] fields = component.GetType().GetFields(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);
+        string componentKey = component.name + "." + component.GetType().FullName;
         foreach (FieldInfo fieldInfo in fields)
         {
-            Saveable[] attribute = fieldInfo.GetCustomAttributes(typeof(Saveable), true) as Saveable[];
-            if (attribute.Length != 0)
+            //Saveable[] attribute = fieldInfo.GetCustomAttributes(typeof(Saveable), true) as Saveable[];
+            if (Attribute.IsDefined(fieldInfo, typeof(Saveable)))
             {
                 return true;
             }
         }
+        
         return false;
     }
 }

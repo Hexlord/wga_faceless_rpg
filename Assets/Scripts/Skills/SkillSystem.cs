@@ -11,10 +11,11 @@ using UnityEngine;
  * 
  * 03.03.2019   aknorre     Created
  * 16.03.2019   bkrylov     Allocated to Component Menu
+ * 19.05.2019   mbukhalov   Added known skills and chosen skill saving
  * 
  */
 [AddComponentMenu("ProjectFaceless/Creature/Skill System")]
-public class SkillSystem : MonoBehaviour
+public class SkillSystem : MonoBehaviour, ISaveable
 {
 
     // Public
@@ -51,6 +52,7 @@ public class SkillSystem : MonoBehaviour
 
 
     [Tooltip("Skills known by this character")]
+    [Saveable]
     public Skill[] startSkills;
 
     public bool Busy
@@ -118,7 +120,9 @@ public class SkillSystem : MonoBehaviour
 
     private readonly IList<SkillBase> skills = new List<SkillBase>();
     private readonly IList<Skill> skillTypes = new List<Skill>();
+    [Saveable]
     private SkillBase activeSkill = null;
+    [Saveable]
     private int activeSkillNumber = -1;
 
     private float stateTimer = 0.0f;
@@ -393,4 +397,13 @@ public class SkillSystem : MonoBehaviour
         stop = true;
     }
 
+    public void OnSave()
+    {
+       
+    }
+
+    public void OnLoad()
+    {
+        
+    }
 }

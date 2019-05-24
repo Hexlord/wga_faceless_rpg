@@ -132,6 +132,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: LoadscreenStart
       objectReference: {fileID: 0}
+    - target: {fileID: 2050682120378367700, guid: 5d8326021f21c4945bce4b19c5b50b1c,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 2050682120378367704, guid: 5d8326021f21c4945bce4b19c5b50b1c,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -237,6 +242,16 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2618556222336333984, guid: 5d8326021f21c4945bce4b19c5b50b1c,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2618556222336333983, guid: 5d8326021f21c4945bce4b19c5b50b1c,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5d8326021f21c4945bce4b19c5b50b1c, type: 3}
 --- !u!1 &392952009
@@ -322,6 +337,78 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &866000344 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2050682120378367700, guid: 5d8326021f21c4945bce4b19c5b50b1c,
+    type: 3}
+  m_PrefabInstance: {fileID: 155457744}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &866000345
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 866000344}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: abf7002e20cdafa46a6e615883176a3f, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  saveSystem: {fileID: 942631864}
+--- !u!1 &942631862
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 942631863}
+  - component: {fileID: 942631864}
+  m_Layer: 0
+  m_Name: SaveSystem
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &942631863
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 942631862}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 411.22003, y: 280.27594, z: -151.42377}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &942631864
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 942631862}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bfdb9c93d8ab07344b6dd5344d022820, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  folderName: SaveFiles
+  autoFilename: AutoSave
+  quickFilename: QuickSave
+  saveFileName1: Save1
+  saveFileName2: Save2
+  saveFileName3: Save3
+  loadingSceneName:
+  gameSceneName: GameSasha
+  saveKeyCode: 99
+  loadKeyCode: 118
 --- !u!1 &1718688655
 GameObject:
   m_ObjectHideFlags: 0
