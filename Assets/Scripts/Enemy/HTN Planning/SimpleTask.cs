@@ -29,7 +29,7 @@ public class SimpleTask:Task
         taskAction = action;
         if (finish == null)
         {
-            finish = EmptyCondition;
+            endingConditions = EmptyCondition;
         }
         else
         {

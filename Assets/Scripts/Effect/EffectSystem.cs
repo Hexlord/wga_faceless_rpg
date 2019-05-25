@@ -23,6 +23,11 @@ public class EffectSystem : MonoBehaviour
     private List<EffectBase> effects = new List<EffectBase>();
     private List<EffectBase> expiredEffects = new List<EffectBase>();
 
+    public IList<EffectBase> Effects
+    {
+        get { return effects; }
+    }
+
     public void Apply(Effect effect, GameObject source)
     {
         var e = effect.Instantiate();

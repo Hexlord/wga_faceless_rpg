@@ -10,11 +10,12 @@ using UnityEngine.SceneManagement;
  * Date         Author      Description
  * 
  * 17.04.2019   mbukhalov   Created
+ * 19.05.2019   mbukhalov   Added active portals saving
  * 
  */
 
 
-public class PortalUIComponent : MonoBehaviour
+public class PortalUIComponent : MonoBehaviour, ISaveable
 {
     [Header("Portal Menu Settings")]
 
@@ -30,8 +31,8 @@ public class PortalUIComponent : MonoBehaviour
     [Tooltip("Inactive portals")]
     public List<GameObject> inactivePortals;
 
-    [Saveable]
     [Tooltip("Active portals")]
+    [Saveable]
     public List<bool> isActive;
 
     [Tooltip("Exit key")]
@@ -160,5 +161,14 @@ public class PortalUIComponent : MonoBehaviour
         portalMenu.SetActive(false);
     }
 
+    public void OnSave()
+    {
+       // throw new System.NotImplementedException();
+    }
+
+    public void OnLoad()
+    {
+      //  throw new System.NotImplementedException();
+    }
 }
 

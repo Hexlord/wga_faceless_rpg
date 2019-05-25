@@ -6,6 +6,7 @@ using System.Linq;
 using Unity.Collections;
 using UnityEditor;
 using UnityEngine;
+using Debug = System.Diagnostics.Debug;
 
 public class Task
 {
@@ -96,10 +97,22 @@ public class Task
     protected bool BasicCheck(Condition[] collection)
     {
             var result = true;
+            try
+            {
             foreach (var condition in collection)
             {
-                result &= condition.Invoke();
-                if (!result) return false;
+
+                    UnityEngine.Debug.Assert(condition != null);
+                    result &= condition.Invoke();
+                    if (!result) return false;
+                
+
+            }
+            }
+            catch (NullReferenceException e)
+            {
+                Console.WriteLine(e);
+                throw;
             }
             return true;
     }

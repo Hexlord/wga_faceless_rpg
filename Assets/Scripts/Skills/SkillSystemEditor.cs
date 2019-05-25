@@ -32,8 +32,7 @@ public class SkillSystemEditor : Editor
         for (var i = 0; i < list.arraySize; i++)
         {
             EditorGUILayout.BeginHorizontal();
-            var name = i <= 1 ? "Physical " : "Magical";
-            name += " Skill " + ((i % 2) + 1);
+            var name = " Skill " + (i + 1);
             EditorGUILayout.PropertyField(list.GetArrayElementAtIndex(i), new GUIContent(name));
             if(GUILayout.Button(moveButtonContent, EditorStyles.miniButtonLeft, miniButtonWidth))
             {

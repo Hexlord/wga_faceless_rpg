@@ -11,10 +11,11 @@ using UnityEngine;
  * 
  * 03.03.2019   aknorre     Created
  * 16.03.2019   bkrylov     Allocated to Component Menu
+ * 19.05.2019   mbukhalov   Added known skills and chosen skill saving
  * 
  */
 [AddComponentMenu("ProjectFaceless/Creature/Skill System")]
-public class SkillSystem : MonoBehaviour
+public class SkillSystem : MonoBehaviour, ISaveable
 {
 
     // Public
@@ -51,6 +52,7 @@ public class SkillSystem : MonoBehaviour
 
 
     [Tooltip("Skills known by this character")]
+    [Saveable]
     public Skill[] startSkills;
 
     public bool Busy
@@ -99,9 +101,13 @@ public class SkillSystem : MonoBehaviour
         get { return activeSkill != null; }
     }
 
-    public int SelectedSkill
+    public int SelectedSkillNumber
     {
         get { return activeSkillNumber; }
+    }
+    public SkillBase SelectedSkill
+    {
+        get { return activeSkillNumber == -1 ? null : skills[activeSkillNumber]; }
     }
 
     // Private
@@ -114,7 +120,9 @@ public class SkillSystem : MonoBehaviour
 
     private readonly IList<SkillBase> skills = new List<SkillBase>();
     private readonly IList<Skill> skillTypes = new List<Skill>();
+    [Saveable]
     private SkillBase activeSkill = null;
+    [Saveable]
     private int activeSkillNumber = -1;
 
     private float stateTimer = 0.0f;
@@ -191,6 +199,50 @@ public class SkillSystem : MonoBehaviour
         }
     }
 
+    public bool HasSkill(Skill skill)
+    {
+        foreach (var skillIt in skills)
+        {
+            if (skillIt.Type == skill) return true;
+        }
+
+        return false;
+    }
+    public float ConcentrationCost(Skill skill)
+    {
+        foreach (var skillIt in skills)
+        {
+            if (skillIt.Type == skill) return skillIt.ConcentrationCost;
+        }
+
+        return 0.0f;
+    }
+
+    public void Learn(Skill skill)
+    {
+        Debug.Assert(!HasSkill(skill));
+
+        skills.Add(skill.Instantiate());
+        skillTypes.Add(skill);
+    }
+
+    public void SelectSkill(Skill skill)
+    {
+        Debug.Assert(!Busy);
+
+        for (var i = 0; i < skills.Count; ++i)
+        {
+            if (skills[i].Type == skill)
+            {
+                SelectSkill(i);
+                return;
+            }
+        }
+
+        Debug.LogError("Skill " + skill.ToString() + " not found!");
+        Debug.Assert(false);
+    }
+
     public void SelectSkill(string skillName)
     {
         Debug.Assert(!Busy);
@@ -225,6 +277,19 @@ public class SkillSystem : MonoBehaviour
 
     }
 
+    public float GetCooldownNormalized(Skill skill)
+    {
+        for (var i = 0; i < skills.Count; ++i)
+        {
+            if (skills[i].Type == skill)
+            {
+                return skills[i].CooldownTimerNormalized;
+            }
+        }
+
+        return 0.0f;
+    }
+
     public void UnselectSkill()
     {
         Debug.Assert(!Busy);
@@ -239,8 +304,13 @@ public class SkillSystem : MonoBehaviour
         Debug.Assert(!Busy);
         Debug.Assert(IsSkillSelected);
 
-        activeSkill.PrepareEvent(gameObject);
-        animator.SetTrigger(CreatureAnimationBehaviour.GetSkillTriggerHash(activeSkill.Animation));
+        if (!activeSkill.PrepareEvent(gameObject))
+        {
+            UnselectSkill();
+            return;
+        }
+        animator.SetTrigger(CreatureAnimationBehaviour.skillTriggerHash);
+        animator.SetFloat(CreatureAnimationBehaviour.currentSkillFloatHash, Convert.ToSingle(activeSkill.Animation));
 
         animator.ResetTrigger(CreatureAnimationBehaviour.interruptTriggerHash);
         interrupt = false;
@@ -256,7 +326,7 @@ public class SkillSystem : MonoBehaviour
         switch (state)
         {
             case SkillSystemState.Preparing:
-                activeSkill.PrepareEvent(gameObject);
+                // activeSkill.PrepareEvent(gameObject);
                 SwitchState(activeSkill.Channeling ? SkillSystemState.ChannelStart : SkillSystemState.SkillStart);
                 animator.SetBool(CreatureAnimationBehaviour.channelingBooleanHash, activeSkill.Channeling);
                 break;
@@ -327,4 +397,13 @@ public class SkillSystem : MonoBehaviour
         stop = true;
     }
 
+    public void OnSave()
+    {
+       
+    }
+
+    public void OnLoad()
+    {
+        
+    }
 }

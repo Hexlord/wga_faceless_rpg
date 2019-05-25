@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using UnityEngine;
@@ -40,7 +41,11 @@ public class MovementSystem : MonoBehaviour
 
     [Tooltip("Speed multiplier when attacking or casting")]
     [Range(0.0f, 1.0f)]
-    public float busyMultiplier = 0.6f;
+    public float attackingMultiplier = 0.6f;
+
+    [Tooltip("Speed multiplier when attacking or casting")]
+    [Range(0.0f, 1.0f)]
+    public float castingMultiplier = 0.0f;
 
     [Tooltip("Body rotation stabilization")]
     public bool rotationStabilization = true;
@@ -57,6 +62,9 @@ public class MovementSystem : MonoBehaviour
     [Range(0.001f, 10.0f)]
     public float airwalkFadeTime = 1.0f;
 
+    public bool canSprint = true;
+    public float sprintMovementSpeedMultiplier = 1.6f;
+
     [Header("Animation Settings")]
     [Tooltip("Smoothing factor for transitions")]
     public float animationDamping = 0.15f;
@@ -68,7 +76,8 @@ public class MovementSystem : MonoBehaviour
 
     private readonly int animatorHorizontal = Animator.StringToHash("Horizontal");
     private readonly int animatorVertical = Animator.StringToHash("Vertical");
-
+    private readonly int animatorFall = Animator.StringToHash("Fall");
+    private readonly int animatorSprint = Animator.StringToHash("Sprint");
     private float currentMovementSpeed;
 
     private float busyFactor;
@@ -100,12 +109,14 @@ public class MovementSystem : MonoBehaviour
         }
     }
 
+    public bool Sprint { get; set; }
+
     // Private
 
     [Header("Debug")]
     public Vector2 desiredMovement = Vector2.zero;
     public Vector2 desiredMovementBodySpace = Vector2.zero;
-
+    
     // Cache
 
     private Animator animator;
@@ -114,11 +125,12 @@ public class MovementSystem : MonoBehaviour
     private TouchCondition legsTouchCondition;
     private SkillSystem skillSystem;
     private AttackSystem attackSystem;
+    private EffectSystem effectSystem;
 
     protected void Awake()
     {
         // Private
-
+        Sprint = false;
         currentMovementSpeed = baseMovementSpeed;
         ResistForces = true;
 
@@ -129,6 +141,7 @@ public class MovementSystem : MonoBehaviour
         sheathSystem = GetComponent<SheathSystem>();
         skillSystem = GetComponent<SkillSystem>();
         attackSystem = GetComponent<AttackSystem>();
+        effectSystem = GetComponent<EffectSystem>();
 
         var legs = transform.Find("LegsCollider");
         if (legs)
@@ -152,8 +165,8 @@ public class MovementSystem : MonoBehaviour
     private void MoveBody(float delta)
     {
         busyFactor = 1.0f;
-        if (skillSystem && skillSystem.Busy) busyFactor = busyMultiplier;
-        if (attackSystem && attackSystem.Attacking) busyFactor = busyMultiplier;
+        if (skillSystem && skillSystem.Busy && !skillSystem.SelectedSkill.CanMove) busyFactor *= castingMultiplier;
+        if (attackSystem && attackSystem.Attacking) busyFactor = attackingMultiplier;
 
         landFactor = 1.0f;
         gravity = 0.0f;
@@ -168,8 +181,39 @@ public class MovementSystem : MonoBehaviour
             }
         }
 
+        if (transform.CompareTag("Player")) animator.SetFloat(animatorFall, 1.0f - landFactor);
+
+        var effectFactor = 1.0f;
+        if (effectSystem)
+        {
+            foreach (var effect in effectSystem.Effects)
+            {
+                switch (effect.Type)
+                {
+                    case Effect.Burn:
+                        effectFactor *= 0.9f;
+                        break;
+                    case Effect.Freeze:
+                        effectFactor *= 0.5f;
+                        break;
+                    case Effect.Special1Invulnerable:
+                        break;
+                    case Effect.Special1Speed:
+                        effectFactor *= 2.0f;
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+            }
+        }
+
         currentVelocity = (new Vector2(body.velocity.x, body.velocity.z));
-        targetVelocity = desiredMovement * currentMovementSpeed * busyFactor;
+        targetVelocity = desiredMovement * currentMovementSpeed * busyFactor * effectFactor;
+        if (Sprint)
+        {
+            targetVelocity *=
+                1.0f + (sprintMovementSpeedMultiplier - 1.0f) * Mathf.Max(0.0f, desiredMovementBodySpace.y);
+        }
         if (!ResistForces)
         {
             targetVelocity += currentVelocity;
@@ -178,9 +222,13 @@ public class MovementSystem : MonoBehaviour
         appliedVelocity = Vector2.MoveTowards(
             Vector2.zero,
             targetVelocity - currentVelocity,
-            currentMovementSpeed * delta * landFactor / accelerationTime);
+            currentMovementSpeed * delta * landFactor / accelerationTime * effectFactor);
 
         body.AddForce(appliedVelocity.x, -gravity, appliedVelocity.y, ForceMode.VelocityChange);
+        
+        if (animator) animator.SetFloat(animatorHorizontal, desiredMovementBodySpace.x * busyFactor * effectFactor * landFactor, animationDamping, delta);
+        if (animator) animator.SetFloat(animatorVertical, desiredMovementBodySpace.y * busyFactor * effectFactor * landFactor, animationDamping, delta);
+        if (animator && transform.CompareTag("Player")) animator.SetFloat(animatorSprint, Sprint ? 1.0f : 0.0f, animationDamping, delta);
     }
 
     private void RotateBody(float delta)
@@ -194,9 +242,6 @@ public class MovementSystem : MonoBehaviour
     protected void FixedUpdate()
     {
         var delta = Time.fixedDeltaTime;
-
-        if (animator) animator.SetFloat(animatorHorizontal, desiredMovementBodySpace.x, animationDamping, delta);
-        if (animator) animator.SetFloat(animatorVertical, desiredMovementBodySpace.y, animationDamping, delta);
 
         if (canMove)
         {

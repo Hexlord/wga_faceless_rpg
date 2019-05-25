@@ -19,10 +19,12 @@ public enum InputAction
     Sheathe,
     Attack,
     Defend,
+    Sprint,
     Aim,
     Heal,
     SkillMenu,
     Use,
+    Special,
     Skill_1,
     Skill_2,
     Skill_3,
@@ -34,6 +36,7 @@ public enum InputAction
     Escape,
     Enter,
     Menu,
+    Cheat
 }
 
 public static class InputManager
@@ -75,12 +78,18 @@ public static class InputManager
                 return "LMB";
             case InputAction.Defend:
                 return "Shift";
+            case InputAction.Sprint:
+                return "Shift";
             case InputAction.SkillMenu:
                 return "H";
             case InputAction.Use:
                 return "E";
             case InputAction.Menu:
                 return "F1";
+            case InputAction.Cheat:
+                return "Cheat";
+            case InputAction.Special:
+                return "T";
             default:
                 throw new ArgumentOutOfRangeException("action", action, null);
         }

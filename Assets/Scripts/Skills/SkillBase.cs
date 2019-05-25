@@ -27,6 +27,16 @@ public class SkillBase
 
     private readonly GameObject textPrefab;
 
+    public virtual bool CanMove
+    {
+        get { return false; }
+    }
+
+    public virtual float ConcentrationCost
+    {
+        get { return 0.0f; }
+    }
+
     public SkillBase(Skill type, SkillAnimation animation, bool channeling, float cooldown)
     {
         this.type = type;
@@ -43,9 +53,11 @@ public class SkillBase
     
     /*
      * Called before casting starts
+     * Returning false prevents the cast
      */
-    public virtual void PrepareEvent(GameObject caster)
+    public virtual bool PrepareEvent(GameObject caster)
     {
+        return true;
     }
 
     /*

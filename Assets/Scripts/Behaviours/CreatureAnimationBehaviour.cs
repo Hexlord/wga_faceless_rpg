@@ -39,84 +39,9 @@ public class CreatureAnimationBehaviour : StateMachineBehaviour
      */
     public static readonly int stopTriggerHash = Animator.StringToHash("stopTrigger");
     public static readonly int channelingBooleanHash = Animator.StringToHash("Channeling");
+    public static readonly int currentSkillFloatHash = Animator.StringToHash("CurrentSkill");
 
-    private static readonly int skill1TriggerHash = Animator.StringToHash("skill1Trigger");
-    private static readonly int skill2TriggerHash = Animator.StringToHash("skill2Trigger");
-    private static readonly int skill3TriggerHash = Animator.StringToHash("skill3Trigger");
-
-    public static int GetSkillTriggerHash(SkillAnimation animation)
-    {
-        switch (animation)
-        {
-            case SkillAnimation.First:
-                return skill1TriggerHash;
-            case SkillAnimation.Second:
-                return skill2TriggerHash;
-            case SkillAnimation.Third:
-                return skill3TriggerHash;
-            default:
-                throw new ArgumentOutOfRangeException("animation", animation, null);
-        }
-    }
-
-
-    private static readonly int skill1Hash = Animator.StringToHash("skill1");
-    private static readonly int skill2Hash = Animator.StringToHash("skill2");
-    private static readonly int skill3Hash = Animator.StringToHash("skill3");
-
-    public static int GetSkillHash(SkillAnimation animation)
-    {
-        switch (animation)
-        {
-            case SkillAnimation.First:
-                return skill1Hash;
-            case SkillAnimation.Second:
-                return skill2Hash;
-            case SkillAnimation.Third:
-                return skill3Hash;
-            default:
-                throw new ArgumentOutOfRangeException("animation", animation, null);
-        }
-    }
-
-    private static readonly int skill1UpdateHash = Animator.StringToHash("skill1Update");
-    private static readonly int skill2UpdateHash = Animator.StringToHash("skill2Update");
-    private static readonly int skill3UpdateHash = Animator.StringToHash("skill3Update");
-
-    public static int GetSkillUpdateHash(SkillAnimation animation)
-    {
-        switch (animation)
-        {
-            case SkillAnimation.First:
-                return skill1UpdateHash;
-            case SkillAnimation.Second:
-                return skill2UpdateHash;
-            case SkillAnimation.Third:
-                return skill3UpdateHash;
-            default:
-                throw new ArgumentOutOfRangeException("animation", animation, null);
-        }
-    }
-
-    private static readonly int skill1EndHash = Animator.StringToHash("skill1End");
-    private static readonly int skill2EndHash = Animator.StringToHash("skill2End");
-    private static readonly int skill3EndHash = Animator.StringToHash("skill3End");
-
-    public static int GetSkillEndHash(SkillAnimation animation)
-    {
-        switch (animation)
-        {
-            case SkillAnimation.First:
-                return skill1EndHash;
-            case SkillAnimation.Second:
-                return skill2EndHash;
-            case SkillAnimation.Third:
-                return skill3EndHash;
-            default:
-                throw new ArgumentOutOfRangeException("animation", animation, null);
-        }
-    }
-    
+    public static readonly int skillTriggerHash = Animator.StringToHash("skillTrigger");
 
     // OnStateEnter is called when a transition starts and the state machine starts to evaluate this state
     public override void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)

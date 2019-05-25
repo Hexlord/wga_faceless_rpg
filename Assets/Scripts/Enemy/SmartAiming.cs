@@ -18,6 +18,7 @@ public class SmartAiming : MonoBehaviour
 
     private void Awake()
     {
+        targetPositionsDelta = new Queue<Vector3>();
         queueSize = Mathf.RoundToInt( storageTime / collectingFrequency);
         shootSys = GetComponent<ShootSystem>();
     }

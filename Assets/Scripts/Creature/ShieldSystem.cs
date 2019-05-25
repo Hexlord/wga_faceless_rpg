@@ -5,13 +5,16 @@ public class ShieldSystem : MonoBehaviour
 {
     public GameObject shield;
     [Header("Basic Settings")]
+
     [Tooltip("Maximum HP the shield can have")]
     public float maxShieldHP = 400.0f;
+
     [Tooltip("How many HP the shield can regenerate per second")]
     public float shieldHPRegen = 50.0f;
-    [Tooltip("How many HP the shield has in one charge")]
-    public float shieldHPPerCharge = 100.0f;
 
+    [Tooltip("Charge count")]
+    public int chargeCount = 5;
+    
     [Header("Animation Settings")]
     [Tooltip("Animation played when the creature raised his shield")]
     public string defenseStanceAnimation = "Defend";
@@ -21,12 +24,14 @@ public class ShieldSystem : MonoBehaviour
     //private
     private float shieldHP = 400.0f;
     private bool isRaised = false;
+    private float shieldHPPerCharge;
     //cache
     private Animator animator;
     // Start is called before the first frame update
 
     void Awake()
     {
+        shieldHPPerCharge = maxShieldHP / chargeCount;
         shieldHP = maxShieldHP;
         if(shield) shield.SetActive(isRaised);
         animator = GetComponent<Animator>();
@@ -35,7 +40,7 @@ public class ShieldSystem : MonoBehaviour
     //properties
     public int GetFullShieldCharges()
     {
-        return Mathf.RoundToInt(shieldHP -  (shieldHP % shieldHPPerCharge) * shieldHPPerCharge);
+        return Mathf.Max(0, Mathf.CeilToInt(shieldHP / shieldHPPerCharge - 0.001f));
     }
 
     public float GetRemainingHPInCharge()
@@ -90,6 +95,15 @@ public class ShieldSystem : MonoBehaviour
         {
             RegenerateShieldHP(Time.deltaTime);
         }
+    }
+
+    public void RestoreShieldHP(float amount)
+    {
+        Debug.Assert(amount >= 0.0f);
+        if (shieldHP < 0) shieldHP = 0;
+
+        if (shieldHP < maxShieldHP) shieldHP += amount;
+        if (shieldHP > maxShieldHP) shieldHP = maxShieldHP;
     }
 
     public void RegenerateShieldHP(float deltaTime)

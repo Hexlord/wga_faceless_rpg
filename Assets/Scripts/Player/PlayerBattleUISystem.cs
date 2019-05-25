@@ -28,6 +28,7 @@ public class PlayerBattleUISystem : MonoBehaviour
     private HealthSystem healthSystem;
     private ConcentrationSystem concentrationSystem;
     private SkillSystem skillSystem;
+    private PlayerSkillBook skillBook;
     private DashSystem dashSystem;
     private ShieldSystem shieldSystem;
     private SheathSystem sheathSystem;
@@ -36,16 +37,20 @@ public class PlayerBattleUISystem : MonoBehaviour
 
     private SkillsUISystem slot1;
     private SkillsUISystem slot2;
+    private SkillsUISystem slotSpecial;
     private SkillsUtilityUISystem slotUtility1;
     private SkillsUtilityUISystem slotUtility2;
 
     // Cache
 
     private GameObject Raven;
+    private GameObject RavenSpecialNotReady;
+    private GameObject RavenSpecialReady;
     private GameObject JewelRed;
     private GameObject JewelBlue;
 
     private DashUISystem dashUiSystem;
+    private ShieldUISystem shieldUiSystem;
 
     private Image Health;
     private Image Concentration;
@@ -54,14 +59,10 @@ public class PlayerBattleUISystem : MonoBehaviour
 
     protected void Awake()
     {
-        if (!battleUI)
-        {
-            battleUI = GameObject.Find("UI").FindPrecise("Canvas").FindPrecise("BattleUI").gameObject;
-        }
-
         healthSystem = GetComponent<HealthSystem>();
         concentrationSystem = GetComponent<ConcentrationSystem>();
         skillSystem = GetComponent<SkillSystem>();
+        skillBook = GetComponent<PlayerSkillBook>();
         sheathSystem = GetComponent<SheathSystem>();
         dashSystem = GetComponent<DashSystem>();
         shieldSystem = GetComponent<ShieldSystem>();
@@ -71,10 +72,13 @@ public class PlayerBattleUISystem : MonoBehaviour
         var skillsPanel = battleUI.transform.Find("SkillsPanel");
 
         Raven = skillsPanel.Find("Raven").gameObject;
+        RavenSpecialNotReady = Raven.FindPrecise("Head1").gameObject;
+        RavenSpecialReady = Raven.FindPrecise("Head2Colored").gameObject;
         JewelRed = Raven.FindPrecise("JewelRed").gameObject;
         JewelBlue = Raven.FindPrecise("JewelBlue").gameObject;
 
         dashUiSystem = battleUI.transform.Find("DashPanel").GetComponent<DashUISystem>();
+        shieldUiSystem = battleUI.transform.Find("ShieldPanel").GetComponent<ShieldUISystem>();
 
         var statusPanel = battleUI.transform.Find("StatusPanel");
         var status = statusPanel.Find("Status");
@@ -85,6 +89,7 @@ public class PlayerBattleUISystem : MonoBehaviour
 
         slot1 = skillsPanel.FindPrecise("Slot1").GetComponent<SkillsUISystem>();
         slot2 = skillsPanel.FindPrecise("Slot2").GetComponent<SkillsUISystem>();
+        slotSpecial = skillsPanel.FindPrecise("SpecialSkillSlot").GetComponent<SkillsUISystem>();
         slotUtility1 = skillsPanel.FindPrecise("SlotUtility1").GetComponent<SkillsUtilityUISystem>();
         slotUtility2 = skillsPanel.FindPrecise("SlotUtility2").GetComponent<SkillsUtilityUISystem>();
 
@@ -103,25 +108,39 @@ public class PlayerBattleUISystem : MonoBehaviour
         JewelRed.SetActive(physical);
         JewelBlue.SetActive(magical);
 
-        dashUiSystem.DashCharges = dashSystem.ChargesAvailabe;
+        dashUiSystem.Charges = dashSystem.ChargesAvailabe;
+        shieldUiSystem.Charges = shieldSystem.GetFullShieldCharges();
+
+        Debug.Log("Current charges: " + shieldSystem.GetFullShieldCharges());
 
         Health.fillAmount = healthSystem.Health / healthSystem.healthMaximum;
         Concentration.fillAmount = concentrationSystem.Concentration / concentrationSystem.concentrationMaximum;
         XP.fillAmount = xpSystem.LevelCompletion;
 
-        var offset = 0;
-        if (magical) offset += 2;
-
-        slot1.Slot = skillSystem.SkillTypes[offset];
-        slot2.Slot = skillSystem.SkillTypes[offset + 1];
+        var type = physical ? SkillType.Physical : SkillType.Magical;
+        var skill1 = skillBook.GetSkill(type, 0);
+        var skill2 = skillBook.GetSkill(type, 1);
+        var skillSpecial = skillBook.GetSkill(SkillType.Special, 0);
+        slot1.Slot = skill1;
+        slot2.Slot = skill2;
+        slotSpecial.Slot = skillSpecial;
         slot1.Active = !sheathSystem.Sheathed;
         slot2.Active = !sheathSystem.Sheathed;
-        slot1.CooldownNormalized = skillSystem.Skills[offset].CooldownTimerNormalized;
-        slot2.CooldownNormalized = skillSystem.Skills[offset + 1].CooldownTimerNormalized;
-        slot1.Selected = skillSystem.SelectedSkill == offset;
-        slot2.Selected = skillSystem.SelectedSkill == offset + 1;
+        var specialReady = !sheathSystem.Sheathed && skillSpecial.HasValue &&
+                                                      concentrationSystem.Concentration >=
+                                                      skillSystem.ConcentrationCost(skillSpecial.Value);
+        slotSpecial.Active = specialReady;
 
+        RavenSpecialNotReady.SetActive(!specialReady);
+        RavenSpecialReady.SetActive(specialReady);
 
+        if (skill1.HasValue) slot1.CooldownNormalized = skillSystem.GetCooldownNormalized(skill1.Value);
+        if (skill2.HasValue) slot2.CooldownNormalized = skillSystem.GetCooldownNormalized(skill2.Value);
+        if (skillSpecial.HasValue) slotSpecial.CooldownNormalized = skillSystem.GetCooldownNormalized(skillSpecial.Value);
+        slot1.Selected = skill1.HasValue && skillSystem.SelectedSkill != null && (skillSystem.SelectedSkill.Type == skill1);
+        slot2.Selected = skill2.HasValue && skillSystem.SelectedSkill != null && (skillSystem.SelectedSkill.Type == skill2);
+        slotSpecial.Selected = skillSpecial.HasValue && skillSystem.SelectedSkill != null && (skillSystem.SelectedSkill.Type == skillSpecial);
+        
         slotUtility1.Slot = magical ? SkillUtility.Shoot : SkillUtility.Attack;
         slotUtility2.Slot = magical ? SkillUtility.Dash : SkillUtility.Shield;
         slotUtility1.Active = !sheathSystem.Sheathed;

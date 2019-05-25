@@ -12,7 +12,7 @@ using UnityEngine;
  */
 public class DashUISystem : MonoBehaviour
 {
-    public int DashCharges
+    public int Charges
     {
         set
         {

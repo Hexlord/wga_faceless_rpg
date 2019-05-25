@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.18028352, g: 0.22571376, b: 0.30692244, a: 1}
+  m_IndirectSpecularColor: {r: 0.18028334, g: 0.2257134, b: 0.30692226, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -184,9 +184,9 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 0
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1001 &727266948
+--- !u!1001 &165641736
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
@@ -303,28 +303,61 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 1425325639177377977, guid: 74a54511b84d54348981d5b781b99d6e,
-        type: 3}
-      propertyPath: loadMenuAutoLoad
-      value: 
-      objectReference: {fileID: 1422832932}
-    - target: {fileID: 1425325639177377977, guid: 74a54511b84d54348981d5b781b99d6e,
-        type: 3}
-      propertyPath: loadMenuQuickLoad
-      value: 
-      objectReference: {fileID: 1371427435}
-    - target: {fileID: 2269197473511861901, guid: 74a54511b84d54348981d5b781b99d6e,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 6281129291382139070, guid: 74a54511b84d54348981d5b781b99d6e,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 74a54511b84d54348981d5b781b99d6e, type: 3}
+--- !u!1 &167174535
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 167174537}
+  - component: {fileID: 167174536}
+  m_Layer: 0
+  m_Name: SaveSystem
+  m_TagString: SaveSystem
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &167174536
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 167174535}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bfdb9c93d8ab07344b6dd5344d022820, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  folderName: SaveFiles
+  autoFilename: AutoSave
+  quickFilename: QuickSave
+  saveFileName1: Save1
+  saveFileName2: Save2
+  saveFileName3: Save3
+  loadingSceneName: 
+  gameSceneName: 
+  saveKeyCode: 99
+  loadKeyCode: 118
+--- !u!4 &167174537
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 167174535}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 496.6794, y: 256.99765, z: 477.44858}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 5
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1108508442
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -426,7 +459,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 400010, guid: ff6dbc0f0169a844cadc3876f6869cb3, type: 3}
       propertyPath: m_RootOrder
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 400010, guid: ff6dbc0f0169a844cadc3876f6869cb3, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -713,18 +746,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
---- !u!1 &1371427435 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 987383844612612291, guid: 74a54511b84d54348981d5b781b99d6e,
-    type: 3}
-  m_PrefabInstance: {fileID: 727266948}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &1422832932 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 4316103277265397118, guid: 74a54511b84d54348981d5b781b99d6e,
-    type: 3}
-  m_PrefabInstance: {fileID: 727266948}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &2079159104
 GameObject:
   m_ObjectHideFlags: 0
@@ -738,6 +759,7 @@ GameObject:
   - component: {fileID: 2079159105}
   - component: {fileID: 2079159109}
   - component: {fileID: 2079159108}
+  - component: {fileID: 2079159110}
   m_Layer: 0
   m_Name: 3d camera
   m_TagString: Untagged
@@ -831,7 +853,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 8300000, guid: 5ad3d209cbfd506488f1b87e20d65051, type: 3}
   m_PlayOnAwake: 1
-  m_Volume: 1
+  m_Volume: 0.7
   m_Pitch: 1
   Loop: 1
   Mute: 0
@@ -915,3 +937,22 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!95 &2079159110
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2079159104}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 1b751906e97c1d64194393fb8974f077, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0

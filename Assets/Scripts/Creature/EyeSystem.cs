@@ -27,6 +27,7 @@ public class EyeSystem : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        target = GameObject.Find("Player").transform;
         eyes = this.transform;
         GameObject gm = gameObject.TraverseParent(transform.tag);
         agent = gameObject.TraverseParent(transform.tag).GetComponent<BaseAgent>();

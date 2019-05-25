@@ -14,6 +14,8 @@ public class PortalSystem : MonoBehaviour
     int portalCount;
     void Start()
     {
+        GameObject ss = GameObject.Find("SaveSystem");
+        saveSystem = ss.GetComponent<SaveSystem>();
         portalCount = portals.Count;
     }
 
@@ -25,6 +27,7 @@ public class PortalSystem : MonoBehaviour
 
     public void teleport(int portal)
     {
+        saveSystem.Save();
         player.transform.position = portals[portal].spawn.position;
         player.transform.rotation = portals[portal].spawn.rotation;
 

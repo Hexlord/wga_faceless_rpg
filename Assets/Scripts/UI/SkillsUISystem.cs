@@ -17,19 +17,25 @@ public class SkillsUISystem : MonoBehaviour
 {
     
 
-    public Skill Slot
+    public Skill? Slot
     {
         set
         {
             if (currentSlot == value) return;
 
-            slotNodes[(int)currentSlot].SetActive(false);
-            slotActiveNodes[(int)currentSlot].SetActive(false);
+            if (currentSlot != null)
+            {
+                slotNodes[(int) currentSlot].SetActive(false);
+                slotActiveNodes[(int) currentSlot].SetActive(false);
+            }
 
             currentSlot = value;
 
-            slotNodes[(int)currentSlot].SetActive(true);
-            slotActiveNodes[(int)currentSlot].SetActive(active);
+            if (currentSlot != null)
+            {
+                slotNodes[(int) currentSlot].SetActive(true);
+                slotActiveNodes[(int) currentSlot].SetActive(active);
+            }
         }
     }
 
@@ -39,8 +45,10 @@ public class SkillsUISystem : MonoBehaviour
         {
             if (active == value) return;
             active = value;
-            slotActiveNodes[(int)currentSlot].SetActive(active);
-
+            if (currentSlot != null)
+            {
+                slotActiveNodes[(int)currentSlot].SetActive(active);
+            }
         }
     }
 
@@ -62,7 +70,7 @@ public class SkillsUISystem : MonoBehaviour
     private GameObject border;
     private Image fade;
 
-    private Skill currentSlot = Skill.Hook;
+    private Skill? currentSlot = null;
     private bool active = false;
     
     private List<DashElementUISystem> charges = new List<DashElementUISystem>();
@@ -74,16 +82,20 @@ public class SkillsUISystem : MonoBehaviour
         slotActiveNodes = new GameObject[length];
 
         var slots = (Skill[]) Enum.GetValues(typeof(Skill));
-        var i = 0;
-        foreach (var slot in slots)
+
+        for(var i = 0; i != slots.Length; ++i)
         {
-            var node = transform.FindPrecise(slot.ToString()).gameObject;
-            var activeNode = transform.FindPrecise(slot.ToString()+"Active").gameObject;
+            var slot = slots[i];
 
-            slotNodes[i] = node;
-            slotActiveNodes[i] = activeNode;
+            var node = transform.FindPrecise(slot.ToString(), false);
+            if (node)
+            {
+                var go = node.gameObject;
+                var activeNode = transform.FindPrecise(slot.ToString() + "Active", false).gameObject;
 
-            ++i;
+                slotNodes[i] = go;
+                slotActiveNodes[i] = activeNode;
+            }
         }
 
         border = transform.FindPrecise("SkillBorderWhite").gameObject;

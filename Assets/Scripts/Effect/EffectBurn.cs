@@ -13,7 +13,7 @@ public class EffectBurn : EffectBase
     public EffectBurn() :
         base(Effect.Burn, 7.5f)
     {
-        effectPrefab = (GameObject)Resources.Load("Prefabs/Effects/BurnEffect", typeof(GameObject));
+        effectPrefab = (GameObject)Resources.Load("Prefabs/Skills/BurnEffect", typeof(GameObject));
     }
 
     public override void Update(float delta)

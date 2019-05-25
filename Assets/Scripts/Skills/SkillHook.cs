@@ -24,18 +24,25 @@ public class SkillHook : SkillBase
     public static float power = 50.0f;
     public static float powerToBoss = 500.0f;
     public static float targetDistance = 0.5f;
+    public override bool CanMove
+    {
+        get { return true; }
+    }
+
 
     public SkillHook() :
-        base(Skill.Hook, SkillAnimation.First, true, 1.0f)
+        base(Skill.Hook, SkillAnimation.Hook, true, 1.0f)
     {
         hookPrefab = (GameObject)Resources.Load("Prefabs/Skills/Hook", typeof(GameObject));
     }
 
-    public override void PrepareEvent(GameObject caster)
+    public override bool PrepareEvent(GameObject caster)
     {
         base.PrepareEvent(caster);
         PutOnCooldown();
         casterMovementSystem = caster.GetComponent<MovementSystem>();
+
+        return true;
     }
 
     public override void StartUpdate(GameObject caster, float delta, float time, float length)

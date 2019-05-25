@@ -17,7 +17,7 @@ using UnityEngine.UI;
 [AddComponentMenu("ProjectFaceless/Player/Character Controller")]
 public class PlayerCharacterController : MonoBehaviour
 {
-    
+
     // Public
     [Header("Basic Settings")]
 
@@ -26,6 +26,9 @@ public class PlayerCharacterController : MonoBehaviour
 
     [Tooltip("Camera for aiming")]
     public ConstrainedCamera cameraThirdPersonAim;
+
+    public GameObject aimDefault;
+    public GameObject aimZoom;
 
     public bool Freeze
     {
@@ -40,11 +43,14 @@ public class PlayerCharacterController : MonoBehaviour
         }
     }
 
+    public bool CanChangeBodyState { get; set; }
+
     // Cache
 
     private MovementSystem movementSystem;
     private new Camera camera;
     private PlayerCameraController cameraController;
+    private PlayerSkillBook skillBook;
     private SkillSystem skillSystem;
     private AttackSystem attackSystem;
     private ShootSystem shootSystem;
@@ -62,6 +68,8 @@ public class PlayerCharacterController : MonoBehaviour
 
     protected void Start()
     {
+        CanChangeBodyState = false;
+
         movementSystem = GetComponent<MovementSystem>();
         skillSystem = GetComponent<SkillSystem>();
         attackSystem = GetComponent<AttackSystem>();
@@ -70,6 +78,7 @@ public class PlayerCharacterController : MonoBehaviour
         dashSystem = GetComponent<DashSystem>();
         shieldSystem = GetComponent<ShieldSystem>();
         bodyStateSystem = GetComponent<BodyStateSystem>();
+        skillBook = GetComponent<PlayerSkillBook>();
         cameraController = GetComponent<PlayerCameraController>();
         aimSystem = GetComponent<AimSystem>();
         //Main camera can be accessed via Camera.main. Why do you use such an unorthodox and heavy method?
@@ -88,7 +97,7 @@ public class PlayerCharacterController : MonoBehaviour
 
         var desire = Quaternion.Euler(0.0f, camera.transform.rotation.eulerAngles.y, 0.0f)
             * movement;
-        if ((bodyStateSystem.State == BodyStateSystem.BodyState.Magical) && 
+        if ((bodyStateSystem.State == BodyStateSystem.BodyState.Magical) &&
             InputManager.Pressed(InputAction.Defend))
         {
             Debug.Log("Dashed");
@@ -102,6 +111,7 @@ public class PlayerCharacterController : MonoBehaviour
             movementSystem.Movement = new Vector2(desire.x, desire.z);
         }
 
+        movementSystem.Sprint = sheathSystem.Sheathed && InputManager.Down(InputAction.Sprint);
 
         if (movementSystem.Moving)
         {
@@ -138,43 +148,41 @@ public class PlayerCharacterController : MonoBehaviour
         }
     }
 
-    private int GetSkillSelection()
-    {
-        var magicalOffset = bodyStateSystem.State == BodyStateSystem.BodyState.Magical ? 2 : 0;
-
-        var key = -1;
-        if (InputManager.Pressed(InputAction.Skill_1))
-        {
-            key = 0;
-        }
-        else if (InputManager.Pressed(InputAction.Skill_2))
-        {
-            key = 1;
-        }
-
-        if (key >= 0)
-        {
-            key += magicalOffset;
-            if (skillSystem.Skills.Count <= key) key = -1;
-        }
-       
-        return key;
-    }
-
     private void UpdateSkills()
     {
-        var selectedSkill = GetSkillSelection();
+        var type = bodyStateSystem.State == BodyStateSystem.BodyState.Physical
+            ? SkillType.Physical
+            : SkillType.Magical;
 
-        if (selectedSkill >= 0 &&
-            !skillSystem.Busy)
+        if (!skillSystem.Busy)
         {
-            if (skillSystem.SelectedSkill == selectedSkill)
+            if (InputManager.Down(InputAction.Heal))
             {
-                skillSystem.UnselectSkill();
+                skillSystem.SelectSkill(Skill.Heal);
+                skillSystem.Cast();
             }
-            else
+            else if (!sheathSystem.Sheathed &&
+                InputManager.Pressed(InputAction.Special) &&
+                     skillBook.IsBound(SkillType.Special, 0))
             {
-                skillSystem.SelectSkill(selectedSkill);
+                skillBook.Select(SkillType.Special, 0);
+                skillSystem.Cast();
+            }
+            else if (InputManager.Pressed(InputAction.Skill_1))
+            {
+                skillBook.Select(type, 0);
+            }
+            else if (InputManager.Pressed(InputAction.Skill_2))
+            {
+                skillBook.Select(type, 1);
+            }
+        }
+
+        if (skillSystem.Channeling && skillSystem.SelectedSkill.Type == Skill.Heal)
+        {
+            if (!InputManager.Down(InputAction.Heal))
+            {
+                skillSystem.Interrupt();
             }
         }
     }
@@ -192,6 +200,9 @@ public class PlayerCharacterController : MonoBehaviour
             ? cameraThirdPersonAim
             : cameraThirdPerson,
             preserveRotation: true);
+
+        aimDefault.SetActive(!aiming);
+        aimZoom.SetActive(aiming);
     }
 
     private void UpdateSheathe()
@@ -215,7 +226,10 @@ public class PlayerCharacterController : MonoBehaviour
 
         if (bodyStateSystem.State == BodyStateSystem.BodyState.Physical)
         {
+            if (!attackSystem.Attacking)
+            {
                 attackSystem.Attack(-1, 0);
+            }
         }
         else if (bodyStateSystem.State == BodyStateSystem.BodyState.Magical)
         {
@@ -244,19 +258,19 @@ public class PlayerCharacterController : MonoBehaviour
             }
 
             Attack();
-            
+
             wantToAttack = false;
         }
         else
         {
-            if (skillSystem.Channeling) skillSystem.Interrupt();
+            if (skillSystem.Channeling && skillSystem.SelectedSkill.Type != Skill.Heal) skillSystem.Interrupt();
         }
 
     }
 
     private void UpdateBodyState()
     {
-        if (InputManager.Released(InputAction.ChangeBodyState))
+        if (InputManager.Released(InputAction.ChangeBodyState) && CanChangeBodyState)
         {
             bodyStateSystem.ChangeState(
                 bodyStateSystem.State == BodyStateSystem.BodyState.Magical

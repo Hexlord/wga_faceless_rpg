@@ -17,7 +17,7 @@ using UnityEngine.UI;
 [AddComponentMenu("ProjectFaceless/Player/Character Controller")]
 public class PlayerCharacterController : MonoBehaviour
 {
-    
+
     // Public
     [Header("Basic Settings")]
 
@@ -26,6 +26,9 @@ public class PlayerCharacterController : MonoBehaviour
 
     [Tooltip("Camera for aiming")]
     public ConstrainedCamera cameraThirdPersonAim;
+
+    public GameObject aimDefault;
+    public GameObject aimZoom;
 
     public bool Freeze
     {
@@ -40,11 +43,14 @@ public class PlayerCharacterController : MonoBehaviour
         }
     }
 
+    public bool CanChangeBodyState { get; set; }
+
     // Cache
 
     private MovementSystem movementSystem;
     private new Camera camera;
     private PlayerCameraController cameraController;
+    private PlayerSkillBook skillBook;
     private SkillSystem skillSystem;
     private AttackSystem attackSystem;
     private ShootSystem shootSystem;
@@ -62,6 +68,8 @@ public class PlayerCharacterController : MonoBehaviour
 
     protected void Start()
     {
+        CanChangeBodyState = false;
+
         movementSystem = GetComponent<MovementSystem>();
         skillSystem = GetComponent<SkillSystem>();
         attackSystem = GetComponent<AttackSystem>();
@@ -70,6 +78,7 @@ public class PlayerCharacterController : MonoBehaviour
         dashSystem = GetComponent<DashSystem>();
         shieldSystem = GetComponent<ShieldSystem>();
         bodyStateSystem = GetComponent<BodyStateSystem>();
+        skillBook = GetComponent<PlayerSkillBook>();
         cameraController = GetComponent<PlayerCameraController>();
         aimSystem = GetComponent<AimSystem>();
         //Main camera can be accessed via Camera.main. Why do you use such an unorthodox and heavy method?
@@ -88,9 +97,10 @@ public class PlayerCharacterController : MonoBehaviour
 
         var desire = Quaternion.Euler(0.0f, camera.transform.rotation.eulerAngles.y, 0.0f)
             * movement;
-        if ((bodyStateSystem.State == BodyStateSystem.BodyState.Magical) && 
-            InputManager.Down(InputAction.Defend))
+        if ((bodyStateSystem.State == BodyStateSystem.BodyState.Magical) &&
+            InputManager.Pressed(InputAction.Defend))
         {
+            Debug.Log("Dashed");
             if (sheathSystem.state == SheathSystem.SheathSystemState.Unsheathed)
             {
                 dashSystem.StartDashing(new Vector2(desire.x, desire.z));
@@ -101,6 +111,7 @@ public class PlayerCharacterController : MonoBehaviour
             movementSystem.Movement = new Vector2(desire.x, desire.z);
         }
 
+        movementSystem.Sprint = sheathSystem.Sheathed && InputManager.Down(InputAction.Sprint);
 
         if (movementSystem.Moving)
         {
@@ -110,9 +121,13 @@ public class PlayerCharacterController : MonoBehaviour
 
     private void UpdateDefense()
     {
+        if (shieldSystem.IsRaised && bodyStateSystem.State == BodyStateSystem.BodyState.Magical)
+        {
+            shieldSystem.LowerShield();
+        }
         if (bodyStateSystem.State == BodyStateSystem.BodyState.Physical && sheathSystem.state == SheathSystem.SheathSystemState.Unsheathed)
         {
-            if (!shieldSystem.CanShield)
+            if (shieldSystem.CanShield)
             {
                 if (InputManager.Pressed(InputAction.Defend))
                 {
@@ -120,11 +135,11 @@ public class PlayerCharacterController : MonoBehaviour
                     Debug.Log("Full shield Charges: " + shieldSystem.GetFullShieldCharges());
                     Debug.Log("Current shield charge HP: " + shieldSystem.GetRemainingHPInCharge());
                 }
-                else shieldSystem.RegenerateShieldHP(Time.deltaTime);
             }
             else
             {
-                if (InputManager.Released(InputAction.Defend)) shieldSystem.LowerShield();
+                if (InputManager.Released(InputAction.Defend))
+                    shieldSystem.LowerShield();
                 else
                 {
                     cameraController.TriggerPlayerAutoRotation();
@@ -133,37 +148,42 @@ public class PlayerCharacterController : MonoBehaviour
         }
     }
 
-    private int GetSkillSelection()
-    {
-        var magicalOffset = bodyStateSystem.State == BodyStateSystem.BodyState.Magical ? 2 : 0;
-
-        var key = -1;
-        if (InputManager.Down(InputAction.Skill_1))
-        {
-            key = 0;
-        }
-        else if (InputManager.Down(InputAction.Skill_2))
-        {
-            key = 1;
-        }
-
-        if (key >= 0)
-        {
-            key += magicalOffset;
-            if (skillSystem.Skills.Count <= key) key = -1;
-        }
-       
-        return key;
-    }
-
     private void UpdateSkills()
     {
-        int selectedSkill = GetSkillSelection();
+        var type = bodyStateSystem.State == BodyStateSystem.BodyState.Physical
+            ? SkillType.Physical
+            : SkillType.Magical;
 
-        if (selectedSkill >= 0 &&
-            !skillSystem.Busy)
+        if (!skillSystem.Busy)
         {
-            skillSystem.SelectSkill(selectedSkill);
+            if (InputManager.Down(InputAction.Heal))
+            {
+                skillSystem.SelectSkill(Skill.Heal);
+                skillSystem.Cast();
+            }
+            else if (!sheathSystem.Sheathed &&
+                InputManager.Pressed(InputAction.Special) &&
+                     skillBook.IsBound(SkillType.Special, 0))
+            {
+                skillBook.Select(SkillType.Special, 0);
+                skillSystem.Cast();
+            }
+            else if (InputManager.Pressed(InputAction.Skill_1))
+            {
+                skillBook.Select(type, 0);
+            }
+            else if (InputManager.Pressed(InputAction.Skill_2))
+            {
+                skillBook.Select(type, 1);
+            }
+        }
+
+        if (skillSystem.Channeling && skillSystem.SelectedSkill.Type == Skill.Heal)
+        {
+            if (!InputManager.Down(InputAction.Heal))
+            {
+                skillSystem.Interrupt();
+            }
         }
     }
 
@@ -180,6 +200,9 @@ public class PlayerCharacterController : MonoBehaviour
             ? cameraThirdPersonAim
             : cameraThirdPerson,
             preserveRotation: true);
+
+        aimDefault.SetActive(!aiming);
+        aimZoom.SetActive(aiming);
     }
 
     private void UpdateSheathe()
@@ -188,8 +211,8 @@ public class PlayerCharacterController : MonoBehaviour
 
         if (InputManager.Released(InputAction.Sheathe))
         {
-            if (sheathSystem.Sheathed) sheathSystem.Unsheath();
-            else sheathSystem.Sheath();
+            if (sheathSystem.Sheathed) sheathSystem.Unsheathe();
+            else sheathSystem.Sheathe();
         }
     }
 
@@ -203,14 +226,24 @@ public class PlayerCharacterController : MonoBehaviour
 
         if (bodyStateSystem.State == BodyStateSystem.BodyState.Physical)
         {
-            attackSystem.Attack();
+            if (!attackSystem.Attacking)
+            {
+                attackSystem.Attack(-1, 0);
+            }
         }
         else if (bodyStateSystem.State == BodyStateSystem.BodyState.Magical)
         {
+<<<<<<< HEAD
+            shootSystem.Shoot(ShootingDirection, 0);
+=======
+
             var rayFromCenterOfTheScreen = camera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
+            //Vector3 aimingPointOffset = camera.ViewportToWorldPoint(new Vector3(0.5f, 0.5f, 0));
+            //aimingPointOffset = /*(shootSystem.ShootingPointPosition - aimingPointOffset).magnitude */ camera.transform.forward;
+            //Ray rayForAiming = new Ray(aimingPointOffset, camera.transform.forward);
             RaycastHit hit;
             Vector3 shootingDirection;
-            var mask = LayerMask.GetMask("Enemy", "Environment", "Character");
+            var mask = LayerMask.GetMask("Enemy", "Environment");
             const float dist = 1000.0f;
 
             if (Physics.Raycast(rayFromCenterOfTheScreen, out hit, dist, mask, QueryTriggerInteraction.Ignore))
@@ -223,7 +256,11 @@ public class PlayerCharacterController : MonoBehaviour
                 shootingDirection = camera.transform.forward;
             }
             cameraController.TriggerPlayerAutoRotation();
-            shootSystem.Shoot(shootingDirection);
+            if (!shootSystem.Shooting)
+            {
+                shootSystem.Shoot(shootingDirection, 0);
+            }
+>>>>>>> merge_save_5.0
         }
     }
 
@@ -234,7 +271,7 @@ public class PlayerCharacterController : MonoBehaviour
         {
             if (sheathSystem.Sheathed)
             {
-                if (!sheathSystem.Busy) sheathSystem.Unsheath();
+                if (!sheathSystem.Busy) sheathSystem.Unsheathe();
 
                 wantToAttack = true;
                 return;
@@ -247,47 +284,20 @@ public class PlayerCharacterController : MonoBehaviour
                 return;
             }
 
-<<<<<<< HEAD
-            if (bodyStateSystem.State == BodyStateSystem.BodyState.Physical)
-            {
-                attackSystem.Attack(0, 0);
-            } else if (bodyStateSystem.State == BodyStateSystem.BodyState.Magical)
-            {
-                var rayFromCenterOfTheScreen = camera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
-                RaycastHit hit;
-                Vector3 shootingDirection;
-                var mask = LayerMask.GetMask("Enemy", "Environment", "Character");
-                const float dist = 1000.0f;
-
-                if (Physics.Raycast(rayFromCenterOfTheScreen, out hit, dist, mask, QueryTriggerInteraction.Ignore))
-                {
-                    shootingDirection = (hit.point - (shootSystem.ShootingPoint.position));
-                    if(shootingDirection.sqrMagnitude > Mathf.Epsilon) shootingDirection.Normalize();
-                }
-                else
-                {
-                    shootingDirection = camera.transform.forward;
-                }
-                cameraController.TriggerPlayerAutoRotation();
-                shootSystem.Shoot(shootingDirection);
-            }
-
-=======
             Attack();
-            
->>>>>>> origin/release/4.0
+
             wantToAttack = false;
         }
         else
         {
-            if (skillSystem.Channeling) skillSystem.Interrupt(false);
+            if (skillSystem.Channeling && skillSystem.SelectedSkill.Type != Skill.Heal) skillSystem.Interrupt();
         }
 
     }
 
     private void UpdateBodyState()
     {
-        if (InputManager.Released(InputAction.ChangeBodyState))
+        if (InputManager.Released(InputAction.ChangeBodyState) && CanChangeBodyState)
         {
             bodyStateSystem.ChangeState(
                 bodyStateSystem.State == BodyStateSystem.BodyState.Magical
@@ -324,6 +334,30 @@ public class PlayerCharacterController : MonoBehaviour
         }
 
 
+    }
+
+    public Vector3 ShootingDirection()
+    {
+        var rayFromCenterOfTheScreen = camera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
+        //Vector3 aimingPointOffset = camera.ViewportToWorldPoint(new Vector3(0.5f, 0.5f, 0));
+        //aimingPointOffset = /*(shootSystem.ShootingPointPosition - aimingPointOffset).magnitude */ camera.transform.forward;
+        //Ray rayForAiming = new Ray(aimingPointOffset, camera.transform.forward);
+        RaycastHit hit;
+        Vector3 shootingDirection;
+        var mask = LayerMask.GetMask("Enemy", "Environment");
+        const float dist = 1000.0f;
+
+        if (Physics.Raycast(rayFromCenterOfTheScreen, out hit, dist, mask, QueryTriggerInteraction.Ignore))
+        {
+            shootingDirection = (hit.point - (shootSystem.ShootingPoint.position));
+            if (shootingDirection.sqrMagnitude > Mathf.Epsilon) shootingDirection.Normalize();
+        }
+        else
+        {
+            shootingDirection = camera.transform.forward;
+        }
+        cameraController.TriggerPlayerAutoRotation();
+        return shootingDirection;
     }
 
 }

@@ -19,15 +19,17 @@ public class SkillFireBreath : SkillBase
     private readonly GameObject firePrefab;
 
     public SkillFireBreath() :
-        base(Skill.FireBreath, SkillAnimation.First, false, 5.0f)
+        base(Skill.FireBreath, SkillAnimation.FireBreath, false, 5.0f)
     {
         firePrefab = (GameObject)Resources.Load("Prefabs/Skills/FireBreath", typeof(GameObject));
     }
 
-    public override void PrepareEvent(GameObject caster)
+    public override bool PrepareEvent(GameObject caster)
     {
         base.PrepareEvent(caster);
         PutOnCooldown();
+
+        return true;
     }
 
     public override void StartUpdate(GameObject caster, float delta, float time, float length)

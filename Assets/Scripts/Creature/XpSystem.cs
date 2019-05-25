@@ -13,7 +13,7 @@ using UnityEngine.UI;
  * 
  */
 [AddComponentMenu("ProjectFaceless/Creature/XP System")]
-public class XpSystem : MonoBehaviour
+public class XpSystem : MonoBehaviour, ISaveable
 {
 
     // Public
@@ -38,10 +38,13 @@ public class XpSystem : MonoBehaviour
     }
 
     // Private
-
+    [Saveable]
     private int level = 0;
+    [Saveable]
     private float xp = 0.0f;
+    [Saveable]
     private int swordPoints = 0;
+    [Saveable]
     private int maskPoints = 0;
 
     // Cache
@@ -75,4 +78,13 @@ public class XpSystem : MonoBehaviour
         }
     }
 
+    public void OnSave()
+    {
+        //throw new NotImplementedException();
+    }
+
+    public void OnLoad()
+    {
+        Debug.Log(xp);
+    }
 }
