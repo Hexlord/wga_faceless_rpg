@@ -156,13 +156,16 @@ public class CollisionDamageBasic : MonoBehaviour
                     case "Weapon":
                         break;
                     case "Shield":
-                        dealsDamage = false;
-                        Interrupted(other);
-                        Debug.Log(other.ToString() + this.gameObject.ToString());
-                        if (target != null)
+                        if (dealsDamage)
                         {
-                            var shield = target.GetComponent<ShieldSystem>();
-                            if (shield) shield.RecieveDamage(shieldDamage);
+                            dealsDamage = false;
+                            Interrupted(other);
+                            Debug.Log(other.ToString() + this.gameObject.ToString());
+                            if (target != null)
+                            {
+                                var shield = target.GetComponent<ShieldSystem>();
+                                if (shield) shield.RecieveDamage(shieldDamage);
+                            }
                         }
                         break;
                     case "Body":

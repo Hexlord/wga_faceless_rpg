@@ -111,6 +111,10 @@ public class PlayerCharacterController : MonoBehaviour
 
     private void UpdateDefense()
     {
+        if (shieldSystem.IsRaised && bodyStateSystem.State == BodyStateSystem.BodyState.Magical)
+        {
+            shieldSystem.LowerShield();
+        }
         if (bodyStateSystem.State == BodyStateSystem.BodyState.Physical && sheathSystem.state == SheathSystem.SheathSystemState.Unsheathed)
         {
             if (shieldSystem.CanShield)
@@ -215,27 +219,7 @@ public class PlayerCharacterController : MonoBehaviour
         }
         else if (bodyStateSystem.State == BodyStateSystem.BodyState.Magical)
         {
-
-            var rayFromCenterOfTheScreen = camera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
-            //Vector3 aimingPointOffset = camera.ViewportToWorldPoint(new Vector3(0.5f, 0.5f, 0));
-            //aimingPointOffset = /*(shootSystem.ShootingPointPosition - aimingPointOffset).magnitude */ camera.transform.forward;
-            //Ray rayForAiming = new Ray(aimingPointOffset, camera.transform.forward);
-            RaycastHit hit;
-            Vector3 shootingDirection;
-            var mask = LayerMask.GetMask("Enemy", "Environment");
-            const float dist = 1000.0f;
-
-            if (Physics.Raycast(rayFromCenterOfTheScreen, out hit, dist, mask, QueryTriggerInteraction.Ignore))
-            {
-                shootingDirection = (hit.point - (shootSystem.ShootingPoint.position));
-                if (shootingDirection.sqrMagnitude > Mathf.Epsilon) shootingDirection.Normalize();
-            }
-            else
-            {
-                shootingDirection = camera.transform.forward;
-            }
-            cameraController.TriggerPlayerAutoRotation();
-            shootSystem.Shoot(shootingDirection, 0);
+            shootSystem.Shoot(ShootingDirection, 0);
         }
     }
 
@@ -309,6 +293,30 @@ public class PlayerCharacterController : MonoBehaviour
         }
 
 
+    }
+
+    public Vector3 ShootingDirection()
+    {
+        var rayFromCenterOfTheScreen = camera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
+        //Vector3 aimingPointOffset = camera.ViewportToWorldPoint(new Vector3(0.5f, 0.5f, 0));
+        //aimingPointOffset = /*(shootSystem.ShootingPointPosition - aimingPointOffset).magnitude */ camera.transform.forward;
+        //Ray rayForAiming = new Ray(aimingPointOffset, camera.transform.forward);
+        RaycastHit hit;
+        Vector3 shootingDirection;
+        var mask = LayerMask.GetMask("Enemy", "Environment");
+        const float dist = 1000.0f;
+
+        if (Physics.Raycast(rayFromCenterOfTheScreen, out hit, dist, mask, QueryTriggerInteraction.Ignore))
+        {
+            shootingDirection = (hit.point - (shootSystem.ShootingPoint.position));
+            if (shootingDirection.sqrMagnitude > Mathf.Epsilon) shootingDirection.Normalize();
+        }
+        else
+        {
+            shootingDirection = camera.transform.forward;
+        }
+        cameraController.TriggerPlayerAutoRotation();
+        return shootingDirection;
     }
 
 }

@@ -119,6 +119,13 @@ public class NavigationSystem : MonoBehaviour
             return Vector2.zero;
         }
     }
+
+    public void StopAgent(uint ID)
+    {
+        AgentsToPaths[ID].Clear();
+        AgentsToDestinations[ID] = agents[ID].transform.position;
+        ClearRequest(ID);
+    }
     
     public Vector3 GetIntendedDirection(uint ID)
     {

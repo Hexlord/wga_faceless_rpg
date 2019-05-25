@@ -77,7 +77,7 @@ public class CollectiveAISystem : MonoBehaviour
             agentsTypes.Add(agent.ID, agent.AgentType());
             agentsOrders.Add(agent.ID, new Order(OrderType.RoamAround, ClosestRecreationalArea(agent.transform.position)));
             agentsLastPathCalculated.Add(agent.ID, 0);
-            agent.SetTarget(agentsOrders[agent.ID].target);
+            //agent.SetTarget(agentsOrders[agent.ID].target);
         }
     }
 

@@ -21,9 +21,9 @@ public class ComplexTask: Task
     
     public ComplexTask(string name,
         HTNplanner coroutineRunner,
-        Condition[] conditions, 
-        Condition[] rules, 
-        DecompositionMethod decompose) : base(name, coroutineRunner, conditions, rules)
+        DecompositionMethod decompose,
+        Condition[] conditions = null, 
+        Condition[] rules = null) : base(name, coroutineRunner, conditions, rules)
     {
         Decompose = decompose;
     }
@@ -51,7 +51,7 @@ public class ComplexTask: Task
 
         while (this.Status != TaskStatus.Complete)
         {
-            if (!CheckTaskIntegrity())
+            if (!CheckTaskIntegrity() || TaskExecutionPlan.Status == Plan.PlanStatus.Failure)
             {
                 this.SetStatus(TaskStatus.Failure);
                 yield break;

@@ -12,6 +12,12 @@ public class Task
     private string taskName;
     
     private TaskStatus taskStatus;
+
+    public static readonly Condition[] EmptyCondition =
+    {
+        () => true
+    };
+    
     
     public delegate bool Condition(); 
     
@@ -19,14 +25,32 @@ public class Task
     protected readonly Condition[] integrityRules;
     protected readonly HTNplanner taskCouroutineStarter;
 
-    public Task(string name, HTNplanner coroutineRunner, Condition[] conditions, Condition[] rules)
+    public Task(string name, 
+        HTNplanner coroutineRunner, 
+        Condition[] conditions = null, 
+        Condition[] rules = null)
     {
         taskName = name;
         taskCouroutineStarter = coroutineRunner;
-        preConditionsList = new Condition[conditions.Length];
-        integrityRules = new Condition[rules.Length];
-        conditions.CopyTo(preConditionsList, 0);
-        rules.CopyTo(integrityRules, 0);
+        if (conditions == null)
+        {
+            preConditionsList = EmptyCondition;
+        }
+        else
+        {
+            preConditionsList = new Condition[conditions.Length];
+            conditions.CopyTo(preConditionsList, 0);
+        }
+
+        if (rules == null)
+        {
+            integrityRules = EmptyCondition;
+        }
+        else
+        {
+            integrityRules = new Condition[rules.Length];
+            rules.CopyTo(integrityRules, 0);
+        }
         taskStatus = TaskStatus.Planned;
     }
     
@@ -55,7 +79,7 @@ public class Task
         get { return TaskType.Empty; }
     }
     
-    public virtual TaskStatus Status
+    public TaskStatus Status
     {
         get { return taskStatus; }
     }

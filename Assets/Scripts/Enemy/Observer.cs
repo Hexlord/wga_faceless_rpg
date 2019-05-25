@@ -18,7 +18,7 @@ class Observer : MonoBehaviour
         }
     }
 
-    private List<Vector3> ShootingPositionsThatSeeTarget(Transform target)
+    public List<Vector3> ShootingPositionsThatSeeTarget(Transform target)
     {
         List<Vector3> positions = new List<Vector3>();
         foreach (Transform pos in shootingPositions)
@@ -27,9 +27,10 @@ class Observer : MonoBehaviour
             RaycastHit hit;
             if (Physics.Raycast(ray, out hit, 1000.0f, LayerMask.GetMask("Character", "Environment"), QueryTriggerInteraction.Ignore))
             {
-                if (hit.collider.tag == target.tag)
+                if (hit.collider.CompareTag(target.tag))
                 {
                     positions.Add(pos.position);
+                    ShootingPositionCanSeeTarget[pos] = true;
                 }
             }
         }
@@ -73,7 +74,7 @@ class Observer : MonoBehaviour
         RaycastHit hit;
         if (Physics.Raycast(ray, out hit, 1000.0f, LayerMask.GetMask("Character", "Environment"), QueryTriggerInteraction.Ignore))
         {
-            if (hit.collider.tag == target.tag)
+            if (hit.collider.CompareTag(target.tag))
             {
                 return true;
             }

@@ -50,7 +50,7 @@ public class HTNplanner : MonoBehaviour
         {
             AgentIdDictionary.Add(a.ID, a);
             a.SetControllingSystems(this, navSystem);
-            a.SetMeTask("RoamAround");
+            AssignTask(a,a.GetTaskByName("RoamAround"));
         }
     }
     // Update is called once per frame
@@ -58,7 +58,7 @@ public class HTNplanner : MonoBehaviour
     {
         foreach (var t in IdToTask.Values)
         {
-            if (t.Status == Task.TaskStatus.Planned)
+            if (t.Status != Task.TaskStatus.InProgress )
                 t.StartExecution();
         }
     }
@@ -115,6 +115,11 @@ public class HTNplanner : MonoBehaviour
         Debug.Log("Agent" + agent + " has died and removed.");
     }
 
+    public bool TragetStateIsPhysical()
+    {
+        return statesOfTarget.State == BodyStateSystem.BodyState.Physical;
+    }
+    
     public void StartRunningCoroutine(IEnumerator coroutine)
     {
         StartCoroutine(coroutine);

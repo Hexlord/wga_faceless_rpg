@@ -87,7 +87,6 @@ public class HealthSystem : MonoBehaviour
     public void Damage(GameObject source, float amount)
     {
         Health -= amount;
-        Debug.Log(this.gameObject.name + ": " + health + " HP");
         OnDamage(source, amount);
         if (Health <= 0.0f) OnDeath(source);
     }
@@ -108,6 +107,12 @@ public class HealthSystem : MonoBehaviour
             if (concentrationSystem)
             {
                 concentrationSystem.Restore(amount * concentrationSystem.concentrationVampirism);
+            }
+
+            BaseAgent npc = this.GetComponent<BaseAgent>();
+            if (npc)
+            {
+                npc.SawSomething(source);
             }
         }
     }
@@ -139,8 +144,7 @@ public class HealthSystem : MonoBehaviour
             worldSpaceHealthBar.enabled = false;
         }
         if (GetComponent<BaseAgent>()) GetComponent<BaseAgent>().enabled = false;
-        if (source && source.tag == "Player" &&
-            gameObject != source)
+        if (transform.CompareTag("Faceless") || transform.CompareTag("FacelessBoss") )
         {
             int index = Random.Range(1, DeathVariants + 1);
             animator.SetInteger(DeathVariantsInt, index);

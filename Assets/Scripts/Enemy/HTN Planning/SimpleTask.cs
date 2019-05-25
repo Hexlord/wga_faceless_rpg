@@ -21,48 +21,51 @@ public class SimpleTask:Task
     
     public SimpleTask(string name,
         HTNplanner coroutineRunner,
-        Condition[] conditions, 
-        Condition[] rules, 
-        Condition[] finish, 
-        TaskAction action) : base (name, coroutineRunner, conditions, rules)
+        TaskAction action = null,
+        Condition[] conditions = null, 
+        Condition[] rules = null, 
+        Condition[] finish = null) : base (name, coroutineRunner, conditions, rules)
     {
         taskAction = action;
-        endingConditions = new Condition[finish.Length];
-        finish.CopyTo(endingConditions, 0);
+        if (finish == null)
+        {
+            finish = EmptyCondition;
+        }
+        else
+        {
+            endingConditions = new Condition[finish.Length];
+            finish.CopyTo(endingConditions, 0);
+        }
+
     }
     
-    protected bool CheckEndTask()
+    private bool CheckEndTask()
     {
         return BasicCheck(endingConditions);
-    }
-
-    public override void StartExecution()
-    {
-        base.StartExecution();
     }
     
     protected override IEnumerator TaskExecution()
     {
-        this.SetStatus(TaskStatus.InProgress);
+        SetStatus(TaskStatus.InProgress);
         if (!CheckPreConditions())
         {
-            this.SetStatus(TaskStatus.Failure);
+            SetStatus(TaskStatus.Failure);
             yield break;
         }
         
         taskAction.Invoke();
         
-        while (this.Status != TaskStatus.Complete)
+        while (Status != TaskStatus.Complete)
         {
             if (!CheckTaskIntegrity())
             {
-                this.SetStatus(TaskStatus.Failure);
+                SetStatus(TaskStatus.Failure);
                 yield break;
             }
 
             if (CheckEndTask())
             {
-                this.SetStatus(TaskStatus.Complete);
+                SetStatus(TaskStatus.Complete);
             }
 
             yield return null;

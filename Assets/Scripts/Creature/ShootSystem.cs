@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 /*
  * History:
@@ -52,34 +53,19 @@ public class ShootSystem : MonoBehaviour
 
     public int animationLayer = 0;
 
-    public string shootAnimation = "shoot";
-    public string shootRestoreAnimation = "shootRestore";
     public string shootAnimationTrigger = "shootTrigger";
-
-    public string idleAnimation = "idle";
 
     //private
 
     private GameObject projectile;
-    private Vector3 shootingDirection;
+    private AimVectorCalculationDelegate shootingDirection;
+    public delegate Vector3 AimVectorCalculationDelegate();
     private float fireLastTime = 0.0f;
     private int indexOfChosenProjectile = 0;
 
     public bool Shooting
     {
         get { return state != ShootSystemState.None || (Time.time < fireLastTime + fireRate); }
-    }
-
-    public Vector3 ShootingDirection
-    {
-        get
-        {
-            return shootingDirection;
-        }
-        set
-        {
-            shootingDirection = value.normalized;
-        }
     }
 
     public int ShootingProjectileIndex
@@ -128,18 +114,54 @@ public class ShootSystem : MonoBehaviour
             p.source = gameObject;
             p.traverseParentTag = targetTag;
         }
-        projectile.GetComponent<Rigidbody>().AddForce(shootingDirection * projectileSpeed);
+        projectile.GetComponent<Rigidbody>().AddForce(shootingDirection.Invoke() * projectileSpeed);
+    }
+    
+    
+    private void SpawnPellets(int n, int m)
+    {
+        float x = 0,
+            y = 0, 
+            k = 0;
+        Vector3 direction = shootingDirection.Invoke();
+        Vector3 tan;
+        for (int j = 0; j < m; j++)
+        {
+            k += 0.05f;
+            for (int i = 0; i < n; i++)
+            {
+                x = Random.Range(-Mathf.Sin(0.01f), Mathf.Sin(0.01f));
+                y = Random.Range(-Mathf.Sin(0.01f), Mathf.Sin(0.01f));
+                tan = new Vector3(x, y, 0);
+                Vector3.OrthoNormalize(ref direction, ref tan);
+                projectile = Instantiate(projectilePrefabs[indexOfChosenProjectile], ShootingPoint.position,
+                    ShootingPoint.rotation);
+                //TO DO: Find the way to omitt next line
+                foreach (CollisionDamageProjectile p in projectile.GetComponentsInChildren<CollisionDamageProjectile>())
+                {
+                    p.source = gameObject;
+                    p.traverseParentTag = targetTag;
+                }
+
+                projectile.GetComponent<Rigidbody>().AddForce((direction + tan * Mathf.Sin(k)) * projectileSpeed);
+            }
+        }
     }
 
+    public void Spawn18Pellets()
+    {
+        SpawnPellets(18, 3);
+    }
+    
     public void EndShooting()
     {
         state = ShootSystemState.None;
     }
 
-    public void Shoot(Vector3 direction, int projectileIndex)
+    public void Shoot(AimVectorCalculationDelegate direction, int projectileIndex)
     {
-        Debug.Assert(!Shooting);
-        shootingDirection = direction.normalized;
+        //Debug.Assert(!Shooting);
+        shootingDirection = direction;
 
         if (Shooting || !canShoot ||
             Time.time < fireLastTime + fireRate) return;

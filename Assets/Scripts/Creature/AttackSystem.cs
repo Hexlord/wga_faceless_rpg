@@ -80,7 +80,6 @@ public class AttackSystem : MonoBehaviour
     public void Attack(int attackIndex, int weaponIndex)
     {
         activeWeaponIndex = weaponIndex;
-        weapons[activeWeaponIndex].DealsDamage = true;
         //Debug.Assert(!Attacking);
 
         if (!canAttack) return;
@@ -103,6 +102,12 @@ public class AttackSystem : MonoBehaviour
         animator.SetTrigger(interruptAnimationTrigger);
     }
 
+    public void StartAttackPhase()
+    {
+        weapons[activeWeaponIndex].DealsDamage = true;
+    }
+    
+    
     public void FinalizeAttack()
     {
         if (activeWeaponIndex != -1)

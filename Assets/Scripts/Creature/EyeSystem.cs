@@ -53,13 +53,14 @@ public class EyeSystem : MonoBehaviour
     {
         spottedObject = null;
         rayDirection = eyes.forward;
+        rayDirection.y = 0;
 
         for (float i = 0.0f; i < fieldOfViewWidth * 0.5; i += rayStep)
         {
             rayDirection = Quaternion.AngleAxis(i, Vector3.up) * eyes.forward;
             if (Physics.Raycast(eyes.position, rayDirection, out hit, maxDistance, LayerMask.GetMask("Character"), QueryTriggerInteraction.Ignore))
             {
-                if (hit.collider.tag == spottingTag)
+                if (hit.collider.CompareTag(spottingTag))
                 {
                     spottedObject = hit.collider.gameObject.TraverseParent(targetTag);
                     return true;
@@ -69,7 +70,7 @@ public class EyeSystem : MonoBehaviour
             rayDirection = Quaternion.AngleAxis(i, Vector3.down) * eyes.forward;
             if (Physics.Raycast(eyes.position, rayDirection, out hit, maxDistance, LayerMask.GetMask("Character"), QueryTriggerInteraction.Ignore))
             {
-                if (hit.collider.tag == spottingTag)
+                if (hit.collider.CompareTag(spottingTag))
                 {
                     spottedObject = hit.collider.gameObject.TraverseParent(targetTag);
                     return true;
