@@ -80,7 +80,7 @@ public class StartMenuScript : MonoBehaviour
 
     void Awake()
     {
-        //saveSystem = GameObject.FindGameObjectWithTag("SaveSystem").GetComponent<SaveSystem>();
+        saveSystem = GameObject.Find("SaveSystem").GetComponent<SaveSystem>();
 
         mainMenuStart.GetComponent<Button>().onClick.AddListener(() => { Invoke("PressedStart", 0.4f); });
         mainMenuSettings.GetComponent<Button>().onClick.AddListener(() => { Invoke("PressedSettings", 0.4f);});
@@ -121,10 +121,11 @@ public class StartMenuScript : MonoBehaviour
 
     void PressedLoad()
     {
-        PressedBack();
+        /*PressedBack();
         if (settingsMenuHideMainMenu) mainMenu.SetActive(false);
         loadMenu.SetActive(true);
-        otherMenuBackground.SetActive(true);
+        otherMenuBackground.SetActive(true);*/
+        PressedAutoLoad();
     }
 
     void PressedAutoLoad()

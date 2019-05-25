@@ -21,7 +21,7 @@ public class DeathUISystem : MonoBehaviour
     void Awake()
     {
         GameObject.Find("ToMainMenuButton").GetComponent<Button>().onClick.AddListener(ToMainMenu);
-        GameObject.Find("RestartButton").GetComponent<Button>().onClick.AddListener(Restart);
+        //GameObject.Find("RestartButton").GetComponent<Button>().onClick.AddListener(Restart);
         GameObject.Find("LoadButton").GetComponent<Button>().onClick.AddListener(Load);
         saveSystem = GameObject.Find("SaveSystem").GetComponent<SaveSystem>();
     }
