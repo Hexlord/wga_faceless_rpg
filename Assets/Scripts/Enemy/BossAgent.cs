@@ -98,7 +98,21 @@ public class BossAgent : BaseAgent
 
     protected SimpleTask WalkTowardsChosenTower()
     {
+        Task.Condition[] finishCondition =
+        {
+            () => navSys.HasAgentReachedDestination(ID)
+        };
+
+        SimpleTask.TaskAction action = () => { };
         
+        var task = new SimpleTask(
+            this.name + "WalkTowardsChosenTower",
+            AISys,
+            action,
+            Task.EmptyCondition, 
+            Task.EmptyCondition,
+            finishCondition);
+        return task;
     }
     
     protected SimpleTask WaitUntilAlerted()
