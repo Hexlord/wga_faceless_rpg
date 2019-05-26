@@ -14,9 +14,9 @@ using UnityEngine;
  
 public class SkillShiftStrike : SkillBase
 {
-    private const float Strength = 40000.0f;
+    private const float Strength = 80000.0f;
     private const float Damage = 30.0f;
-    private const float AOE = 5.0f;
+    private const float AOE = 6.0f;
 
     public SkillShiftStrike() :
         base(Skill.ShiftStrike, SkillAnimation.ShiftLeft, false, 10.0f)

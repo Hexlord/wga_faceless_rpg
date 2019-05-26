@@ -19,7 +19,7 @@ public class SkillIceWall : SkillBase
     private readonly GameObject firePrefab;
 
     public SkillIceWall() :
-        base(Skill.IceWall, SkillAnimation.IceWall, false, 5.0f)
+        base(Skill.IceWall, SkillAnimation.IceWall, false, 15.0f)
     {
         firePrefab = (GameObject)Resources.Load("Prefabs/Skills/IceWall", typeof(GameObject));
     }

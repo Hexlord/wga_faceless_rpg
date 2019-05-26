@@ -191,7 +191,10 @@ public class PlayerCharacterController : MonoBehaviour
     {
         aimSystem.Aim = cameraController.Camera.transform.rotation;
 
-        if (InputManager.Released(InputAction.Aim))
+        if (bodyStateSystem.State == BodyStateSystem.BodyState.Physical)
+        {
+            aiming = false;
+        } else if (InputManager.Released(InputAction.Aim))
         {
             aiming = !aiming;
         }

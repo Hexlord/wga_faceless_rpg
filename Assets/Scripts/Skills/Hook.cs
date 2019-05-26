@@ -21,6 +21,8 @@ public class Hook : MonoBehaviour
 
     [Tooltip("Hook range")]
     public float hookRange = 15.0f;
+
+    public GameObject Owner { get; set; }
     
     private GameObject hit;
     private float distanceTraveled = 0.0f;
@@ -100,6 +102,12 @@ public class Hook : MonoBehaviour
                 hitOffset = transform.position - hit.transform.position;
                 hitRotation = Quaternion.Inverse(hit.transform.rotation);
                 state = HookState.Hit;
+
+                var health = other.GetComponent<HealthSystem>();
+                if (health)
+                {
+                    health.Damage(Owner, 50.0f);
+                }
             } else if (other.gameObject.layer == LayerMask.NameToLayer("Environment"))
             {
                 state = HookState.Returning;

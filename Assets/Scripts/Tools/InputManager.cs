@@ -77,7 +77,7 @@ public static class InputManager
             case InputAction.Attack:
                 return "LMB";
             case InputAction.Defend:
-                return "Shift";
+                return "RMB";
             case InputAction.Sprint:
                 return "Shift";
             case InputAction.SkillMenu:

@@ -21,10 +21,12 @@ public class SkillMeteor : SkillBase
     public static float raiseTime = 0.3f;
     public static float flyTime = 0.7f;
     public static float maximumDistance = 10.0f;
+    private readonly GameObject explosionPrefab;
 
     public SkillMeteor() :
         base(Skill.Meteor, SkillAnimation.Meteor, true, 0.0f)
     {
+        explosionPrefab = (GameObject)Resources.Load("Prefabs/Skills/CircleStrike", typeof(GameObject));
 
     }
 
@@ -41,21 +43,26 @@ public class SkillMeteor : SkillBase
     {
         base.StartUpdate(caster, delta, time, length);
 
-        Debug.Log("Meteor: " + time.ToString() + " / " + length.ToString());
     }
 
     public override void CastEvent(GameObject caster)
     {
         base.CastEvent(caster);
 
-        var rotation = caster.transform.rotation;
-        var position = caster.transform.position + Vector3.up * 2.0f;
+        var dummy = new GameObject("Dummy");
+        dummy.transform.position = caster.transform.position;
+        var attractor = dummy.AddComponent<AttractorPoint>();
+        attractor.damagePerSecond = 3000.0f;
+        attractor.distanceHighpass = 7.0f;
+        attractor.distancePower = 0.0f;
+        attractor.strength = -40000.0f;
+        attractor.useForce = true;
+        attractor.ignoreY = false;
+        var lifespan = dummy.AddComponent<Lifespan>();
+        lifespan.lifespan = 0.0f;
 
-        var aim = caster.GetComponent<AimSystem>();
-        if (aim)
-        {
-            rotation = aim.Aim;
-        }
+        var effect = UnityEngine.Object.Instantiate(explosionPrefab, caster.transform.position, Quaternion.identity);
+        effect.transform.localScale = new Vector3(2, 2, 2);
     }
 
     public override void ChannelUpdate(GameObject caster, float delta, float time, float length)
