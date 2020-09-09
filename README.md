@@ -1,5 +1,8 @@
-## Faceless
+## Faceless RPG
 
-#### [Где искать и куда ложить файлы](index.md)
+Wargaming Academy project, made via Unity, for more details see https://sites.google.com/view/facelessthegame/home (RU)
 
-![image](current_state.png)
+Extremely raw, unfinished gameplay experience, but it was somewhat fun making it :)
+Feel free to look at the code/assets.
+
+![image](chrome_J34LcH8euE.png)
